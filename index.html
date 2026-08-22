@@ -1018,7 +1018,7 @@
    ============================================================ */
 
       const API_URL =
-        "https://script.google.com/macros/s/AKfycbxDavCMbRwi4e6wLWmGPy8D1SCdVaBDEK-V2ZHVhl7QG8HmdYu5YdNDwsSJAKESDGti/exec";
+        "4tv9bfNp1TO69iYDcuD_Q8ZAEEwUQLbt8QMIeQGFXdHZ9F7ZA0-_HEKcC0uRoveD";
 
       /* ============================================================
    LOCAL STORAGE
@@ -1188,6 +1188,28 @@
               60000,
           ),
         );
+      }
+
+      function getLastCompletedSleep() {
+        return appState.recent
+          .filter((item) => item.type === "Sleep" && item.endTime)
+          .reduce((latest, item) => {
+            if (!latest) return item;
+            return new Date(item.endTime).getTime() >
+              new Date(latest.endTime).getTime()
+              ? item
+              : latest;
+          }, null);
+      }
+
+      function awakeMinutesSinceLastSleep() {
+        const lastSleep = getLastCompletedSleep();
+        if (!lastSleep || !lastSleep.endTime) return null;
+
+        const wokeAt = new Date(lastSleep.endTime).getTime();
+        if (!Number.isFinite(wokeAt)) return null;
+
+        return Math.max(0, Math.floor((Date.now() - wokeAt) / 60000));
       }
 
       function escapeHtml(value) {
@@ -1401,14 +1423,29 @@
             `Started at ${formatClock(appState.activeSleep.startTime)}`;
         } else {
           const lastFeed = appState.recent.find((item) => item.type === "Feed");
+          const lastSleep = getLastCompletedSleep();
+          const awakeMinutes = awakeMinutesSinceLastSleep();
 
-          $("statusLabel").textContent = "Ready";
-          $("statusMain").textContent = lastFeed
-            ? `Last feed ${formatClock(lastFeed.startTime)}`
-            : "All caught up";
-          $("statusSub").textContent = lastFeed
-            ? `${lastFeed.amount} oz · ${formatDateShort(lastFeed.startTime)}`
-            : "Tap Sleep or Feed to record an event";
+          if (lastSleep && awakeMinutes !== null) {
+            $("statusLabel").textContent = "Awake now";
+            $("statusMain").textContent = formatDuration(awakeMinutes);
+
+            const feedDetail = lastFeed
+              ? ` · Last feed ${formatClock(lastFeed.startTime)}`
+              : "";
+
+            $("statusSub").textContent =
+              `Awake since ${formatClock(lastSleep.endTime)}${feedDetail}`;
+          } else {
+            $("statusLabel").textContent = "Ready";
+            $("statusMain").textContent = lastFeed
+              ? `Last feed ${formatClock(lastFeed.startTime)}`
+              : "All caught up";
+            $("statusSub").textContent = lastFeed
+              ? `${lastFeed.amount} oz · ${formatDateShort(lastFeed.startTime)}`
+              : "Tap Sleep or Feed to record an event";
+          }
+
           $("editActiveSleep").classList.remove("show");
 
           $("sleepButton").classList.remove("active");
@@ -2056,9 +2093,11 @@
         }
       });
 
+      // Keep the live sleep/awake duration current between server syncs.
+      // We only display whole minutes, so a 10-second UI refresh is plenty.
       setInterval(() => {
-        if (appState.activeSleep) render();
-      }, 1000);
+        render();
+      }, 10000);
 
       setInterval(() => {
         if (!document.hidden && currentUser && familyKey && !busy) {
