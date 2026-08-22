@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0d12" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Baby Tracker" />
+  <title>Baby Tracker</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0d12;
+      --panel: #141821;
+      --panel-2: #1b202b;
+      --panel-3: #10141b;
+      --text: #f7f8fb;
+      --muted: #929aab;
+      --line: rgba(255,255,255,.08);
+      --sleep: #a99cff;
+      --sleep-2: #7a68f4;
+      --feed: #8de7c9;
+      --feed-2: #59cda8;
+      --warm: #ffd38d;
+      --danger: #ffb0b0;
+      --shadow: 0 18px 46px rgba(0,0,0,.28);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      overscroll-behavior-y: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    }
+
+    button, input, select { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+
+    .app {
+      width: min(100%, 560px);
+      margin: 0 auto;
+      padding: 18px 16px 36px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1;
+      letter-spacing: -.045em;
+    }
+
+    .person-chip {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+      border-radius: 28px;
+      padding: 22px;
+      min-height: 138px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      margin-bottom: 12px;
+    }
+
+    .hero-topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .status-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .edit-active {
+      border: 0;
+      background: transparent;
+      color: var(--sleep);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 0;
+      display: none;
+    }
+
+    .edit-active.show { display: block; }
+
+    .status-main {
+      font-size: clamp(31px, 9vw, 46px);
+      font-weight: 850;
+      line-height: 1;
+      letter-spacing: -.055em;
+    }
+
+    .status-sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 9px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 13px 10px;
+      min-width: 0;
+    }
+
+    .stat-value {
+      font-size: 19px;
+      font-weight: 850;
+      letter-spacing: -.035em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .action-button {
+      width: 100%;
+      min-height: 112px;
+      border: 0;
+      border-radius: 24px;
+      padding: 19px 20px;
+      text-align: left;
+      color: #0b0d12;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform .12s ease, opacity .12s ease;
+    }
+
+    .action-button:active { transform: scale(.985); }
+    .action-button:disabled, .compact-action:disabled { opacity: .5; cursor: default; }
+
+    .action-button .eyebrow {
+      display: block;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      opacity: .64;
+      margin-bottom: 5px;
+    }
+
+    .action-button .title {
+      display: block;
+      font-size: 31px;
+      font-weight: 900;
+      letter-spacing: -.05em;
+      line-height: 1;
+    }
+
+    .action-button .sub {
+      display: block;
+      font-size: 13px;
+      font-weight: 750;
+      opacity: .7;
+      margin-top: 7px;
+    }
+
+    .sleep-button { background: linear-gradient(135deg, #b8afff, var(--sleep)); }
+    .sleep-button.active { background: linear-gradient(135deg, #9e8eff, var(--sleep-2)); color: white; }
+    .feed-button { background: linear-gradient(135deg, #a9efd9, var(--feed)); }
+
+    .compact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .compact-action {
+      min-height: 68px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 19px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .compact-action span:last-child { color: var(--muted); font-size: 18px; }
+
+    .past-sleep-button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 2px 4px 0;
+      justify-self: start;
+      cursor: pointer;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin: 26px 2px 10px;
+    }
+
+    .section-title h2 { margin: 0; font-size: 14px; }
+    .sync-status { color: var(--muted); font-size: 11px; }
+
+    .history-list {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--panel);
+    }
+
+    .history-row {
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      color: var(--text);
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 15px;
+      text-align: left;
+    }
+
+    .history-row:last-child { border-bottom: 0; }
+    button.history-row { cursor: pointer; }
+
+    .history-icon { font-size: 20px; text-align: center; }
+    .history-name { font-size: 13px; font-weight: 850; }
+    .history-detail { color: var(--muted); font-size: 12px; margin-top: 3px; }
+    .history-time { color: var(--muted); font-size: 11px; text-align: right; line-height: 1.35; }
+    .empty { padding: 22px; color: var(--muted); font-size: 13px; text-align: center; }
+
+    .install-tip {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      background: var(--panel-3);
+      border-radius: 18px;
+      padding: 13px 14px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      position: relative;
+    }
+
+    .install-tip.show { display: block; }
+    .install-tip strong { color: var(--text); }
+
+    .install-dismiss {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0,0,0,.62);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .backdrop.open { display: flex; }
+
+    .sheet-modal {
+      width: min(100%, 520px);
+      max-height: calc(100vh - 24px - env(safe-area-inset-top));
+      overflow: auto;
+      background: #151922;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 22px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.5);
+      margin-bottom: max(0px, env(safe-area-inset-bottom));
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .modal-head h3 { margin: 0; font-size: 22px; letter-spacing: -.04em; }
+
+    .close-button {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    .field { margin-bottom: 16px; }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .input, .select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #0f1218;
+      color: var(--text);
+      border-radius: 15px;
+      min-height: 52px;
+      padding: 0 14px;
+      outline: none;
+    }
+
+    .input:focus, .select:focus { border-color: rgba(169,156,255,.75); }
+
+    .stepper {
+      display: grid;
+      grid-template-columns: 58px 1fr 58px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .stepper button {
+      height: 58px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 26px;
+    }
+
+    .amount-wrap { position: relative; }
+
+    .amount-wrap input {
+      width: 100%;
+      height: 58px;
+      text-align: center;
+      font-size: 25px;
+      font-weight: 850;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #0f1218;
+      color: var(--text);
+      padding-right: 36px;
+    }
+
+    .amount-wrap span {
+      position: absolute;
+      right: 13px;
+      top: 19px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #0f1218;
+      padding: 4px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+
+    .segmented button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .segmented button.selected { background: var(--panel-2); color: var(--text); }
+    .manual-time { display: none; margin-top: 10px; }
+    .manual-time.show { display: block; }
+
+    .primary-save {
+      width: 100%;
+      min-height: 56px;
+      border: 0;
+      border-radius: 17px;
+      background: var(--text);
+      color: #0b0d12;
+      font-weight: 900;
+      margin-top: 8px;
+    }
+
+    .primary-save:disabled { opacity: .5; }
+
+    .person-picker, .diaper-picker {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .diaper-picker { grid-template-columns: repeat(3, 1fr); }
+
+    .person-option, .diaper-option {
+      min-height: 54px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #0f1218;
+      color: var(--text);
+      font-weight: 850;
+    }
+
+    .person-option.selected, .diaper-option.selected {
+      border-color: var(--sleep);
+      background: rgba(169,156,255,.13);
+    }
+
+    .setup-note, .modal-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      margin: -4px 0 18px;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 100;
+      left: 50%;
+      bottom: calc(22px + env(safe-area-inset-bottom));
+      transform: translate(-50%, 18px);
+      width: calc(100% - 36px);
+      max-width: 460px;
+      background: #f4f5f8;
+      color: #111318;
+      padding: 13px 16px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .toast.error { background: #ffd9d9; color: #5c1212; }
+    iframe.write-sink { display: none; width: 0; height: 0; border: 0; }
+
+    @media (max-width: 390px) {
+      .stat-value { font-size: 17px; }
+      .stat { padding: 12px 8px; }
+      .app { padding-left: 12px; padding-right: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <small id="todayLabel">Today</small>
+        <h1>Baby Tracker</h1>
+      </div>
+
+      <button class="person-chip" id="personChip" type="button">Setup</button>
+    </header>
+
+    <section class="hero">
+      <div class="hero-topline">
+        <div class="status-label" id="statusLabel">Current status</div>
+        <button class="edit-active" id="editActiveSleep" type="button">Correct start time</button>
+      </div>
+
+      <div class="status-main" id="statusMain">Loading…</div>
+      <div class="status-sub" id="statusSub">Checking the shared log</div>
+    </section>
+
+    <section class="stats" aria-label="Today's totals">
+      <div class="stat">
+        <div class="stat-value" id="statSleep">0m</div>
+        <div class="stat-label">Sleep</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="statMilk">0 oz</div>
+        <div class="stat-label">Milk</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="statFeeds">0</div>
+        <div class="stat-label">Feeds</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="statDiapers">0</div>
+        <div class="stat-label">Diapers</div>
+      </div>
+    </section>
+
+    <section class="actions">
+      <button class="action-button sleep-button" id="sleepButton" type="button">
+        <span class="eyebrow" id="sleepEyebrow">Sleep</span>
+        <span class="title" id="sleepTitle">Start Sleep</span>
+        <span class="sub" id="sleepSub">Timestamp the start now</span>
+      </button>
+
+      <button class="past-sleep-button" id="pastSleepButton" type="button">+ Add past sleep manually</button>
+
+      <button class="action-button feed-button" id="feedButton" type="button">
+        <span class="eyebrow">Bottle</span>
+        <span class="title">Feed</span>
+        <span class="sub">Record breastmilk ounces</span>
+      </button>
+
+      <div class="compact-grid">
+        <button class="compact-action" id="diaperButton" type="button">
+          <span>Diaper</span><span>›</span>
+        </button>
+
+        <button class="compact-action" id="medicineButton" type="button">
+          <span>Medicine</span><span>›</span>
+        </button>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <h2>Recent activity</h2>
+      <div class="sync-status" id="syncStatus">Connecting</div>
+    </div>
+
+    <section class="history-list" id="historyList">
+      <div class="empty">No activity yet.</div>
+    </section>
+
+    <aside class="install-tip" id="installTip">
+      <button class="install-dismiss" id="installDismiss" type="button">×</button>
+      <strong>Add this to your iPhone Home Screen.</strong><br>
+      In Safari, tap Share → Add to Home Screen. It will open like a standalone app.
+    </aside>
+  </main>
+
+
+  <!-- FEED MODAL -->
+  <div class="backdrop" id="feedBackdrop">
+    <div class="sheet-modal">
+      <div class="modal-head">
+        <h3>Record Feed</h3>
+        <button class="close-button" type="button" data-close="feedBackdrop">×</button>
+      </div>
+
+      <div class="field">
+        <label>Breastmilk consumed</label>
+        <div class="stepper">
+          <button type="button" id="feedMinus">−</button>
+          <div class="amount-wrap">
+            <input id="feedAmount" type="number" inputmode="decimal" min="0.1" step="0.5" value="2.0" />
+            <span>oz</span>
+          </div>
+          <button type="button" id="feedPlus">+</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Time</label>
+        <div class="segmented">
+          <button type="button" class="selected" id="feedNow">Now</button>
+          <button type="button" id="feedManual">Choose Time</button>
+        </div>
+        <div class="manual-time" id="feedManualWrap">
+          <input class="input" id="feedTime" type="datetime-local" />
+        </div>
+      </div>
+
+      <button class="primary-save" id="saveFeed" type="button">Save Feed</button>
+    </div>
+  </div>
+
+
+  <!-- MEDICINE MODAL -->
+  <div class="backdrop" id="medicineBackdrop">
+    <div class="sheet-modal">
+      <div class="modal-head">
+        <h3>Record Medicine</h3>
+        <button class="close-button" type="button" data-close="medicineBackdrop">×</button>
+      </div>
+
+      <div class="field">
+        <label>Medicine</label>
+        <input class="input" id="medicineName" type="text" autocomplete="off" placeholder="e.g. Infant Tylenol" />
+      </div>
+
+      <div class="field">
+        <label>Dose</label>
+        <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;">
+          <input class="input" id="medicineAmount" type="number" inputmode="decimal" min="0.01" step="0.1" placeholder="1.25" />
+          <select class="select" id="medicineUnit">
+            <option value="mL">mL</option>
+            <option value="mg">mg</option>
+            <option value="tablet">tablet</option>
+            <option value="tsp">tsp</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Time</label>
+        <div class="segmented">
+          <button type="button" class="selected" id="medicineNow">Now</button>
+          <button type="button" id="medicineManual">Choose Time</button>
+        </div>
+        <div class="manual-time" id="medicineManualWrap">
+          <input class="input" id="medicineTime" type="datetime-local" />
+        </div>
+      </div>
+
+      <button class="primary-save" id="saveMedicine" type="button">Save Medicine</button>
+    </div>
+  </div>
+
+
+  <!-- DIAPER MODAL -->
+  <div class="backdrop" id="diaperBackdrop">
+    <div class="sheet-modal">
+      <div class="modal-head">
+        <h3>Record Diaper</h3>
+        <button class="close-button" type="button" data-close="diaperBackdrop">×</button>
+      </div>
+
+      <div class="field">
+        <label>Type</label>
+        <div class="diaper-picker">
+          <button class="diaper-option selected" type="button" data-diaper="Wet">Wet</button>
+          <button class="diaper-option" type="button" data-diaper="Dirty">Dirty</button>
+          <button class="diaper-option" type="button" data-diaper="Both">Both</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Time</label>
+        <div class="segmented">
+          <button type="button" class="selected" id="diaperNow">Now</button>
+          <button type="button" id="diaperManual">Choose Time</button>
+        </div>
+        <div class="manual-time" id="diaperManualWrap">
+          <input class="input" id="diaperTime" type="datetime-local" />
+        </div>
+      </div>
+
+      <button class="primary-save" id="saveDiaper" type="button">Save Diaper</button>
+    </div>
+  </div>
+
+
+  <!-- MANUAL / EDIT SLEEP MODAL -->
+  <div class="backdrop" id="sleepEditBackdrop">
+    <div class="sheet-modal">
+      <div class="modal-head">
+        <h3 id="sleepEditTitle">Add Past Sleep</h3>
+        <button class="close-button" type="button" data-close="sleepEditBackdrop">×</button>
+      </div>
+
+      <p class="modal-note" id="sleepEditNote">Use this if you forgot to start or stop the timer at the correct time.</p>
+
+      <div class="field">
+        <label>Sleep started</label>
+        <input class="input" id="sleepStartTime" type="datetime-local" />
+      </div>
+
+      <div class="field" id="sleepEndWrap">
+        <label>Sleep ended</label>
+        <input class="input" id="sleepEndTime" type="datetime-local" />
+      </div>
+
+      <button class="primary-save" id="saveSleepEdit" type="button">Save Sleep</button>
+    </div>
+  </div>
+
+
+  <!-- DEVICE SETUP -->
+  <div class="backdrop" id="setupBackdrop">
+    <div class="sheet-modal">
+      <div class="modal-head">
+        <h3>Set Up This Phone</h3>
+        <button class="close-button" id="setupClose" type="button">×</button>
+      </div>
+
+      <p class="setup-note">Choose who uses this phone most often. The family code is the private code stored in Apps Script and is saved only on this device.</p>
+
+      <div class="field">
+        <label>Who is using this phone?</label>
+        <div class="person-picker">
+          <button class="person-option" type="button" data-person="Michael">Michael</button>
+          <button class="person-option" type="button" data-person="Alison">Alison</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Family code</label>
+        <input class="input" id="familyCode" type="password" autocomplete="off" placeholder="Enter the private Apps Script code" />
+      </div>
+
+      <button class="primary-save" id="saveSetup" type="button">Connect Phone</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <iframe class="write-sink" id="writeSink" name="babyTrackerWriteSink" title="Hidden data writer"></iframe>
+
+
+<script>
+/* ============================================================
+   REQUIRED: KEEP YOUR EXISTING GOOGLE APPS SCRIPT /exec URL HERE
+   ============================================================ */
+
+const API_URL = 'PASTE_YOUR_EXISTING_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+
+/* ============================================================
+   LOCAL STORAGE
+   ============================================================ */
+
+const STORAGE = {
+  user: 'babyTracker.user',
+  key: 'babyTracker.key',
+  feedAmount: 'babyTracker.feedAmount',
+  medicineName: 'babyTracker.medicineName',
+  medicineAmount: 'babyTracker.medicineAmount',
+  medicineUnit: 'babyTracker.medicineUnit',
+  installDismissed: 'babyTracker.installDismissed',
+};
+
+
+/* ============================================================
+   STATE
+   ============================================================ */
+
+let appState = {
+  activeSleep: null,
+  recent: [],
+  today: {
+    sleepMinutes: 0,
+    feedOunces: 0,
+    feeds: 0,
+    diapers: 0,
+    wetDiapers: 0,
+    dirtyDiapers: 0,
+    medicine: 0,
+  },
+};
+
+let currentUser = localStorage.getItem(STORAGE.user) || '';
+let familyKey = localStorage.getItem(STORAGE.key) || '';
+let selectedSetupUser = currentUser;
+let busy = false;
+let feedUsesNow = true;
+let medicineUsesNow = true;
+let diaperUsesNow = true;
+let selectedDiaper = 'Wet';
+let lastSyncAt = null;
+let toastTimer = null;
+let sleepEditMode = 'new';
+let sleepEditId = null;
+let sleepEditOriginalEnd = null;
+
+const $ = id => document.getElementById(id);
+
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+
+function makeId() {
+  if (window.crypto && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+
+  return 'bt-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function showToast(message, isError = false) {
+  clearTimeout(toastTimer);
+  const toast = $('toast');
+  toast.textContent = message;
+  toast.classList.toggle('error', isError);
+  toast.classList.add('show');
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+function setBusy(value) {
+  busy = value;
+
+  [
+    'sleepButton',
+    'feedButton',
+    'diaperButton',
+    'medicineButton',
+    'pastSleepButton',
+    'saveFeed',
+    'saveMedicine',
+    'saveDiaper',
+    'saveSleepEdit',
+  ].forEach(id => {
+    if ($(id)) $(id).disabled = value;
+  });
+}
+
+function openModal(id) {
+  $(id).classList.add('open');
+}
+
+function closeModal(id) {
+  $(id).classList.remove('open');
+}
+
+function localDateTimeValue(date = new Date()) {
+  const pad = n => String(n).padStart(2, '0');
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function startOfLocalDayIso() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+}
+
+function endOfLocalDayIso() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 1);
+  return d.toISOString();
+}
+
+function formatClock(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+function formatDateShort(iso) {
+  if (!iso) return '';
+
+  const date = new Date(iso);
+  const today = new Date();
+
+  if (date.toDateString() === today.toDateString()) return 'Today';
+
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+
+  return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
+
+function formatDuration(minutes) {
+  const total = Math.max(0, Math.floor(Number(minutes) || 0));
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+
+  if (!h) return `${m}m`;
+  return `${h}h ${String(m).padStart(2, '0')}m`;
+}
+
+function activeSleepMinutes() {
+  if (!appState.activeSleep || !appState.activeSleep.startTime) return 0;
+
+  return Math.max(
+    0,
+    Math.floor((Date.now() - new Date(appState.activeSleep.startTime).getTime()) / 60000)
+  );
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function parseManualDateTime(value, message) {
+  if (!value) throw new Error(message);
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) throw new Error(message);
+  return date;
+}
+
+function nearlySameTime(a, b) {
+  if (!a || !b) return !a && !b;
+  return Math.abs(new Date(a).getTime() - new Date(b).getTime()) < 61000;
+}
+
+function getHistoryItem(id) {
+  return appState.recent.find(item => item.id === id) || null;
+}
+
+
+/* ============================================================
+   JSONP READ
+   ============================================================ */
+
+function jsonpState(keyOverride = familyKey) {
+  return new Promise((resolve, reject) => {
+    if (!API_URL.startsWith('https://script.google.com/')) {
+      reject(new Error('Paste your Apps Script /exec URL into index.html first.'));
+      return;
+    }
+
+    const callbackName = 'btCallback_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    const script = document.createElement('script');
+    let finished = false;
+
+    const cleanup = () => {
+      if (finished) return;
+      finished = true;
+      delete window[callbackName];
+      script.remove();
+    };
+
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error('Could not reach Baby Tracker. Check your connection.'));
+    }, 10000);
+
+    window[callbackName] = data => {
+      clearTimeout(timeout);
+      cleanup();
+
+      if (!data || data.ok !== true) {
+        reject(new Error((data && data.error) || 'Baby Tracker returned an error.'));
+        return;
+      }
+
+      resolve(data);
+    };
+
+    script.onerror = () => {
+      clearTimeout(timeout);
+      cleanup();
+      reject(new Error('Could not load Baby Tracker data.'));
+    };
+
+    const query = new URLSearchParams({
+      action: 'state',
+      key: keyOverride,
+      callback: callbackName,
+      dayStart: startOfLocalDayIso(),
+      dayEnd: endOfLocalDayIso(),
+      _: String(Date.now()),
+    });
+
+    script.src = `${API_URL}?${query.toString()}`;
+    document.body.appendChild(script);
+  });
+}
+
+
+/* ============================================================
+   HIDDEN FORM WRITE
+   ============================================================ */
+
+function postAction(payload) {
+  if (!API_URL.startsWith('https://script.google.com/')) {
+    throw new Error('Paste your Apps Script /exec URL into index.html first.');
+  }
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = API_URL;
+  form.target = 'babyTrackerWriteSink';
+  form.style.display = 'none';
+
+  const fields = { ...payload, key: familyKey };
+
+  Object.entries(fields).forEach(([name, value]) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value == null ? '' : String(value);
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+  setTimeout(() => form.remove(), 1000);
+}
+
+
+/* ============================================================
+   SYNC
+   ============================================================ */
+
+async function refreshState(showErrors = true) {
+  try {
+    const data = await jsonpState();
+
+    appState = {
+      activeSleep: data.activeSleep || null,
+      recent: Array.isArray(data.recent) ? data.recent : [],
+      today: data.today || appState.today,
+    };
+
+    lastSyncAt = new Date();
+    render();
+    return appState;
+
+  } catch (error) {
+    $('syncStatus').textContent = 'Not synced';
+    if (showErrors) showToast(error.message, true);
+    throw error;
+  }
+}
+
+async function writeAndConfirm(payload, predicate, successMessage) {
+  setBusy(true);
+
+  try {
+    postAction(payload);
+
+    for (let attempt = 0; attempt < 12; attempt++) {
+      await delay(attempt === 0 ? 650 : 500);
+
+      try {
+        const state = await refreshState(false);
+
+        if (predicate(state)) {
+          if (successMessage) showToast(successMessage);
+          return;
+        }
+      } catch (_) {
+        // Keep checking during brief mobile-network hiccups.
+      }
+    }
+
+    throw new Error('The change was sent, but I could not confirm it. Refresh before tapping again.');
+
+  } finally {
+    setBusy(false);
+  }
+}
+
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+
+function render() {
+  const now = new Date();
+  $('todayLabel').textContent = now.toLocaleDateString([], {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+
+  $('personChip').textContent = currentUser || 'Setup';
+
+  if (appState.activeSleep) {
+    $('statusLabel').textContent = 'Sleeping now';
+    $('statusMain').textContent = formatDuration(activeSleepMinutes());
+    $('statusSub').textContent = `Started ${formatClock(appState.activeSleep.startTime)} · ${appState.activeSleep.recordedBy || 'Recorded'}`;
+    $('editActiveSleep').classList.add('show');
+
+    $('sleepButton').classList.add('active');
+    $('sleepEyebrow').textContent = 'Sleep in progress';
+    $('sleepTitle').textContent = 'End Sleep';
+    $('sleepSub').textContent = `Started at ${formatClock(appState.activeSleep.startTime)}`;
+  } else {
+    const lastFeed = appState.recent.find(item => item.type === 'Feed');
+
+    $('statusLabel').textContent = 'Ready';
+    $('statusMain').textContent = lastFeed ? `Last feed ${formatClock(lastFeed.startTime)}` : 'All caught up';
+    $('statusSub').textContent = lastFeed ? `${lastFeed.amount} oz · ${formatDateShort(lastFeed.startTime)}` : 'Tap Sleep or Feed to record an event';
+    $('editActiveSleep').classList.remove('show');
+
+    $('sleepButton').classList.remove('active');
+    $('sleepEyebrow').textContent = 'Sleep';
+    $('sleepTitle').textContent = 'Start Sleep';
+    $('sleepSub').textContent = 'Timestamp the start now';
+  }
+
+  $('statSleep').textContent = formatDuration(appState.today.sleepMinutes || 0);
+  $('statMilk').textContent = `${Number(appState.today.feedOunces || 0).toLocaleString([], { maximumFractionDigits: 2 })} oz`;
+  $('statFeeds').textContent = String(appState.today.feeds || 0);
+  $('statDiapers').textContent = String(appState.today.diapers || 0);
+
+  const recent = appState.recent.slice(0, 10);
+
+  $('historyList').innerHTML = recent.length
+    ? recent.map(historyRow).join('')
+    : '<div class="empty">No activity yet.</div>';
+
+  if (lastSyncAt) {
+    $('syncStatus').textContent = `Synced ${formatClock(lastSyncAt.toISOString())}`;
+  } else {
+    $('syncStatus').textContent = 'Connecting';
+  }
+}
+
+function historyRow(item) {
+  let icon = '•';
+  let name = item.type;
+  let detail = item.recordedBy || '';
+  let timeIso = item.endTime || item.startTime;
+
+  if (item.type === 'Feed') {
+    icon = '🍼';
+    name = 'Feed';
+    detail = `${item.amount} oz · ${escapeHtml(item.recordedBy)}`;
+  }
+
+  if (item.type === 'Sleep') {
+    icon = '☾';
+    name = item.endTime ? 'Sleep' : 'Sleeping';
+    detail = item.endTime
+      ? `${formatDuration(item.durationMinutes)} · ${formatClock(item.startTime)}–${formatClock(item.endTime)}`
+      : `Started ${formatClock(item.startTime)} · ${escapeHtml(item.recordedBy)}`;
+  }
+
+  if (item.type === 'Medicine') {
+    icon = '＋';
+    name = item.medicine || 'Medicine';
+    detail = `${item.amount} ${escapeHtml(item.unit)} · ${escapeHtml(item.recordedBy)}`;
+  }
+
+  if (item.type === 'Diaper') {
+    icon = '◌';
+    name = `${item.details || 'Diaper'} diaper`;
+    detail = escapeHtml(item.recordedBy);
+  }
+
+  const tag = item.type === 'Sleep' ? 'button' : 'div';
+  const attrs = item.type === 'Sleep' ? ` type="button" data-sleep-id="${escapeHtml(item.id)}"` : '';
+
+  return `
+    <${tag} class="history-row"${attrs}>
+      <div class="history-icon">${icon}</div>
+      <div>
+        <div class="history-name">${escapeHtml(name)}</div>
+        <div class="history-detail">${detail}</div>
+      </div>
+      <div class="history-time">
+        ${formatDateShort(timeIso)}<br>${formatClock(timeIso)}
+      </div>
+    </${tag}>
+  `;
+}
+
+
+/* ============================================================
+   SLEEP
+   ============================================================ */
+
+async function handleSleep() {
+  if (busy || !currentUser || !familyKey) return;
+
+  if (appState.activeSleep) {
+    const sleepId = appState.activeSleep.id;
+
+    await writeAndConfirm(
+      {
+        action: 'endSleep',
+        id: sleepId,
+        timestamp: new Date().toISOString(),
+        recordedBy: currentUser,
+      },
+      state => !state.activeSleep || state.activeSleep.id !== sleepId,
+      'Sleep ended'
+    );
+
+  } else {
+    const id = makeId();
+
+    await writeAndConfirm(
+      {
+        action: 'startSleep',
+        id,
+        timestamp: new Date().toISOString(),
+        recordedBy: currentUser,
+      },
+      state => state.activeSleep && state.activeSleep.id === id,
+      'Sleep started'
+    );
+  }
+}
+
+function openNewPastSleep() {
+  sleepEditMode = 'new';
+  sleepEditId = null;
+  sleepEditOriginalEnd = null;
+
+  const end = new Date();
+  const start = new Date(end.getTime() - 60 * 60000);
+
+  $('sleepEditTitle').textContent = 'Add Past Sleep';
+  $('sleepEditNote').textContent = 'Use this if you forgot to start or stop the sleep timer at the correct time.';
+  $('sleepStartTime').value = localDateTimeValue(start);
+  $('sleepEndTime').value = localDateTimeValue(end);
+  $('sleepEndWrap').style.display = '';
+  $('saveSleepEdit').textContent = 'Save Sleep';
+
+  openModal('sleepEditBackdrop');
+}
+
+function openSleepCorrection(item) {
+  if (!item || item.type !== 'Sleep') return;
+
+  sleepEditMode = 'edit';
+  sleepEditId = item.id;
+  sleepEditOriginalEnd = item.endTime || null;
+
+  $('sleepEditTitle').textContent = item.endTime ? 'Correct Sleep' : 'Correct Start Time';
+  $('sleepEditNote').textContent = item.endTime
+    ? 'Adjust either timestamp. The duration will be recalculated automatically.'
+    : 'This sleep is still active. You can correct the start time here; end it from the main Sleep button.';
+
+  $('sleepStartTime').value = localDateTimeValue(new Date(item.startTime));
+
+  if (item.endTime) {
+    $('sleepEndTime').value = localDateTimeValue(new Date(item.endTime));
+    $('sleepEndWrap').style.display = '';
+    $('saveSleepEdit').textContent = 'Save Correction';
+  } else {
+    $('sleepEndTime').value = '';
+    $('sleepEndWrap').style.display = 'none';
+    $('saveSleepEdit').textContent = 'Save Start Time';
+  }
+
+  openModal('sleepEditBackdrop');
+}
+
+async function saveSleepCorrection() {
+  const start = parseManualDateTime($('sleepStartTime').value, 'Choose a valid sleep start time.');
+
+  if (sleepEditMode === 'new') {
+    const end = parseManualDateTime($('sleepEndTime').value, 'Choose a valid sleep end time.');
+
+    if (end <= start) {
+      showToast('Sleep end time must be after the start time.', true);
+      return;
+    }
+
+    const id = makeId();
+    const startIso = start.toISOString();
+    const endIso = end.toISOString();
+
+    await writeAndConfirm(
+      {
+        action: 'addSleep',
+        id,
+        startTime: startIso,
+        endTime: endIso,
+        recordedBy: currentUser,
+      },
+      state => state.recent.some(item => item.id === id),
+      'Past sleep added'
+    );
+
+    closeModal('sleepEditBackdrop');
+    return;
+  }
+
+  const end = sleepEditOriginalEnd
+    ? parseManualDateTime($('sleepEndTime').value, 'Choose a valid sleep end time.')
+    : null;
+
+  if (end && end <= start) {
+    showToast('Sleep end time must be after the start time.', true);
+    return;
+  }
+
+  const startIso = start.toISOString();
+  const endIso = end ? end.toISOString() : '';
+  const id = sleepEditId;
+
+  await writeAndConfirm(
+    {
+      action: 'updateSleep',
+      id,
+      startTime: startIso,
+      endTime: endIso,
+      recordedBy: currentUser,
+    },
+    state => {
+      const item = state.recent.find(row => row.id === id);
+      if (!item) return false;
+      return nearlySameTime(item.startTime, startIso) && nearlySameTime(item.endTime, endIso || null);
+    },
+    'Sleep corrected'
+  );
+
+  closeModal('sleepEditBackdrop');
+}
+
+
+/* ============================================================
+   FEED
+   ============================================================ */
+
+function setFeedTimeMode(useNow) {
+  feedUsesNow = useNow;
+  $('feedNow').classList.toggle('selected', useNow);
+  $('feedManual').classList.toggle('selected', !useNow);
+  $('feedManualWrap').classList.toggle('show', !useNow);
+  if (!useNow) $('feedTime').value = localDateTimeValue();
+}
+
+function openFeed() {
+  const remembered = Number(localStorage.getItem(STORAGE.feedAmount));
+  $('feedAmount').value = remembered > 0 ? remembered : 2.0;
+  setFeedTimeMode(true);
+  openModal('feedBackdrop');
+}
+
+function adjustFeed(delta) {
+  const current = Number($('feedAmount').value) || 0;
+  const next = Math.max(.5, Math.round((current + delta) * 10) / 10);
+  $('feedAmount').value = next.toFixed(1);
+}
+
+async function saveFeed() {
+  const amount = Number($('feedAmount').value);
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    showToast('Enter the number of ounces.', true);
+    return;
+  }
+
+  const timestamp = feedUsesNow
+    ? new Date().toISOString()
+    : parseManualDateTime($('feedTime').value, 'Choose a valid feed time.').toISOString();
+
+  const id = makeId();
+
+  await writeAndConfirm(
+    {
+      action: 'addFeed',
+      id,
+      timestamp,
+      amount,
+      recordedBy: currentUser,
+    },
+    state => state.recent.some(item => item.id === id),
+    `${amount} oz feed saved`
+  );
+
+  localStorage.setItem(STORAGE.feedAmount, String(amount));
+  closeModal('feedBackdrop');
+}
+
+
+/* ============================================================
+   MEDICINE
+   ============================================================ */
+
+function setMedicineTimeMode(useNow) {
+  medicineUsesNow = useNow;
+  $('medicineNow').classList.toggle('selected', useNow);
+  $('medicineManual').classList.toggle('selected', !useNow);
+  $('medicineManualWrap').classList.toggle('show', !useNow);
+  if (!useNow) $('medicineTime').value = localDateTimeValue();
+}
+
+function openMedicine() {
+  $('medicineName').value = localStorage.getItem(STORAGE.medicineName) || '';
+  $('medicineAmount').value = localStorage.getItem(STORAGE.medicineAmount) || '';
+  $('medicineUnit').value = localStorage.getItem(STORAGE.medicineUnit) || 'mL';
+  setMedicineTimeMode(true);
+  openModal('medicineBackdrop');
+}
+
+async function saveMedicine() {
+  const medicine = $('medicineName').value.trim();
+  const amount = Number($('medicineAmount').value);
+  const unit = $('medicineUnit').value;
+
+  if (!medicine) {
+    showToast('Enter the medicine name.', true);
+    return;
+  }
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    showToast('Enter the dose.', true);
+    return;
+  }
+
+  const timestamp = medicineUsesNow
+    ? new Date().toISOString()
+    : parseManualDateTime($('medicineTime').value, 'Choose a valid medicine time.').toISOString();
+
+  const id = makeId();
+
+  await writeAndConfirm(
+    {
+      action: 'addMedicine',
+      id,
+      timestamp,
+      medicine,
+      amount,
+      unit,
+      recordedBy: currentUser,
+    },
+    state => state.recent.some(item => item.id === id),
+    'Medicine saved'
+  );
+
+  localStorage.setItem(STORAGE.medicineName, medicine);
+  localStorage.setItem(STORAGE.medicineAmount, String(amount));
+  localStorage.setItem(STORAGE.medicineUnit, unit);
+  closeModal('medicineBackdrop');
+}
+
+
+/* ============================================================
+   DIAPER
+   ============================================================ */
+
+function setDiaperTimeMode(useNow) {
+  diaperUsesNow = useNow;
+  $('diaperNow').classList.toggle('selected', useNow);
+  $('diaperManual').classList.toggle('selected', !useNow);
+  $('diaperManualWrap').classList.toggle('show', !useNow);
+  if (!useNow) $('diaperTime').value = localDateTimeValue();
+}
+
+function openDiaper() {
+  selectedDiaper = 'Wet';
+  document.querySelectorAll('.diaper-option').forEach(button => {
+    button.classList.toggle('selected', button.dataset.diaper === selectedDiaper);
+  });
+  setDiaperTimeMode(true);
+  openModal('diaperBackdrop');
+}
+
+async function saveDiaper() {
+  const timestamp = diaperUsesNow
+    ? new Date().toISOString()
+    : parseManualDateTime($('diaperTime').value, 'Choose a valid diaper time.').toISOString();
+
+  const id = makeId();
+
+  await writeAndConfirm(
+    {
+      action: 'addDiaper',
+      id,
+      timestamp,
+      details: selectedDiaper,
+      recordedBy: currentUser,
+    },
+    state => state.recent.some(item => item.id === id),
+    `${selectedDiaper} diaper saved`
+  );
+
+  closeModal('diaperBackdrop');
+}
+
+
+/* ============================================================
+   DEVICE SETUP
+   ============================================================ */
+
+function openSetup() {
+  selectedSetupUser = currentUser;
+
+  document.querySelectorAll('.person-option').forEach(button => {
+    button.classList.toggle('selected', button.dataset.person === selectedSetupUser);
+  });
+
+  $('familyCode').value = familyKey;
+  $('setupClose').style.display = currentUser && familyKey ? '' : 'none';
+  openModal('setupBackdrop');
+}
+
+async function saveSetup() {
+  const key = $('familyCode').value.trim();
+
+  if (!selectedSetupUser) {
+    showToast('Choose Michael or Alison.', true);
+    return;
+  }
+
+  if (!key) {
+    showToast('Enter the family code.', true);
+    return;
+  }
+
+  const button = $('saveSetup');
+  button.disabled = true;
+  button.textContent = 'Connecting…';
+
+  try {
+    const data = await jsonpState(key);
+
+    currentUser = selectedSetupUser;
+    familyKey = key;
+
+    localStorage.setItem(STORAGE.user, currentUser);
+    localStorage.setItem(STORAGE.key, familyKey);
+
+    appState = {
+      activeSleep: data.activeSleep || null,
+      recent: data.recent || [],
+      today: data.today || appState.today,
+    };
+
+    lastSyncAt = new Date();
+    closeModal('setupBackdrop');
+    render();
+    showToast(`Connected as ${currentUser}`);
+
+  } catch (error) {
+    showToast(error.message, true);
+
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Connect Phone';
+  }
+}
+
+
+/* ============================================================
+   HOME SCREEN TIP
+   ============================================================ */
+
+function maybeShowInstallTip() {
+  const ua = navigator.userAgent || '';
+  const isiOS = /iPhone|iPad|iPod/i.test(ua);
+  const standalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  const dismissed = localStorage.getItem(STORAGE.installDismissed) === '1';
+
+  if (isiOS && !standalone && !dismissed) {
+    $('installTip').classList.add('show');
+  }
+}
+
+
+/* ============================================================
+   EVENTS
+   ============================================================ */
+
+$('sleepButton').addEventListener('click', () => handleSleep().catch(error => showToast(error.message, true)));
+$('pastSleepButton').addEventListener('click', openNewPastSleep);
+$('editActiveSleep').addEventListener('click', () => openSleepCorrection(appState.activeSleep));
+$('feedButton').addEventListener('click', openFeed);
+$('diaperButton').addEventListener('click', openDiaper);
+$('medicineButton').addEventListener('click', openMedicine);
+$('personChip').addEventListener('click', openSetup);
+
+$('feedMinus').addEventListener('click', () => adjustFeed(-.5));
+$('feedPlus').addEventListener('click', () => adjustFeed(.5));
+$('feedNow').addEventListener('click', () => setFeedTimeMode(true));
+$('feedManual').addEventListener('click', () => setFeedTimeMode(false));
+$('saveFeed').addEventListener('click', () => saveFeed().catch(error => showToast(error.message, true)));
+
+$('medicineNow').addEventListener('click', () => setMedicineTimeMode(true));
+$('medicineManual').addEventListener('click', () => setMedicineTimeMode(false));
+$('saveMedicine').addEventListener('click', () => saveMedicine().catch(error => showToast(error.message, true)));
+
+$('diaperNow').addEventListener('click', () => setDiaperTimeMode(true));
+$('diaperManual').addEventListener('click', () => setDiaperTimeMode(false));
+$('saveDiaper').addEventListener('click', () => saveDiaper().catch(error => showToast(error.message, true)));
+
+$('saveSleepEdit').addEventListener('click', () => saveSleepCorrection().catch(error => showToast(error.message, true)));
+
+$('historyList').addEventListener('click', event => {
+  const row = event.target.closest('[data-sleep-id]');
+  if (!row) return;
+  const item = getHistoryItem(row.dataset.sleepId);
+  if (item) openSleepCorrection(item);
+});
+
+document.querySelectorAll('[data-close]').forEach(button => {
+  button.addEventListener('click', () => closeModal(button.dataset.close));
+});
+
+document.querySelectorAll('.person-option').forEach(button => {
+  button.addEventListener('click', () => {
+    selectedSetupUser = button.dataset.person;
+    document.querySelectorAll('.person-option').forEach(option => {
+      option.classList.toggle('selected', option === button);
+    });
+  });
+});
+
+document.querySelectorAll('.diaper-option').forEach(button => {
+  button.addEventListener('click', () => {
+    selectedDiaper = button.dataset.diaper;
+    document.querySelectorAll('.diaper-option').forEach(option => {
+      option.classList.toggle('selected', option === button);
+    });
+  });
+});
+
+$('saveSetup').addEventListener('click', saveSetup);
+$('setupClose').addEventListener('click', () => closeModal('setupBackdrop'));
+
+$('installDismiss').addEventListener('click', () => {
+  localStorage.setItem(STORAGE.installDismissed, '1');
+  $('installTip').classList.remove('show');
+});
+
+
+/* ============================================================
+   AUTO SYNC
+   ============================================================ */
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && currentUser && familyKey && !busy) {
+    refreshState(false).catch(() => {});
+  }
+});
+
+setInterval(() => {
+  if (appState.activeSleep) render();
+}, 1000);
+
+setInterval(() => {
+  if (!document.hidden && currentUser && familyKey && !busy) {
+    refreshState(false).catch(() => {});
+  }
+}, 30000);
+
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+
+async function boot() {
+  render();
+  maybeShowInstallTip();
+
+  if (!currentUser || !familyKey) {
+    openSetup();
+    $('statusMain').textContent = 'Set up phone';
+    $('statusSub').textContent = 'Choose a user and enter the family code';
+    return;
+  }
+
+  try {
+    await refreshState(false);
+  } catch (_) {
+    showToast('Could not sync. Tap your name to check the family code.', true);
+  }
+}
+
+boot();
+</script>
+</body>
+</html>
