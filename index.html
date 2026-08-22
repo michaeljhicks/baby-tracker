@@ -1,0 +1,2063 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+
+    <meta name="theme-color" content="#0b0d12" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <meta name="apple-mobile-web-app-title" content="Baby Tracker" />
+
+    <title>Baby Tracker</title>
+
+    <style>
+      :root {
+        color-scheme: dark;
+
+        --bg: #0b0d12;
+
+        --panel: #141821;
+
+        --panel-2: #1a1f2a;
+
+        --text: #f7f8fb;
+
+        --muted: #939aaa;
+
+        --line: rgba(255, 255, 255, 0.08);
+
+        --sleep: #9f91ff;
+
+        --sleep-dark: #7565ee;
+
+        --feed: #7edfc1;
+
+        --shadow: 0 16px 44px rgba(0, 0, 0, 0.28);
+
+        --radius: 24px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+
+        min-height: 100%;
+
+        background: var(--bg);
+
+        color: var(--text);
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+          Inter, system-ui, sans-serif;
+
+        -webkit-font-smoothing: antialiased;
+
+        padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .app {
+        width: min(100%, 540px);
+
+        margin: 0 auto;
+
+        padding: 18px 18px 36px;
+      }
+
+      .topbar {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        margin-bottom: 22px;
+      }
+
+      .brand small {
+        display: block;
+
+        color: var(--muted);
+
+        font-size: 11px;
+
+        font-weight: 800;
+
+        letter-spacing: 0.16em;
+
+        text-transform: uppercase;
+
+        margin-bottom: 4px;
+      }
+
+      .brand h1 {
+        margin: 0;
+
+        font-size: 24px;
+
+        line-height: 1;
+
+        letter-spacing: -0.04em;
+      }
+
+      .person-chip {
+        border: 1px solid var(--line);
+
+        background: var(--panel);
+
+        color: var(--text);
+
+        border-radius: 999px;
+
+        padding: 9px 13px;
+
+        font-size: 13px;
+
+        font-weight: 700;
+      }
+
+      .status-card {
+        border: 1px solid var(--line);
+
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.035),
+          rgba(255, 255, 255, 0.015)
+        );
+
+        border-radius: var(--radius);
+
+        padding: 24px;
+
+        min-height: 146px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        justify-content: center;
+
+        box-shadow: var(--shadow);
+
+        margin-bottom: 14px;
+      }
+
+      .status-label {
+        color: var(--muted);
+
+        font-size: 12px;
+
+        font-weight: 800;
+
+        letter-spacing: 0.11em;
+
+        text-transform: uppercase;
+
+        margin-bottom: 8px;
+      }
+
+      .status-main {
+        font-size: clamp(31px, 9vw, 46px);
+
+        font-weight: 800;
+
+        line-height: 1;
+
+        letter-spacing: -0.055em;
+      }
+
+      .status-sub {
+        color: var(--muted);
+
+        font-size: 14px;
+
+        margin-top: 10px;
+      }
+
+      .actions {
+        display: grid;
+
+        gap: 12px;
+      }
+
+      .action-button {
+        width: 100%;
+
+        min-height: 122px;
+
+        border: 0;
+
+        border-radius: var(--radius);
+
+        padding: 20px;
+
+        text-align: left;
+
+        color: #0b0d12;
+
+        box-shadow: var(--shadow);
+
+        cursor: pointer;
+
+        transition:
+          transform 0.12s ease,
+          opacity 0.12s ease;
+      }
+
+      .action-button:active {
+        transform: scale(0.985);
+      }
+
+      .action-button:disabled {
+        opacity: 0.55;
+
+        cursor: default;
+      }
+
+      .action-button .eyebrow {
+        display: block;
+
+        font-size: 11px;
+
+        font-weight: 900;
+
+        letter-spacing: 0.12em;
+
+        text-transform: uppercase;
+
+        opacity: 0.66;
+
+        margin-bottom: 5px;
+      }
+
+      .action-button .title {
+        display: block;
+
+        font-size: 31px;
+
+        font-weight: 850;
+
+        letter-spacing: -0.05em;
+
+        line-height: 1;
+      }
+
+      .action-button .sub {
+        display: block;
+
+        font-size: 13px;
+
+        font-weight: 700;
+
+        opacity: 0.68;
+
+        margin-top: 8px;
+      }
+
+      .sleep-button {
+        background: linear-gradient(135deg, #b1a7ff, var(--sleep));
+      }
+
+      .sleep-button.active {
+        background: linear-gradient(135deg, #a392ff, var(--sleep-dark));
+
+        color: white;
+      }
+
+      .feed-button {
+        background: linear-gradient(135deg, #a1efd8, var(--feed));
+      }
+
+      .medicine-button {
+        min-height: 68px;
+
+        border: 1px solid var(--line);
+
+        background: var(--panel);
+
+        color: var(--text);
+
+        border-radius: 20px;
+
+        padding: 0 18px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        font-weight: 800;
+
+        cursor: pointer;
+      }
+
+      .medicine-button span:last-child {
+        color: var(--muted);
+
+        font-size: 18px;
+      }
+
+      .section-title {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: baseline;
+
+        margin: 28px 2px 10px;
+      }
+
+      .section-title h2 {
+        font-size: 14px;
+
+        margin: 0;
+      }
+
+      .sync-status {
+        color: var(--muted);
+
+        font-size: 11px;
+      }
+
+      .summary-list {
+        border: 1px solid var(--line);
+
+        border-radius: 20px;
+
+        overflow: hidden;
+
+        background: var(--panel);
+      }
+
+      .summary-row {
+        display: grid;
+
+        grid-template-columns:
+          42px
+          1fr
+          auto;
+
+        align-items: center;
+
+        gap: 10px;
+
+        padding: 15px 16px;
+
+        border-bottom: 1px solid var(--line);
+      }
+
+      .summary-row:last-child {
+        border-bottom: 0;
+      }
+
+      .summary-icon {
+        font-size: 21px;
+
+        text-align: center;
+      }
+
+      .summary-name {
+        font-size: 13px;
+
+        font-weight: 800;
+      }
+
+      .summary-detail {
+        color: var(--muted);
+
+        font-size: 12px;
+
+        margin-top: 2px;
+      }
+
+      .summary-time {
+        font-size: 12px;
+
+        color: var(--muted);
+
+        text-align: right;
+      }
+
+      .empty {
+        padding: 22px;
+
+        color: var(--muted);
+
+        font-size: 13px;
+
+        text-align: center;
+      }
+
+      .backdrop {
+        position: fixed;
+
+        inset: 0;
+
+        z-index: 50;
+
+        background: rgba(0, 0, 0, 0.62);
+
+        backdrop-filter: blur(10px);
+
+        display: none;
+
+        align-items: flex-end;
+
+        justify-content: center;
+
+        padding: 12px;
+      }
+
+      .backdrop.open {
+        display: flex;
+      }
+
+      .sheet-modal {
+        width: min(100%, 520px);
+
+        max-height: calc(100vh - 24px - env(safe-area-inset-top));
+
+        overflow: auto;
+
+        background: #151922;
+
+        border: 1px solid var(--line);
+
+        border-radius: 28px;
+
+        padding: 22px;
+
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+
+        margin-bottom: max(0px, env(safe-area-inset-bottom));
+      }
+
+      .modal-head {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        margin-bottom: 20px;
+      }
+
+      .modal-head h3 {
+        margin: 0;
+
+        font-size: 22px;
+
+        letter-spacing: -0.04em;
+      }
+
+      .close-button {
+        width: 34px;
+
+        height: 34px;
+
+        border-radius: 50%;
+
+        border: 1px solid var(--line);
+
+        background: var(--panel-2);
+
+        color: var(--text);
+
+        font-size: 18px;
+      }
+
+      .field {
+        margin-bottom: 16px;
+      }
+
+      .field label {
+        display: block;
+
+        color: var(--muted);
+
+        font-size: 12px;
+
+        font-weight: 800;
+
+        margin-bottom: 8px;
+      }
+
+      .input,
+      .select {
+        width: 100%;
+
+        border: 1px solid var(--line);
+
+        background: #0f1218;
+
+        color: var(--text);
+
+        border-radius: 15px;
+
+        min-height: 52px;
+
+        padding: 0 14px;
+
+        outline: none;
+      }
+
+      .input:focus,
+      .select:focus {
+        border-color: rgba(159, 145, 255, 0.75);
+      }
+
+      .stepper {
+        display: grid;
+
+        grid-template-columns:
+          58px
+          1fr
+          58px;
+
+        gap: 10px;
+
+        align-items: center;
+      }
+
+      .stepper button {
+        height: 58px;
+
+        border: 1px solid var(--line);
+
+        border-radius: 17px;
+
+        background: var(--panel-2);
+
+        color: var(--text);
+
+        font-size: 26px;
+      }
+
+      .amount-wrap {
+        position: relative;
+      }
+
+      .amount-wrap input {
+        width: 100%;
+
+        height: 58px;
+
+        text-align: center;
+
+        font-size: 25px;
+
+        font-weight: 800;
+
+        border: 1px solid var(--line);
+
+        border-radius: 17px;
+
+        background: #0f1218;
+
+        color: var(--text);
+
+        padding-right: 36px;
+      }
+
+      .amount-wrap span {
+        position: absolute;
+
+        right: 13px;
+
+        top: 19px;
+
+        color: var(--muted);
+
+        font-size: 12px;
+
+        font-weight: 800;
+      }
+
+      .segmented {
+        display: grid;
+
+        grid-template-columns:
+          1fr
+          1fr;
+
+        background: #0f1218;
+
+        padding: 4px;
+
+        border-radius: 14px;
+
+        border: 1px solid var(--line);
+      }
+
+      .segmented button {
+        min-height: 42px;
+
+        border: 0;
+
+        border-radius: 10px;
+
+        background: transparent;
+
+        color: var(--muted);
+
+        font-weight: 800;
+      }
+
+      .segmented button.selected {
+        background: var(--panel-2);
+
+        color: var(--text);
+      }
+
+      .manual-time {
+        display: none;
+
+        margin-top: 10px;
+      }
+
+      .manual-time.show {
+        display: block;
+      }
+
+      .primary-save {
+        width: 100%;
+
+        min-height: 56px;
+
+        border: 0;
+
+        border-radius: 17px;
+
+        background: var(--text);
+
+        color: #0b0d12;
+
+        font-weight: 900;
+
+        margin-top: 8px;
+      }
+
+      .primary-save:disabled {
+        opacity: 0.5;
+      }
+
+      .person-picker {
+        display: grid;
+
+        grid-template-columns:
+          1fr
+          1fr;
+
+        gap: 10px;
+      }
+
+      .person-option {
+        min-height: 54px;
+
+        border-radius: 16px;
+
+        border: 1px solid var(--line);
+
+        background: #0f1218;
+
+        color: var(--text);
+
+        font-weight: 800;
+      }
+
+      .person-option.selected {
+        border-color: var(--sleep);
+
+        background: rgba(159, 145, 255, 0.13);
+      }
+
+      .setup-note {
+        color: var(--muted);
+
+        font-size: 12px;
+
+        line-height: 1.45;
+
+        margin: -4px 0 18px;
+      }
+
+      .toast {
+        position: fixed;
+
+        z-index: 100;
+
+        left: 50%;
+
+        bottom: calc(22px + env(safe-area-inset-bottom));
+
+        transform: translate(-50%, 18px);
+
+        width: calc(100% - 36px);
+
+        max-width: 460px;
+
+        background: #f4f5f8;
+
+        color: #111318;
+
+        padding: 13px 16px;
+
+        border-radius: 14px;
+
+        font-size: 13px;
+
+        font-weight: 750;
+
+        text-align: center;
+
+        opacity: 0;
+
+        pointer-events: none;
+
+        transition: 0.2s ease;
+
+        box-shadow: var(--shadow);
+      }
+
+      .toast.show {
+        opacity: 1;
+
+        transform: translate(-50%, 0);
+      }
+
+      .toast.error {
+        background: #ffd9d9;
+
+        color: #5c1212;
+      }
+
+      iframe.write-sink {
+        display: none;
+
+        width: 0;
+
+        height: 0;
+
+        border: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <small> Family Log </small>
+
+          <h1>Baby Tracker</h1>
+        </div>
+
+        <button class="person-chip" id="personChip" type="button">Setup</button>
+      </header>
+
+      <section class="status-card">
+        <div class="status-label" id="statusLabel">Current status</div>
+
+        <div class="status-main" id="statusMain">Loading…</div>
+
+        <div class="status-sub" id="statusSub">Checking the shared log</div>
+      </section>
+
+      <section class="actions">
+        <button
+          class="action-button sleep-button"
+          id="sleepButton"
+          type="button"
+        >
+          <span class="eyebrow" id="sleepEyebrow"> Sleep </span>
+
+          <span class="title" id="sleepTitle"> Start Sleep </span>
+
+          <span class="sub" id="sleepSub"> Timestamp the start now </span>
+        </button>
+
+        <button class="action-button feed-button" id="feedButton" type="button">
+          <span class="eyebrow"> Bottle </span>
+
+          <span class="title"> Feed </span>
+
+          <span class="sub"> Record breastmilk ounces </span>
+        </button>
+
+        <button class="medicine-button" id="medicineButton" type="button">
+          <span> Record medicine </span>
+
+          <span> › </span>
+        </button>
+      </section>
+
+      <div class="section-title">
+        <h2>Latest</h2>
+
+        <div class="sync-status" id="syncStatus">Connecting</div>
+      </div>
+
+      <section class="summary-list" id="summaryList">
+        <div class="empty">No activity yet.</div>
+      </section>
+    </div>
+
+    <!-- FEED MODAL -->
+
+    <div class="backdrop" id="feedBackdrop">
+      <div class="sheet-modal">
+        <div class="modal-head">
+          <h3>Record Feed</h3>
+
+          <button class="close-button" type="button" data-close="feedBackdrop">
+            ×
+          </button>
+        </div>
+
+        <div class="field">
+          <label> Breastmilk consumed </label>
+
+          <div class="stepper">
+            <button type="button" id="feedMinus">−</button>
+
+            <div class="amount-wrap">
+              <input
+                id="feedAmount"
+                type="number"
+                inputmode="decimal"
+                min="0.1"
+                step="0.5"
+                value="2.0"
+              />
+
+              <span> oz </span>
+            </div>
+
+            <button type="button" id="feedPlus">+</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label> Time </label>
+
+          <div class="segmented">
+            <button type="button" class="selected" id="feedNow">Now</button>
+
+            <button type="button" id="feedManual">Choose Time</button>
+          </div>
+
+          <div class="manual-time" id="feedManualWrap">
+            <input class="input" id="feedTime" type="datetime-local" />
+          </div>
+        </div>
+
+        <button class="primary-save" id="saveFeed" type="button">
+          Save Feed
+        </button>
+      </div>
+    </div>
+
+    <!-- MEDICINE MODAL -->
+
+    <div class="backdrop" id="medicineBackdrop">
+      <div class="sheet-modal">
+        <div class="modal-head">
+          <h3>Record Medicine</h3>
+
+          <button
+            class="close-button"
+            type="button"
+            data-close="medicineBackdrop"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="field">
+          <label> Medicine </label>
+
+          <input
+            class="input"
+            id="medicineName"
+            type="text"
+            autocomplete="off"
+            placeholder="e.g. Infant Tylenol"
+          />
+        </div>
+
+        <div class="field">
+          <label> Dose </label>
+
+          <div
+            style="display: grid; grid-template-columns: 1fr 110px; gap: 10px"
+          >
+            <input
+              class="input"
+              id="medicineAmount"
+              type="number"
+              inputmode="decimal"
+              min="0.01"
+              step="0.1"
+              placeholder="1.25"
+            />
+
+            <select class="select" id="medicineUnit">
+              <option value="mL">mL</option>
+
+              <option value="mg">mg</option>
+
+              <option value="tablet">tablet</option>
+
+              <option value="tsp">tsp</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label> Time </label>
+
+          <div class="segmented">
+            <button type="button" class="selected" id="medicineNow">Now</button>
+
+            <button type="button" id="medicineManual">Choose Time</button>
+          </div>
+
+          <div class="manual-time" id="medicineManualWrap">
+            <input class="input" id="medicineTime" type="datetime-local" />
+          </div>
+        </div>
+
+        <button class="primary-save" id="saveMedicine" type="button">
+          Save Medicine
+        </button>
+      </div>
+    </div>
+
+    <!-- FIRST-TIME SETUP -->
+
+    <div class="backdrop" id="setupBackdrop">
+      <div class="sheet-modal">
+        <div class="modal-head">
+          <h3>Set Up This Phone</h3>
+
+          <button class="close-button" id="setupClose" type="button">×</button>
+        </div>
+
+        <p class="setup-note">
+          Choose who uses this phone most often. The family code is the private
+          code you put in the Apps Script file. It is saved only on this device.
+        </p>
+
+        <div class="field">
+          <label> Who is using this phone? </label>
+
+          <div class="person-picker">
+            <button class="person-option" type="button" data-person="Michael">
+              Michael
+            </button>
+
+            <button class="person-option" type="button" data-person="Alison">
+              Alison
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label> Family code </label>
+
+          <input
+            class="input"
+            id="familyCode"
+            type="password"
+            autocomplete="off"
+            placeholder="Enter the private Apps Script code"
+          />
+        </div>
+
+        <button class="primary-save" id="saveSetup" type="button">
+          Connect Phone
+        </button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <iframe
+      class="write-sink"
+      id="writeSink"
+      name="babyTrackerWriteSink"
+      title="Hidden data writer"
+    ></iframe>
+
+    <script>
+      /* ============================================================
+   IMPORTANT
+
+   PASTE YOUR GOOGLE APPS SCRIPT /exec URL HERE
+   ============================================================ */
+
+      const API_URL =
+        "https://script.google.com/macros/s/AKfycbxDavCMbRwi4e6wLWmGPy8D1SCdVaBDEK-V2ZHVhl7QG8HmdYu5YdNDwsSJAKESDGti/exec";
+
+      /* ============================================================
+   LOCAL STORAGE
+   ============================================================ */
+
+      const STORAGE = {
+        user: "babyTracker.user",
+
+        key: "babyTracker.key",
+
+        feedAmount: "babyTracker.feedAmount",
+
+        medicineName: "babyTracker.medicineName",
+
+        medicineAmount: "babyTracker.medicineAmount",
+
+        medicineUnit: "babyTracker.medicineUnit",
+      };
+
+      /* ============================================================
+   STATE
+   ============================================================ */
+
+      let appState = {
+        activeSleep: null,
+
+        recent: [],
+      };
+
+      let currentUser = localStorage.getItem(STORAGE.user) || "";
+
+      let familyKey = localStorage.getItem(STORAGE.key) || "";
+
+      let selectedSetupUser = currentUser;
+
+      let busy = false;
+
+      let feedUsesNow = true;
+
+      let medicineUsesNow = true;
+
+      let lastSyncAt = null;
+
+      let toastTimer = null;
+
+      const $ = (id) => document.getElementById(id);
+
+      /* ============================================================
+   GENERAL HELPERS
+   ============================================================ */
+
+      function makeId() {
+        if (window.crypto && crypto.randomUUID) {
+          return crypto.randomUUID();
+        }
+
+        return (
+          "bt-" +
+          Date.now().toString(36) +
+          "-" +
+          Math.random().toString(36).slice(2, 10)
+        );
+      }
+
+      function delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      function showToast(message, isError = false) {
+        clearTimeout(toastTimer);
+
+        const toast = $("toast");
+
+        toast.textContent = message;
+
+        toast.classList.toggle("error", isError);
+
+        toast.classList.add("show");
+
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
+      }
+
+      function setBusy(value) {
+        busy = value;
+
+        $("sleepButton").disabled = value;
+
+        $("feedButton").disabled = value;
+
+        $("medicineButton").disabled = value;
+
+        $("saveFeed").disabled = value;
+
+        $("saveMedicine").disabled = value;
+      }
+
+      function openModal(id) {
+        $(id).classList.add("open");
+      }
+
+      function closeModal(id) {
+        $(id).classList.remove("open");
+      }
+
+      function localDateTimeValue(date = new Date()) {
+        const pad = (n) => String(n).padStart(2, "0");
+
+        return (
+          `${date.getFullYear()}-` +
+          `${pad(date.getMonth() + 1)}-` +
+          `${pad(date.getDate())}T` +
+          `${pad(date.getHours())}:` +
+          `${pad(date.getMinutes())}`
+        );
+      }
+
+      function formatClock(iso) {
+        if (!iso) {
+          return "—";
+        }
+
+        return new Date(iso).toLocaleTimeString([], {
+          hour: "numeric",
+
+          minute: "2-digit",
+        });
+      }
+
+      function formatDateShort(iso) {
+        if (!iso) {
+          return "";
+        }
+
+        const date = new Date(iso);
+
+        const today = new Date();
+
+        if (date.toDateString() === today.toDateString()) {
+          return "Today";
+        }
+
+        const yesterday = new Date(today);
+
+        yesterday.setDate(today.getDate() - 1);
+
+        if (date.toDateString() === yesterday.toDateString()) {
+          return "Yesterday";
+        }
+
+        return date.toLocaleDateString([], {
+          month: "short",
+
+          day: "numeric",
+        });
+      }
+
+      function formatDuration(minutes) {
+        const total = Math.max(0, Math.floor(Number(minutes) || 0));
+
+        const h = Math.floor(total / 60);
+
+        const m = total % 60;
+
+        if (!h) {
+          return `${m}m`;
+        }
+
+        return `${h}h ` + `${String(m).padStart(2, "0")}m`;
+      }
+
+      function activeSleepMinutes() {
+        if (!appState.activeSleep || !appState.activeSleep.startTime) {
+          return 0;
+        }
+
+        return Math.max(
+          0,
+
+          Math.floor(
+            (Date.now() - new Date(appState.activeSleep.startTime).getTime()) /
+              60000,
+          ),
+        );
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+
+          .replaceAll("<", "&lt;")
+
+          .replaceAll(">", "&gt;")
+
+          .replaceAll('"', "&quot;")
+
+          .replaceAll("'", "&#039;");
+      }
+
+      /* ============================================================
+   READ FROM GOOGLE SHEETS
+
+   JSONP means we do not rely on browser CORS.
+   ============================================================ */
+
+      function jsonpState(keyOverride = familyKey) {
+        return new Promise((resolve, reject) => {
+          if (!API_URL.startsWith("https://script.google.com/")) {
+            reject(
+              new Error(
+                "Paste your Apps Script /exec URL into index.html first.",
+              ),
+            );
+
+            return;
+          }
+
+          const callbackName =
+            "btCallback_" +
+            Date.now() +
+            "_" +
+            Math.floor(Math.random() * 100000);
+
+          const script = document.createElement("script");
+
+          let finished = false;
+
+          const cleanup = () => {
+            if (finished) {
+              return;
+            }
+
+            finished = true;
+
+            delete window[callbackName];
+
+            script.remove();
+          };
+
+          const timeout = setTimeout(
+            () => {
+              cleanup();
+
+              reject(
+                new Error(
+                  "Could not reach Baby Tracker. Check your connection.",
+                ),
+              );
+            },
+
+            10000,
+          );
+
+          window[callbackName] = (data) => {
+            clearTimeout(timeout);
+
+            cleanup();
+
+            if (!data || data.ok !== true) {
+              reject(
+                new Error(
+                  (data && data.error) || "Baby Tracker returned an error.",
+                ),
+              );
+
+              return;
+            }
+
+            resolve(data);
+          };
+
+          script.onerror = () => {
+            clearTimeout(timeout);
+
+            cleanup();
+
+            reject(new Error("Could not load Baby Tracker data."));
+          };
+
+          const query = new URLSearchParams({
+            action: "state",
+
+            key: keyOverride,
+
+            callback: callbackName,
+
+            _: String(Date.now()),
+          });
+
+          script.src = `${API_URL}?${query.toString()}`;
+
+          document.body.appendChild(script);
+        });
+      }
+
+      /* ============================================================
+   WRITE TO GOOGLE SHEETS
+
+   We submit a hidden HTML form rather than fetch().
+   ============================================================ */
+
+      function postAction(payload) {
+        if (!API_URL.startsWith("https://script.google.com/")) {
+          throw new Error(
+            "Paste your Apps Script /exec URL into index.html first.",
+          );
+        }
+
+        const form = document.createElement("form");
+
+        form.method = "POST";
+
+        form.action = API_URL;
+
+        form.target = "babyTrackerWriteSink";
+
+        form.style.display = "none";
+
+        const fields = {
+          ...payload,
+
+          key: familyKey,
+        };
+
+        Object.entries(fields).forEach(([name, value]) => {
+          const input = document.createElement("input");
+
+          input.type = "hidden";
+
+          input.name = name;
+
+          input.value = value == null ? "" : String(value);
+
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+
+        form.submit();
+
+        setTimeout(
+          () => form.remove(),
+
+          1000,
+        );
+      }
+
+      /* ============================================================
+   SYNC
+   ============================================================ */
+
+      async function refreshState(showErrors = true) {
+        try {
+          const data = await jsonpState();
+
+          appState = {
+            activeSleep: data.activeSleep || null,
+
+            recent: Array.isArray(data.recent) ? data.recent : [],
+          };
+
+          lastSyncAt = new Date();
+
+          render();
+
+          return appState;
+        } catch (error) {
+          $("syncStatus").textContent = "Not synced";
+
+          if (showErrors) {
+            showToast(error.message, true);
+          }
+
+          throw error;
+        }
+      }
+
+      async function writeAndConfirm(payload, predicate, successMessage) {
+        setBusy(true);
+
+        try {
+          postAction(payload);
+
+          for (let attempt = 0; attempt < 12; attempt++) {
+            await delay(attempt === 0 ? 650 : 500);
+
+            try {
+              const state = await refreshState(false);
+
+              if (predicate(state)) {
+                if (successMessage) {
+                  showToast(successMessage);
+                }
+
+                return;
+              }
+            } catch (_) {
+              // Temporary connection issue.
+              // Continue checking.
+            }
+          }
+
+          throw new Error(
+            "The change was sent, but I could not confirm it. Refresh before tapping again.",
+          );
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      /* ============================================================
+   UI RENDERING
+   ============================================================ */
+
+      function render() {
+        $("personChip").textContent = currentUser || "Setup";
+
+        if (appState.activeSleep) {
+          $("statusLabel").textContent = "Sleeping now";
+
+          $("statusMain").textContent = formatDuration(activeSleepMinutes());
+
+          $("statusSub").textContent =
+            `Started ${formatClock(appState.activeSleep.startTime)} · ` +
+            (appState.activeSleep.recordedBy || "Recorded");
+
+          $("sleepButton").classList.add("active");
+
+          $("sleepEyebrow").textContent = "Sleep in progress";
+
+          $("sleepTitle").textContent = "End Sleep";
+
+          $("sleepSub").textContent = `Started at ${formatClock(
+            appState.activeSleep.startTime,
+          )}`;
+        } else {
+          const lastFeed = appState.recent.find((item) => item.type === "Feed");
+
+          $("statusLabel").textContent = "Ready";
+
+          $("statusMain").textContent = lastFeed
+            ? `Last feed ${formatClock(lastFeed.startTime)}`
+            : "All caught up";
+
+          $("statusSub").textContent = lastFeed
+            ? `${lastFeed.amount} oz · ${formatDateShort(lastFeed.startTime)}`
+            : "Tap Sleep or Feed to record an event";
+
+          $("sleepButton").classList.remove("active");
+
+          $("sleepEyebrow").textContent = "Sleep";
+
+          $("sleepTitle").textContent = "Start Sleep";
+
+          $("sleepSub").textContent = "Timestamp the start now";
+        }
+
+        const latestFeed = appState.recent.find((item) => item.type === "Feed");
+
+        const latestSleep = appState.recent.find(
+          (item) => item.type === "Sleep" && item.endTime,
+        );
+
+        const latestMedicine = appState.recent.find(
+          (item) => item.type === "Medicine",
+        );
+
+        const rows = [];
+
+        if (latestFeed) {
+          rows.push(
+            summaryRow(
+              "🍼",
+              "Feed",
+
+              `${latestFeed.amount} oz · ${escapeHtml(latestFeed.recordedBy)}`,
+
+              latestFeed.startTime,
+            ),
+          );
+        }
+
+        if (latestSleep) {
+          rows.push(
+            summaryRow(
+              "☾",
+
+              "Sleep",
+
+              `${formatDuration(latestSleep.durationMinutes)} · ${formatClock(
+                latestSleep.startTime,
+              )}–${formatClock(latestSleep.endTime)}`,
+
+              latestSleep.endTime,
+            ),
+          );
+        }
+
+        if (latestMedicine) {
+          rows.push(
+            summaryRow(
+              "＋",
+
+              latestMedicine.medicine || "Medicine",
+
+              `${latestMedicine.amount} ${escapeHtml(
+                latestMedicine.unit,
+              )} · ${escapeHtml(latestMedicine.recordedBy)}`,
+
+              latestMedicine.startTime,
+            ),
+          );
+        }
+
+        $("summaryList").innerHTML = rows.length
+          ? rows.join("")
+          : '<div class="empty">No activity yet.</div>';
+
+        $("syncStatus").textContent = lastSyncAt
+          ? `Synced ${formatClock(lastSyncAt.toISOString())}`
+          : "Connecting";
+      }
+
+      function summaryRow(icon, name, detail, iso) {
+        return `
+
+    <div class="summary-row">
+
+      <div class="summary-icon">
+        ${icon}
+      </div>
+
+      <div>
+
+        <div class="summary-name">
+          ${escapeHtml(name)}
+        </div>
+
+        <div class="summary-detail">
+          ${detail}
+        </div>
+
+      </div>
+
+      <div class="summary-time">
+
+        ${formatDateShort(iso)}
+
+        <br>
+
+        ${formatClock(iso)}
+
+      </div>
+
+    </div>
+  `;
+      }
+
+      /* ============================================================
+   SLEEP
+   ============================================================ */
+
+      async function handleSleep() {
+        if (busy || !currentUser || !familyKey) {
+          return;
+        }
+
+        if (appState.activeSleep) {
+          const sleepId = appState.activeSleep.id;
+
+          await writeAndConfirm(
+            {
+              action: "endSleep",
+
+              id: sleepId,
+
+              timestamp: new Date().toISOString(),
+
+              recordedBy: currentUser,
+            },
+
+            (state) => !state.activeSleep || state.activeSleep.id !== sleepId,
+
+            "Sleep ended",
+          );
+        } else {
+          const id = makeId();
+
+          await writeAndConfirm(
+            {
+              action: "startSleep",
+
+              id: id,
+
+              timestamp: new Date().toISOString(),
+
+              recordedBy: currentUser,
+            },
+
+            (state) => state.activeSleep && state.activeSleep.id === id,
+
+            "Sleep started",
+          );
+        }
+      }
+
+      /* ============================================================
+   FEED
+   ============================================================ */
+
+      function setFeedTimeMode(useNow) {
+        feedUsesNow = useNow;
+
+        $("feedNow").classList.toggle("selected", useNow);
+
+        $("feedManual").classList.toggle("selected", !useNow);
+
+        $("feedManualWrap").classList.toggle("show", !useNow);
+
+        if (!useNow) {
+          $("feedTime").value = localDateTimeValue();
+        }
+      }
+
+      function openFeed() {
+        const remembered = Number(localStorage.getItem(STORAGE.feedAmount));
+
+        $("feedAmount").value = remembered > 0 ? remembered : 2.0;
+
+        setFeedTimeMode(true);
+
+        openModal("feedBackdrop");
+      }
+
+      function adjustFeed(delta) {
+        const current = Number($("feedAmount").value) || 0;
+
+        const next = Math.max(
+          0.5,
+
+          Math.round((current + delta) * 10) / 10,
+        );
+
+        $("feedAmount").value = next.toFixed(1);
+      }
+
+      async function saveFeed() {
+        const amount = Number($("feedAmount").value);
+
+        if (!Number.isFinite(amount) || amount <= 0) {
+          showToast("Enter the number of ounces.", true);
+
+          return;
+        }
+
+        let timestamp;
+
+        if (feedUsesNow) {
+          timestamp = new Date().toISOString();
+        } else {
+          const raw = $("feedTime").value;
+
+          if (!raw) {
+            showToast("Choose the feed time.", true);
+
+            return;
+          }
+
+          const date = new Date(raw);
+
+          if (Number.isNaN(date.getTime())) {
+            showToast("Choose a valid feed time.", true);
+
+            return;
+          }
+
+          timestamp = date.toISOString();
+        }
+
+        const id = makeId();
+
+        await writeAndConfirm(
+          {
+            action: "addFeed",
+
+            id: id,
+
+            timestamp: timestamp,
+
+            amount: amount,
+
+            recordedBy: currentUser,
+          },
+
+          (state) => state.recent.some((item) => item.id === id),
+
+          `${amount} oz feed saved`,
+        );
+
+        localStorage.setItem(STORAGE.feedAmount, String(amount));
+
+        closeModal("feedBackdrop");
+      }
+
+      /* ============================================================
+   MEDICINE
+   ============================================================ */
+
+      function setMedicineTimeMode(useNow) {
+        medicineUsesNow = useNow;
+
+        $("medicineNow").classList.toggle("selected", useNow);
+
+        $("medicineManual").classList.toggle("selected", !useNow);
+
+        $("medicineManualWrap").classList.toggle("show", !useNow);
+
+        if (!useNow) {
+          $("medicineTime").value = localDateTimeValue();
+        }
+      }
+
+      function openMedicine() {
+        $("medicineName").value =
+          localStorage.getItem(STORAGE.medicineName) || "";
+
+        $("medicineAmount").value =
+          localStorage.getItem(STORAGE.medicineAmount) || "";
+
+        $("medicineUnit").value =
+          localStorage.getItem(STORAGE.medicineUnit) || "mL";
+
+        setMedicineTimeMode(true);
+
+        openModal("medicineBackdrop");
+      }
+
+      async function saveMedicine() {
+        const medicine = $("medicineName").value.trim();
+
+        const amount = Number($("medicineAmount").value);
+
+        const unit = $("medicineUnit").value;
+
+        if (!medicine) {
+          showToast("Enter the medicine name.", true);
+
+          return;
+        }
+
+        if (!Number.isFinite(amount) || amount <= 0) {
+          showToast("Enter the dose.", true);
+
+          return;
+        }
+
+        let timestamp;
+
+        if (medicineUsesNow) {
+          timestamp = new Date().toISOString();
+        } else {
+          const raw = $("medicineTime").value;
+
+          if (!raw) {
+            showToast("Choose the medicine time.", true);
+
+            return;
+          }
+
+          const date = new Date(raw);
+
+          if (Number.isNaN(date.getTime())) {
+            showToast("Choose a valid medicine time.", true);
+
+            return;
+          }
+
+          timestamp = date.toISOString();
+        }
+
+        const id = makeId();
+
+        await writeAndConfirm(
+          {
+            action: "addMedicine",
+
+            id: id,
+
+            timestamp: timestamp,
+
+            medicine: medicine,
+
+            amount: amount,
+
+            unit: unit,
+
+            recordedBy: currentUser,
+          },
+
+          (state) => state.recent.some((item) => item.id === id),
+
+          "Medicine saved",
+        );
+
+        localStorage.setItem(STORAGE.medicineName, medicine);
+
+        localStorage.setItem(STORAGE.medicineAmount, String(amount));
+
+        localStorage.setItem(STORAGE.medicineUnit, unit);
+
+        closeModal("medicineBackdrop");
+      }
+
+      /* ============================================================
+   DEVICE SETUP
+   ============================================================ */
+
+      function openSetup() {
+        selectedSetupUser = currentUser;
+
+        document.querySelectorAll(".person-option").forEach((button) => {
+          button.classList.toggle(
+            "selected",
+
+            button.dataset.person === selectedSetupUser,
+          );
+        });
+
+        $("familyCode").value = familyKey;
+
+        $("setupClose").style.display = currentUser && familyKey ? "" : "none";
+
+        openModal("setupBackdrop");
+      }
+
+      async function saveSetup() {
+        const key = $("familyCode").value.trim();
+
+        if (!selectedSetupUser) {
+          showToast("Choose Michael or Alison.", true);
+
+          return;
+        }
+
+        if (!key) {
+          showToast("Enter the family code.", true);
+
+          return;
+        }
+
+        const button = $("saveSetup");
+
+        button.disabled = true;
+
+        button.textContent = "Connecting…";
+
+        try {
+          const data = await jsonpState(key);
+
+          currentUser = selectedSetupUser;
+
+          familyKey = key;
+
+          localStorage.setItem(STORAGE.user, currentUser);
+
+          localStorage.setItem(STORAGE.key, familyKey);
+
+          appState = {
+            activeSleep: data.activeSleep || null,
+
+            recent: data.recent || [],
+          };
+
+          lastSyncAt = new Date();
+
+          closeModal("setupBackdrop");
+
+          render();
+
+          showToast(`Connected as ${currentUser}`);
+        } catch (error) {
+          showToast(error.message, true);
+        } finally {
+          button.disabled = false;
+
+          button.textContent = "Connect Phone";
+        }
+      }
+
+      /* ============================================================
+   EVENTS
+   ============================================================ */
+
+      $("sleepButton").addEventListener(
+        "click",
+
+        () => handleSleep().catch((error) => showToast(error.message, true)),
+      );
+
+      $("feedButton").addEventListener("click", openFeed);
+
+      $("medicineButton").addEventListener("click", openMedicine);
+
+      $("personChip").addEventListener("click", openSetup);
+
+      $("feedMinus").addEventListener("click", () => adjustFeed(-0.5));
+
+      $("feedPlus").addEventListener("click", () => adjustFeed(0.5));
+
+      $("feedNow").addEventListener("click", () => setFeedTimeMode(true));
+
+      $("feedManual").addEventListener("click", () => setFeedTimeMode(false));
+
+      $("saveFeed").addEventListener(
+        "click",
+
+        () => saveFeed().catch((error) => showToast(error.message, true)),
+      );
+
+      $("medicineNow").addEventListener("click", () =>
+        setMedicineTimeMode(true),
+      );
+
+      $("medicineManual").addEventListener("click", () =>
+        setMedicineTimeMode(false),
+      );
+
+      $("saveMedicine").addEventListener(
+        "click",
+
+        () => saveMedicine().catch((error) => showToast(error.message, true)),
+      );
+
+      document.querySelectorAll("[data-close]").forEach((button) => {
+        button.addEventListener(
+          "click",
+
+          () => closeModal(button.dataset.close),
+        );
+      });
+
+      document.querySelectorAll(".person-option").forEach((button) => {
+        button.addEventListener(
+          "click",
+
+          () => {
+            selectedSetupUser = button.dataset.person;
+
+            document.querySelectorAll(".person-option").forEach((option) => {
+              option.classList.toggle("selected", option === button);
+            });
+          },
+        );
+      });
+
+      $("saveSetup").addEventListener("click", saveSetup);
+
+      $("setupClose").addEventListener("click", () =>
+        closeModal("setupBackdrop"),
+      );
+
+      /* ============================================================
+   AUTO SYNC
+   ============================================================ */
+
+      document.addEventListener(
+        "visibilitychange",
+
+        () => {
+          if (!document.hidden && currentUser && familyKey && !busy) {
+            refreshState(false).catch(() => {});
+          }
+        },
+      );
+
+      /*
+  Update the on-screen sleep timer.
+*/
+
+      setInterval(
+        () => {
+          if (appState.activeSleep) {
+            render();
+          }
+        },
+
+        1000,
+      );
+
+      /*
+  Check the shared sheet every 30 seconds
+  while the page is open.
+*/
+
+      setInterval(
+        () => {
+          if (!document.hidden && currentUser && familyKey && !busy) {
+            refreshState(false).catch(() => {});
+          }
+        },
+
+        30000,
+      );
+
+      /* ============================================================
+   BOOT
+   ============================================================ */
+
+      async function boot() {
+        render();
+
+        if (!currentUser || !familyKey) {
+          openSetup();
+
+          $("statusMain").textContent = "Set up phone";
+
+          $("statusSub").textContent =
+            "Choose a user and enter the family code";
+
+          return;
+        }
+
+        try {
+          await refreshState(false);
+        } catch (_) {
+          showToast(
+            "Could not sync. Tap your name to check the family code.",
+            true,
+          );
+        }
+      }
+
+      boot();
+    </script>
+  </body>
+</html>
