@@ -15,6 +15,7 @@
     />
     <meta name="apple-mobile-web-app-title" content="Baby Tracker" />
     <title>Baby Tracker</title>
+    <!-- Baby Tracker UI v2.1 -->
 
     <style>
       :root {
@@ -938,6 +939,18 @@
           <input class="input" id="sleepStartTime" type="datetime-local" />
         </div>
 
+        <div class="field" id="sleepStatusWrap">
+          <label>Sleep status</label>
+          <div class="segmented">
+            <button type="button" class="selected" id="sleepEndedOption">
+              Ended
+            </button>
+            <button type="button" id="sleepSnoozingOption">
+              Still snoozing
+            </button>
+          </div>
+        </div>
+
         <div class="field" id="sleepEndWrap">
           <label>Sleep ended</label>
           <input class="input" id="sleepEndTime" type="datetime-local" />
@@ -1052,6 +1065,7 @@
       let sleepEditMode = "new";
       let sleepEditId = null;
       let sleepEditOriginalEnd = null;
+      let sleepStillSnoozing = false;
 
       const $ = (id) => document.getElementById(id);
 
@@ -1513,6 +1527,39 @@
         }
       }
 
+      function setSleepStatus(stillSnoozing) {
+        sleepStillSnoozing = stillSnoozing;
+
+        $("sleepEndedOption").classList.toggle("selected", !stillSnoozing);
+        $("sleepSnoozingOption").classList.toggle("selected", stillSnoozing);
+        $("sleepEndWrap").style.display = stillSnoozing ? "none" : "";
+
+        // If an active sleep is changed to "Ended", make "now" the sensible default.
+        if (!stillSnoozing && !$("sleepEndTime").value) {
+          $("sleepEndTime").value = localDateTimeValue(new Date());
+        }
+
+        if (sleepEditMode === "new") {
+          $("sleepEditNote").textContent = stillSnoozing
+            ? "Set when sleep began. It will stay active until either of you taps End Sleep."
+            : "Use this if you forgot to start or stop the sleep timer at the correct time.";
+
+          $("saveSleepEdit").textContent = stillSnoozing
+            ? "Start Sleep From This Time"
+            : "Save Sleep";
+
+          return;
+        }
+
+        $("sleepEditNote").textContent = stillSnoozing
+          ? "Adjust the start time. No end time will be recorded, and the sleep timer will keep running."
+          : "Adjust either timestamp. The duration will be recalculated automatically.";
+
+        $("saveSleepEdit").textContent = stillSnoozing
+          ? "Save & Keep Snoozing"
+          : "Save Correction";
+      }
+
       function openNewPastSleep() {
         sleepEditMode = "new";
         sleepEditId = null;
@@ -1522,12 +1569,9 @@
         const start = new Date(end.getTime() - 60 * 60000);
 
         $("sleepEditTitle").textContent = "Add Past Sleep";
-        $("sleepEditNote").textContent =
-          "Use this if you forgot to start or stop the sleep timer at the correct time.";
         $("sleepStartTime").value = localDateTimeValue(start);
         $("sleepEndTime").value = localDateTimeValue(end);
-        $("sleepEndWrap").style.display = "";
-        $("saveSleepEdit").textContent = "Save Sleep";
+        setSleepStatus(false);
 
         openModal("sleepEditBackdrop");
       }
@@ -1542,24 +1586,14 @@
         $("sleepEditTitle").textContent = item.endTime
           ? "Correct Sleep"
           : "Correct Start Time";
-        $("sleepEditNote").textContent = item.endTime
-          ? "Adjust either timestamp. The duration will be recalculated automatically."
-          : "This sleep is still active. You can correct the start time here; end it from the main Sleep button.";
-
         $("sleepStartTime").value = localDateTimeValue(
           new Date(item.startTime),
         );
+        $("sleepEndTime").value = item.endTime
+          ? localDateTimeValue(new Date(item.endTime))
+          : "";
 
-        if (item.endTime) {
-          $("sleepEndTime").value = localDateTimeValue(new Date(item.endTime));
-          $("sleepEndWrap").style.display = "";
-          $("saveSleepEdit").textContent = "Save Correction";
-        } else {
-          $("sleepEndTime").value = "";
-          $("sleepEndWrap").style.display = "none";
-          $("saveSleepEdit").textContent = "Save Start Time";
-        }
-
+        setSleepStatus(!item.endTime);
         openModal("sleepEditBackdrop");
       }
 
@@ -1568,8 +1602,27 @@
           $("sleepStartTime").value,
           "Choose a valid sleep start time.",
         );
+        const startIso = start.toISOString();
 
         if (sleepEditMode === "new") {
+          const id = makeId();
+
+          if (sleepStillSnoozing) {
+            await writeAndConfirm(
+              {
+                action: "startSleep",
+                id,
+                timestamp: startIso,
+                recordedBy: currentUser,
+              },
+              (state) => state.activeSleep && state.activeSleep.id === id,
+              "Sleep started",
+            );
+
+            closeModal("sleepEditBackdrop");
+            return;
+          }
+
           const end = parseManualDateTime(
             $("sleepEndTime").value,
             "Choose a valid sleep end time.",
@@ -1580,8 +1633,6 @@
             return;
           }
 
-          const id = makeId();
-          const startIso = start.toISOString();
           const endIso = end.toISOString();
 
           await writeAndConfirm(
@@ -1600,19 +1651,20 @@
           return;
         }
 
-        const end = sleepEditOriginalEnd
-          ? parseManualDateTime(
-              $("sleepEndTime").value,
-              "Choose a valid sleep end time.",
-            )
-          : null;
+        let end = null;
 
-        if (end && end <= start) {
-          showToast("Sleep end time must be after the start time.", true);
-          return;
+        if (!sleepStillSnoozing) {
+          end = parseManualDateTime(
+            $("sleepEndTime").value,
+            "Choose a valid sleep end time.",
+          );
+
+          if (end <= start) {
+            showToast("Sleep end time must be after the start time.", true);
+            return;
+          }
         }
 
-        const startIso = start.toISOString();
         const endIso = end ? end.toISOString() : "";
         const id = sleepEditId;
 
@@ -1627,12 +1679,20 @@
           (state) => {
             const item = state.recent.find((row) => row.id === id);
             if (!item) return false;
-            return (
+
+            const timesMatch =
               nearlySameTime(item.startTime, startIso) &&
-              nearlySameTime(item.endTime, endIso || null)
-            );
+              nearlySameTime(item.endTime, endIso || null);
+
+            const activeStateMatches = sleepStillSnoozing
+              ? state.activeSleep && state.activeSleep.id === id
+              : !state.activeSleep || state.activeSleep.id !== id;
+
+            return timesMatch && activeStateMatches;
           },
-          "Sleep corrected",
+          sleepStillSnoozing
+            ? "Sleep corrected — still snoozing"
+            : "Sleep corrected",
         );
 
         closeModal("sleepEditBackdrop");
@@ -1935,6 +1995,12 @@
         saveDiaper().catch((error) => showToast(error.message, true)),
       );
 
+      $("sleepEndedOption").addEventListener("click", () =>
+        setSleepStatus(false),
+      );
+      $("sleepSnoozingOption").addEventListener("click", () =>
+        setSleepStatus(true),
+      );
       $("saveSleepEdit").addEventListener("click", () =>
         saveSleepCorrection().catch((error) => showToast(error.message, true)),
       );
