@@ -15,7 +15,7 @@
     />
     <meta name="apple-mobile-web-app-title" content="Baby Tracker" />
     <title>Baby Tracker</title>
-    <!-- Baby Tracker UI v2.5 -->
+    <!-- Baby Tracker UI v2.5.2 -->
     <style>
       :root {
         color-scheme: dark;
@@ -36,6 +36,10 @@
         --medicine-2: #df86aa;
         --warm: #ffd38d;
         --danger: #ffb0b0;
+        --baby1-a: #9bbcff;
+        --baby1-b: #627fdf;
+        --baby2-a: #9ce5c9;
+        --baby2-b: #62c29f;
         --shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
         --radius: 24px;
       }
@@ -975,11 +979,11 @@
       }
       .baby-tab {
         min-width: 0;
-        border: 1px solid transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 999px;
         padding: 10px 12px;
         font-size: 12px;
-        font-weight: 900;
+        font-weight: 950;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -991,29 +995,66 @@
           filter 0.12s ease,
           border-color 0.12s ease;
       }
-      .baby-tab[data-baby-id="baby1"] {
-        background: linear-gradient(135deg, #96b9ff, #5f7fe6);
-        color: #111625;
+      .baby-tab.baby-one {
+        background: linear-gradient(135deg, var(--baby1-a), var(--baby1-b));
+        color: #101624;
       }
-      .baby-tab[data-baby-id="baby2"] {
-        background: linear-gradient(135deg, #9ce8d0, #63c6a4);
-        color: #0f1816;
+      .baby-tab.baby-two {
+        background: linear-gradient(135deg, var(--baby2-a), var(--baby2-b));
+        color: #0e1714;
       }
       .baby-tab:not(.selected) {
-        opacity: 0.74;
-        filter: saturate(0.82) brightness(0.92);
+        opacity: 0.58;
+        filter: saturate(0.7) brightness(0.82);
       }
       .baby-tab.selected {
         opacity: 1;
         filter: none;
-        border-color: rgba(255, 255, 255, 0.35);
+        border-color: rgba(255, 255, 255, 0.55);
         box-shadow:
-          0 8px 20px rgba(0, 0, 0, 0.24),
-          inset 0 1px 0 rgba(255, 255, 255, 0.16);
+          0 8px 22px rgba(0, 0, 0, 0.28),
+          inset 0 1px 0 rgba(255, 255, 255, 0.28);
         transform: translateY(-1px);
       }
       .baby-tab:active {
         transform: scale(0.985);
+      }
+
+      .hero-current {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+      .dashboard-baby-badge {
+        display: inline-flex;
+        align-items: center;
+        max-width: 150px;
+        border-radius: 999px;
+        padding: 5px 9px;
+        font-size: 10px;
+        line-height: 1;
+        font-weight: 950;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
+        text-transform: none;
+      }
+      .dashboard-baby-badge.baby-one {
+        background: linear-gradient(135deg, var(--baby1-a), var(--baby1-b));
+        color: #101624;
+      }
+      .dashboard-baby-badge.baby-two {
+        background: linear-gradient(135deg, var(--baby2-a), var(--baby2-b));
+        color: #0e1714;
+      }
+      .hero.baby-one {
+        border-color: rgba(125, 158, 239, 0.24);
+      }
+      .hero.baby-two {
+        border-color: rgba(105, 210, 172, 0.24);
       }
       .handoff-button {
         border: 1px solid var(--line);
@@ -1139,7 +1180,7 @@
       <div class="baby-nav" aria-label="Choose baby">
         <div class="baby-tabs" id="babyTabs">
           <button
-            class="baby-tab selected"
+            class="baby-tab baby-one selected"
             type="button"
             data-baby-id="baby1"
             aria-selected="true"
@@ -1147,7 +1188,7 @@
             Malcolm
           </button>
           <button
-            class="baby-tab"
+            class="baby-tab baby-two"
             type="button"
             data-baby-id="baby2"
             aria-selected="false"
@@ -1160,9 +1201,14 @@
         </button>
       </div>
 
-      <section class="hero">
+      <section class="hero baby-one" id="heroCard">
         <div class="hero-topline">
-          <div class="status-label" id="statusLabel">Current status</div>
+          <div class="hero-current">
+            <span class="dashboard-baby-badge baby-one" id="dashboardBabyBadge"
+              >Malcolm</span
+            >
+            <span class="status-label" id="statusLabel">Current status</span>
+          </div>
           <button class="edit-active" id="editActiveSleep" type="button">
             Correct start time
           </button>
@@ -1825,8 +1871,7 @@
       /* ============================================================
    REQUIRED: KEEP YOUR EXISTING GOOGLE APPS SCRIPT /exec URL HERE
    ============================================================ */
-      const API_URL =
-        "https://script.google.com/macros/s/AKfycbxDavCMbRwi4e6wLWmGPy8D1SCdVaBDEK-V2ZHVhl7QG8HmdYu5YdNDwsSJAKESDGti/exec";
+      const API_URL = "PASTE_YOUR_EXISTING_APPS_SCRIPT_WEB_APP_URL_HERE";
 
       const STORAGE = {
         user: "babyTracker.user",
@@ -2510,13 +2555,24 @@
       }
 
       /* ---------- baby switcher / handoff ---------- */
+      function babyVisualClass(babyId) {
+        return babyId === "baby2" ? "baby-two" : "baby-one";
+      }
+      function babyInlineStyle(babyId, selected) {
+        const gradient =
+          babyId === "baby2"
+            ? "linear-gradient(135deg,#9ce5c9,#62c29f)"
+            : "linear-gradient(135deg,#9bbcff,#627fdf)";
+        const color = babyId === "baby2" ? "#0e1714" : "#101624";
+        return `background:${gradient};color:${color};opacity:${selected ? "1" : ".58"};filter:${selected ? "none" : "saturate(.70) brightness(.82)"};`;
+      }
       function renderBabyTabs() {
         const babies = appState.babies || [];
         $("babyTabs").innerHTML = babies
-          .map(
-            (b) =>
-              `<button class="baby-tab${b.id === selectedBabyId ? " selected" : ""}" type="button" data-baby-id="${escapeHtml(b.id)}" aria-selected="${b.id === selectedBabyId ? "true" : "false"}">${escapeHtml(b.name)}</button>`,
-          )
+          .map((b) => {
+            const selected = b.id === selectedBabyId;
+            return `<button class="baby-tab ${babyVisualClass(b.id)}${selected ? " selected" : ""}" style="${babyInlineStyle(b.id, selected)}" type="button" data-baby-id="${escapeHtml(b.id)}" aria-selected="${selected ? "true" : "false"}">${escapeHtml(b.name)}</button>`;
+          })
           .join("");
       }
 
@@ -2528,6 +2584,16 @@
         localStorage.setItem(STORAGE.selectedBabyId, id);
         if (baby) applyBabyProfile(baby);
         renderBabyTabs();
+        if (baby) {
+          const cls = babyVisualClass(baby.id);
+          $("dashboardBabyBadge").textContent = baby.name;
+          $("dashboardBabyBadge").className = `dashboard-baby-badge ${cls}`;
+          $("dashboardBabyBadge").setAttribute(
+            "style",
+            babyInlineStyle(baby.id, true),
+          );
+          $("heroCard").className = `hero ${cls}`;
+        }
         $("statusLabel").textContent = "Switching baby";
         $("statusMain").textContent = baby ? baby.name : "Loading…";
         $("statusSub").textContent = "Loading this baby’s shared log";
@@ -2597,6 +2663,15 @@
         });
         $("personChip").textContent = currentUser || "Setup";
         renderBabyTabs();
+        const activeBaby = currentBaby();
+        const babyClass = babyVisualClass(activeBaby.id);
+        $("dashboardBabyBadge").textContent = activeBaby.name;
+        $("dashboardBabyBadge").className = `dashboard-baby-badge ${babyClass}`;
+        $("dashboardBabyBadge").setAttribute(
+          "style",
+          babyInlineStyle(activeBaby.id, true),
+        );
+        $("heroCard").className = `hero ${babyClass}`;
 
         const lastFeed =
           appState.lastEvents.feed ||
