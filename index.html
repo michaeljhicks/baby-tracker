@@ -15,8 +15,7 @@
     />
     <meta name="apple-mobile-web-app-title" content="Baby Tracker" />
     <title>Baby Tracker</title>
-    <!-- Baby Tracker UI v2.3 -->
-
+    <!-- Baby Tracker UI v2.4 -->
     <style>
       :root {
         color-scheme: dark;
@@ -731,9 +730,231 @@
           padding-right: 12px;
         }
       }
+
+      /* ===== V2.4 additions ===== */
+      .stat {
+        appearance: none;
+        color: var(--text);
+        text-align: left;
+        cursor: pointer;
+      }
+      button.stat:active {
+        transform: scale(0.985);
+      }
+      .action-button .age {
+        display: block;
+        font-size: 11px;
+        font-weight: 850;
+        opacity: 0.55;
+        margin-top: 4px;
+      }
+      .action-button .age:empty {
+        display: none;
+      }
+      .pending-banner {
+        display: none;
+        margin: 0 0 10px;
+        border: 1px solid rgba(255, 211, 141, 0.28);
+        background: rgba(255, 211, 141, 0.08);
+        color: var(--warm);
+        border-radius: 16px;
+        padding: 10px 12px;
+        font-size: 11px;
+        font-weight: 800;
+      }
+      .pending-banner.show {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+      }
+      .pending-banner button {
+        border: 0;
+        background: transparent;
+        color: var(--warm);
+        font-weight: 900;
+      }
+      .detail-list {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #0f1218;
+      }
+      .detail-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 14px;
+        padding: 12px 13px;
+        border-bottom: 1px solid var(--line);
+        align-items: center;
+      }
+      .detail-row:last-child {
+        border-bottom: 0;
+      }
+      button.detail-row {
+        width: 100%;
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+        background: #0f1218;
+        color: var(--text);
+        text-align: left;
+      }
+      .detail-main {
+        font-size: 12px;
+        font-weight: 850;
+      }
+      .detail-sub {
+        color: var(--muted);
+        font-size: 11px;
+        margin-top: 2px;
+      }
+      .detail-right {
+        color: var(--muted);
+        font-size: 11px;
+        text-align: right;
+        white-space: nowrap;
+      }
+      .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .summary-box {
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: #0f1218;
+        padding: 12px;
+      }
+      .summary-box strong {
+        display: block;
+        font-size: 17px;
+      }
+      .summary-box span {
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 800;
+      }
+      .danger-button {
+        width: 100%;
+        min-height: 50px;
+        border: 1px solid rgba(255, 176, 176, 0.35);
+        background: rgba(255, 176, 176, 0.08);
+        color: var(--danger);
+        border-radius: 15px;
+        font-weight: 900;
+        margin-top: 10px;
+      }
+      .secondary-button {
+        width: 100%;
+        min-height: 50px;
+        border: 1px solid var(--line);
+        background: var(--panel-2);
+        color: var(--text);
+        border-radius: 15px;
+        font-weight: 850;
+        margin-top: 10px;
+      }
+      .field-help {
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.4;
+        margin-top: 6px;
+      }
+      .event-group {
+        display: none;
+      }
+      .event-group.show {
+        display: block;
+      }
+      .settings-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .settings-status {
+        border: 1px solid var(--line);
+        background: #0f1218;
+        border-radius: 15px;
+        padding: 12px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.5;
+        margin-bottom: 14px;
+      }
+      .settings-status strong {
+        color: var(--text);
+      }
+      .undo-bar {
+        position: fixed;
+        z-index: 120;
+        left: 50%;
+        bottom: calc(20px + env(safe-area-inset-bottom));
+        transform: translate(-50%, 18px);
+        width: calc(100% - 28px);
+        max-width: 520px;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.18s ease;
+        background: #f4f5f8;
+        color: #111318;
+        border-radius: 16px;
+        padding: 12px 12px 12px 15px;
+        box-shadow: var(--shadow);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .undo-bar.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+        pointer-events: auto;
+      }
+      .undo-bar button {
+        border: 0;
+        background: #111318;
+        color: white;
+        border-radius: 11px;
+        padding: 9px 13px;
+        font-weight: 900;
+      }
+      .offline-dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--warm);
+        margin-right: 5px;
+      }
+      .modal-divider {
+        height: 1px;
+        background: var(--line);
+        margin: 18px 0;
+      }
+      .setting-label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 850;
+        margin: 0 0 7px;
+      }
+      .home-screen-card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 13px;
+        background: #0f1218;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.5;
+      }
+      .home-screen-card strong {
+        color: var(--text);
+      }
     </style>
   </head>
-
   <body>
     <main class="app">
       <header class="topbar">
@@ -741,7 +962,6 @@
           <small id="todayLabel">Today</small>
           <h1>Baby Tracker</h1>
         </div>
-
         <button class="person-chip" id="personChip" type="button">Setup</button>
       </header>
 
@@ -752,38 +972,48 @@
             Correct start time
           </button>
         </div>
-
         <div class="status-main" id="statusMain">Loading…</div>
         <div class="status-sub" id="statusSub">Checking the shared log</div>
       </section>
 
+      <div class="pending-banner" id="pendingBanner">
+        <span id="pendingText"
+          ><span class="offline-dot"></span>Saved on this phone · waiting to
+          sync</span
+        >
+        <button id="retrySync" type="button">Retry</button>
+      </div>
+
       <section class="stats" aria-label="Baby totals">
-        <div class="stat stat-primary">
+        <button class="stat stat-primary" id="lastNightStat" type="button">
           <div class="stat-value" id="statLastNight">0m</div>
           <div class="stat-label">Sleep Last Night</div>
-          <div class="stat-meta">Night sleep</div>
-        </div>
+          <div class="stat-meta" id="statLastNightMeta">Night sleep</div>
+        </button>
 
-        <div class="stat stat-primary">
+        <button class="stat stat-primary" id="napsStat" type="button">
           <div class="stat-value" id="statNaps">0m</div>
           <div class="stat-label">Naps Today</div>
           <div class="stat-meta" id="statNapCount">0 naps</div>
-        </div>
+        </button>
 
-        <div class="stat stat-secondary">
+        <button class="stat stat-secondary" id="milkStat" type="button">
           <div class="stat-value" id="statMilk">0 oz</div>
-          <div class="stat-label">Milk Today</div>
-        </div>
+          <div class="stat-label">Milk · 24h</div>
+          <div class="stat-meta" id="statMilkMeta">Rolling 24 hours</div>
+        </button>
 
-        <div class="stat stat-secondary">
+        <button class="stat stat-secondary" id="feedsStat" type="button">
           <div class="stat-value" id="statFeeds">0</div>
-          <div class="stat-label">Feeds Today</div>
-        </div>
+          <div class="stat-label">Feeds · 24h</div>
+          <div class="stat-meta">Rolling 24 hours</div>
+        </button>
 
-        <div class="stat stat-secondary">
+        <button class="stat stat-secondary" id="diapersStat" type="button">
           <div class="stat-value" id="statDiapers">0</div>
-          <div class="stat-label">Diapers Today</div>
-        </div>
+          <div class="stat-label">Diapers · 24h</div>
+          <div class="stat-meta" id="statDiaperMeta">0 wet · 0 dirty</div>
+        </button>
       </section>
 
       <section
@@ -807,6 +1037,7 @@
           <span class="eyebrow" id="sleepEyebrow">Sleep</span>
           <span class="title" id="sleepTitle">Start Sleep</span>
           <span class="sub" id="sleepSub">Timestamp the start now</span>
+          <span class="age" id="sleepAge"></span>
         </button>
 
         <button class="past-sleep-button" id="pastSleepButton" type="button">
@@ -817,6 +1048,7 @@
           <span class="eyebrow">Bottle</span>
           <span class="title">Feed</span>
           <span class="sub" id="feedSub">Record breastmilk ounces</span>
+          <span class="age" id="feedAge"></span>
         </button>
 
         <button
@@ -827,6 +1059,7 @@
           <span class="eyebrow">Care</span>
           <span class="title">Diaper</span>
           <span class="sub" id="diaperSub">Record a diaper change</span>
+          <span class="age" id="diaperAge"></span>
         </button>
 
         <button
@@ -837,6 +1070,7 @@
           <span class="eyebrow">Meds</span>
           <span class="title">Medicine</span>
           <span class="sub" id="medicineSub"></span>
+          <span class="age" id="medicineAge"></span>
         </button>
       </section>
 
@@ -859,7 +1093,7 @@
       </aside>
     </main>
 
-    <!-- FEED MODAL -->
+    <!-- FEED -->
     <div class="backdrop" id="feedBackdrop">
       <div class="sheet-modal">
         <div class="modal-head">
@@ -868,7 +1102,6 @@
             ×
           </button>
         </div>
-
         <div class="field">
           <label>Breastmilk consumed</label>
           <div class="stepper">
@@ -881,31 +1114,28 @@
                 min="0.1"
                 step="0.5"
                 value="2.0"
-              />
-              <span>oz</span>
+              /><span>oz</span>
             </div>
             <button type="button" id="feedPlus">+</button>
           </div>
         </div>
-
         <div class="field">
           <label>Time</label>
           <div class="segmented">
-            <button type="button" class="selected" id="feedNow">Now</button>
-            <button type="button" id="feedManual">Choose Time</button>
+            <button type="button" class="selected" id="feedNow">Now</button
+            ><button type="button" id="feedManual">Choose Time</button>
           </div>
           <div class="manual-time" id="feedManualWrap">
             <input class="input" id="feedTime" type="datetime-local" />
           </div>
         </div>
-
         <button class="primary-save" id="saveFeed" type="button">
           Save Feed
         </button>
       </div>
     </div>
 
-    <!-- MEDICINE MODAL -->
+    <!-- MEDICINE -->
     <div class="backdrop" id="medicineBackdrop">
       <div class="sheet-modal">
         <div class="modal-head">
@@ -918,10 +1148,9 @@
             ×
           </button>
         </div>
-
         <div class="field">
-          <label>Medicine</label>
-          <input
+          <label>Medicine</label
+          ><input
             class="input"
             id="medicineName"
             type="text"
@@ -929,7 +1158,6 @@
             placeholder="e.g. Infant Tylenol"
           />
         </div>
-
         <div class="field">
           <label>Dose</label>
           <div
@@ -943,8 +1171,7 @@
               min="0.01"
               step="0.1"
               placeholder="1.25"
-            />
-            <select class="select" id="medicineUnit">
+            /><select class="select" id="medicineUnit">
               <option value="mL">mL</option>
               <option value="mg">mg</option>
               <option value="tablet">tablet</option>
@@ -952,25 +1179,23 @@
             </select>
           </div>
         </div>
-
         <div class="field">
           <label>Time</label>
           <div class="segmented">
-            <button type="button" class="selected" id="medicineNow">Now</button>
-            <button type="button" id="medicineManual">Choose Time</button>
+            <button type="button" class="selected" id="medicineNow">Now</button
+            ><button type="button" id="medicineManual">Choose Time</button>
           </div>
           <div class="manual-time" id="medicineManualWrap">
             <input class="input" id="medicineTime" type="datetime-local" />
           </div>
         </div>
-
         <button class="primary-save" id="saveMedicine" type="button">
           Save Medicine
         </button>
       </div>
     </div>
 
-    <!-- DIAPER MODAL -->
+    <!-- DIAPER -->
     <div class="backdrop" id="diaperBackdrop">
       <div class="sheet-modal">
         <div class="modal-head">
@@ -983,7 +1208,6 @@
             ×
           </button>
         </div>
-
         <div class="field">
           <label>Type</label>
           <div class="diaper-picker">
@@ -992,35 +1216,31 @@
               type="button"
               data-diaper="Wet"
             >
-              Wet
-            </button>
-            <button class="diaper-option" type="button" data-diaper="Dirty">
-              Dirty
-            </button>
-            <button class="diaper-option" type="button" data-diaper="Both">
+              Wet</button
+            ><button class="diaper-option" type="button" data-diaper="Dirty">
+              Dirty</button
+            ><button class="diaper-option" type="button" data-diaper="Both">
               Both
             </button>
           </div>
         </div>
-
         <div class="field">
           <label>Time</label>
           <div class="segmented">
-            <button type="button" class="selected" id="diaperNow">Now</button>
-            <button type="button" id="diaperManual">Choose Time</button>
+            <button type="button" class="selected" id="diaperNow">Now</button
+            ><button type="button" id="diaperManual">Choose Time</button>
           </div>
           <div class="manual-time" id="diaperManualWrap">
             <input class="input" id="diaperTime" type="datetime-local" />
           </div>
         </div>
-
         <button class="primary-save" id="saveDiaper" type="button">
           Save Diaper
         </button>
       </div>
     </div>
 
-    <!-- MANUAL / EDIT SLEEP MODAL -->
+    <!-- SLEEP EDIT / MANUAL -->
     <div class="backdrop" id="sleepEditBackdrop">
       <div class="sheet-modal">
         <div class="modal-head">
@@ -1033,35 +1253,238 @@
             ×
           </button>
         </div>
-
         <p class="modal-note" id="sleepEditNote">
           Use this if you forgot to start or stop the timer at the correct time.
         </p>
-
         <div class="field">
-          <label>Sleep started</label>
-          <input class="input" id="sleepStartTime" type="datetime-local" />
+          <label>Sleep started</label
+          ><input class="input" id="sleepStartTime" type="datetime-local" />
         </div>
-
-        <div class="field" id="sleepStatusWrap">
+        <div class="field">
           <label>Sleep status</label>
           <div class="segmented">
             <button type="button" class="selected" id="sleepEndedOption">
-              Ended
-            </button>
-            <button type="button" id="sleepSnoozingOption">
+              Ended</button
+            ><button type="button" id="sleepSnoozingOption">
               Still snoozing
             </button>
           </div>
+          <div class="field-help" id="sleepStatusHelp"></div>
         </div>
-
         <div class="field" id="sleepEndWrap">
-          <label>Sleep ended</label>
-          <input class="input" id="sleepEndTime" type="datetime-local" />
+          <label>Sleep ended</label
+          ><input class="input" id="sleepEndTime" type="datetime-local" />
         </div>
-
         <button class="primary-save" id="saveSleepEdit" type="button">
           Save Sleep
+        </button>
+        <button
+          class="danger-button"
+          id="deleteSleep"
+          type="button"
+          style="display: none"
+        >
+          Delete Sleep
+        </button>
+      </div>
+    </div>
+
+    <!-- EDIT FEED / DIAPER / MEDICINE -->
+    <div class="backdrop" id="eventEditBackdrop">
+      <div class="sheet-modal">
+        <div class="modal-head">
+          <h3 id="eventEditTitle">Edit Entry</h3>
+          <button
+            class="close-button"
+            type="button"
+            data-close="eventEditBackdrop"
+          >
+            ×
+          </button>
+        </div>
+        <p class="modal-note" id="eventEditNote">
+          Correct this entry or delete it.
+        </p>
+        <div class="field">
+          <label>Time</label
+          ><input class="input" id="eventEditTime" type="datetime-local" />
+        </div>
+        <div class="event-group" id="editFeedGroup">
+          <div class="field">
+            <label>Ounces</label
+            ><input
+              class="input"
+              id="editFeedAmount"
+              type="number"
+              inputmode="decimal"
+              min="0.1"
+              step="0.5"
+            />
+          </div>
+        </div>
+        <div class="event-group" id="editMedicineGroup">
+          <div class="field">
+            <label>Medicine</label
+            ><input class="input" id="editMedicineName" type="text" />
+          </div>
+          <div class="field">
+            <label>Dose</label>
+            <div
+              style="display: grid; grid-template-columns: 1fr 110px; gap: 10px"
+            >
+              <input
+                class="input"
+                id="editMedicineAmount"
+                type="number"
+                inputmode="decimal"
+                min="0.01"
+                step="0.1"
+              /><select class="select" id="editMedicineUnit">
+                <option value="mL">mL</option>
+                <option value="mg">mg</option>
+                <option value="tablet">tablet</option>
+                <option value="tsp">tsp</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="event-group" id="editDiaperGroup">
+          <div class="field">
+            <label>Diaper type</label>
+            <div class="diaper-picker">
+              <button
+                class="diaper-edit-option"
+                type="button"
+                data-edit-diaper="Wet"
+              >
+                Wet</button
+              ><button
+                class="diaper-edit-option"
+                type="button"
+                data-edit-diaper="Dirty"
+              >
+                Dirty</button
+              ><button
+                class="diaper-edit-option"
+                type="button"
+                data-edit-diaper="Both"
+              >
+                Both
+              </button>
+            </div>
+          </div>
+        </div>
+        <button class="primary-save" id="saveEventEdit" type="button">
+          Save Changes
+        </button>
+        <button class="danger-button" id="deleteEvent" type="button">
+          Delete Entry
+        </button>
+      </div>
+    </div>
+
+    <!-- STAT DETAILS -->
+    <div class="backdrop" id="detailBackdrop">
+      <div class="sheet-modal">
+        <div class="modal-head">
+          <h3 id="detailTitle">Details</h3>
+          <button
+            class="close-button"
+            type="button"
+            data-close="detailBackdrop"
+          >
+            ×
+          </button>
+        </div>
+        <div id="detailSummary"></div>
+        <div class="detail-list" id="detailList"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="backdrop" id="settingsBackdrop">
+      <div class="sheet-modal">
+        <div class="modal-head">
+          <h3>Settings</h3>
+          <button
+            class="close-button"
+            type="button"
+            data-close="settingsBackdrop"
+          >
+            ×
+          </button>
+        </div>
+        <div class="field">
+          <label>Who is using this phone?</label>
+          <div class="person-picker">
+            <button
+              class="person-option settings-person"
+              type="button"
+              data-settings-person="Michael"
+            >
+              Michael</button
+            ><button
+              class="person-option settings-person"
+              type="button"
+              data-settings-person="Alison"
+            >
+              Alison
+            </button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Wake-window planning target</label
+          ><input
+            class="input"
+            id="wakeTargetMinutes"
+            type="number"
+            min="0"
+            step="5"
+            placeholder="e.g. 120"
+          />
+          <div class="field-help">
+            Minutes awake before your planning target. This is your own
+            scheduling setting, not a medical recommendation. Leave blank to
+            hide it.
+          </div>
+        </div>
+        <div class="settings-grid">
+          <div class="field">
+            <label>Nap window starts</label
+            ><select class="select" id="napStartHour"></select>
+          </div>
+          <div class="field">
+            <label>Nap window ends</label
+            ><select class="select" id="napEndHour"></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Milk display units</label
+          ><select class="select" id="milkDisplayUnit">
+            <option value="oz">ounces (oz)</option>
+            <option value="mL">milliliters (mL)</option>
+          </select>
+          <div class="field-help">
+            The Sheet still stores feeds in ounces; this only changes how the
+            app displays totals.
+          </div>
+        </div>
+        <div class="settings-status" id="settingsSyncStatus">
+          <strong>Sync:</strong> Checking…
+        </div>
+        <div class="home-screen-card">
+          <strong>Home Screen</strong><br /><span id="homeScreenStatus"
+            >Checking…</span
+          ><br />On iPhone/iPad: open in Safari → Share → Add to Home Screen.
+        </div>
+        <button class="primary-save" id="saveSettings" type="button">
+          Save Settings
+        </button>
+        <button class="secondary-button" id="showInstallTip" type="button">
+          Show Home Screen Tip
+        </button>
+        <button class="secondary-button" id="reconnectButton" type="button">
+          Change Family Connection
         </button>
       </div>
     </div>
@@ -1073,27 +1496,31 @@
           <h3>Set Up This Phone</h3>
           <button class="close-button" id="setupClose" type="button">×</button>
         </div>
-
         <p class="setup-note">
-          Choose who uses this phone most often. The family code is the private
-          code stored in Apps Script and is saved only on this device.
+          Choose who uses this phone most often. The family code is saved only
+          on this device.
         </p>
-
         <div class="field">
           <label>Who is using this phone?</label>
           <div class="person-picker">
-            <button class="person-option" type="button" data-person="Michael">
-              Michael
-            </button>
-            <button class="person-option" type="button" data-person="Alison">
+            <button
+              class="person-option setup-person"
+              type="button"
+              data-person="Michael"
+            >
+              Michael</button
+            ><button
+              class="person-option setup-person"
+              type="button"
+              data-person="Alison"
+            >
               Alison
             </button>
           </div>
         </div>
-
         <div class="field">
-          <label>Family code</label>
-          <input
+          <label>Family code</label
+          ><input
             class="input"
             id="familyCode"
             type="password"
@@ -1101,7 +1528,6 @@
             placeholder="Enter the private Apps Script code"
           />
         </div>
-
         <button class="primary-save" id="saveSetup" type="button">
           Connect Phone
         </button>
@@ -1109,31 +1535,22 @@
     </div>
 
     <div class="toast" id="toast"></div>
+    <div class="undo-bar" id="undoBar">
+      <span id="undoMessage">Saved</span
+      ><button id="undoButton" type="button">Undo</button>
+    </div>
     <iframe
       class="write-sink"
       id="writeSink"
       name="babyTrackerWriteSink"
       title="Hidden data writer"
     ></iframe>
-
     <script>
       /* ============================================================
    REQUIRED: KEEP YOUR EXISTING GOOGLE APPS SCRIPT /exec URL HERE
    ============================================================ */
-
       const API_URL =
         "https://script.google.com/macros/s/AKfycbxDavCMbRwi4e6wLWmGPy8D1SCdVaBDEK-V2ZHVhl7QG8HmdYu5YdNDwsSJAKESDGti/exec";
-
-      // Sleep classification is based on the sleep START time.
-      // Change these two numbers later if your preferred nap window changes.
-      const SLEEP_SETTINGS = Object.freeze({
-        napStartHour: 6,
-        napEndHour: 18,
-      });
-
-      /* ============================================================
-   LOCAL STORAGE
-   ============================================================ */
 
       const STORAGE = {
         user: "babyTracker.user",
@@ -1143,63 +1560,126 @@
         medicineAmount: "babyTracker.medicineAmount",
         medicineUnit: "babyTracker.medicineUnit",
         installDismissed: "babyTracker.installDismissed",
+        pendingWrites: "babyTracker.pendingWrites.v24",
+        wakeTargetMinutes: "babyTracker.wakeTargetMinutes",
+        napStartHour: "babyTracker.napStartHour",
+        napEndHour: "babyTracker.napEndHour",
+        milkDisplayUnit: "babyTracker.milkDisplayUnit",
       };
 
-      /* ============================================================
-   STATE
-   ============================================================ */
+      const DEFAULTS = Object.freeze({
+        napStartHour: 6,
+        napEndHour: 18,
+        milkDisplayUnit: "oz",
+      });
 
-      let appState = {
-        activeSleep: null,
-        recent: [],
-        today: {
-          sleepMinutes: 0,
-          feedOunces: 0,
-          feeds: 0,
-          diapers: 0,
-          wetDiapers: 0,
-          dirtyDiapers: 0,
-          medicine: 0,
-        },
-        sleepSummary: {
-          lastNightMinutes: 0,
-          napMinutesToday: 0,
-          napCountToday: 0,
-          napsToday: [],
-        },
-        lastEvents: {
-          feed: null,
-          diaper: null,
-          medicine: null,
-        },
-      };
-
+      let settings = loadSettings();
+      let appState = emptyState();
       let currentUser = localStorage.getItem(STORAGE.user) || "";
       let familyKey = localStorage.getItem(STORAGE.key) || "";
       let selectedSetupUser = currentUser;
+      let selectedSettingsUser = currentUser;
       let busy = false;
       let feedUsesNow = true;
       let medicineUsesNow = true;
       let diaperUsesNow = true;
       let selectedDiaper = "Wet";
+      let selectedEditDiaper = "Wet";
       let lastSyncAt = null;
       let toastTimer = null;
+      let undoTimer = null;
+      let undoCallback = null;
       let sleepEditMode = "new";
       let sleepEditId = null;
       let sleepEditOriginalEnd = null;
       let sleepStillSnoozing = false;
+      let editingEvent = null;
 
       const $ = (id) => document.getElementById(id);
 
-      /* ============================================================
-   HELPERS
-   ============================================================ */
+      function emptyState() {
+        return {
+          activeSleep: null,
+          recent: [],
+          today: {
+            sleepMinutes: 0,
+            feedOunces: 0,
+            feeds: 0,
+            diapers: 0,
+            wetDiapers: 0,
+            dirtyDiapers: 0,
+            medicine: 0,
+          },
+          rolling24: {
+            feedOunces: 0,
+            feeds: 0,
+            diapers: 0,
+            wetDiapers: 0,
+            dirtyDiapers: 0,
+            medicine: 0,
+            feedEvents: [],
+            diaperEvents: [],
+            medicineEvents: [],
+            lastDirtyDiaper: null,
+          },
+          sleepSummary: {
+            lastNightMinutes: 0,
+            bedtime: null,
+            morningWake: null,
+            overnightWakeups: 0,
+            awakeOvernightMinutes: 0,
+            nightSessions: [],
+            napMinutesToday: 0,
+            napCountToday: 0,
+            napsToday: [],
+          },
+          lastEvents: {
+            feed: null,
+            diaper: null,
+            dirtyDiaper: null,
+            medicine: null,
+          },
+        };
+      }
+
+      function loadSettings() {
+        const rawTarget = localStorage.getItem(STORAGE.wakeTargetMinutes);
+        return {
+          wakeTargetMinutes:
+            rawTarget === null || rawTarget === "" ? null : Number(rawTarget),
+          napStartHour: Number(
+            localStorage.getItem(STORAGE.napStartHour) ?? DEFAULTS.napStartHour,
+          ),
+          napEndHour: Number(
+            localStorage.getItem(STORAGE.napEndHour) ?? DEFAULTS.napEndHour,
+          ),
+          milkDisplayUnit:
+            localStorage.getItem(STORAGE.milkDisplayUnit) ||
+            DEFAULTS.milkDisplayUnit,
+        };
+      }
+
+      function saveSettingsLocal() {
+        if (
+          settings.wakeTargetMinutes === null ||
+          !Number.isFinite(settings.wakeTargetMinutes)
+        )
+          localStorage.removeItem(STORAGE.wakeTargetMinutes);
+        else
+          localStorage.setItem(
+            STORAGE.wakeTargetMinutes,
+            String(settings.wakeTargetMinutes),
+          );
+        localStorage.setItem(
+          STORAGE.napStartHour,
+          String(settings.napStartHour),
+        );
+        localStorage.setItem(STORAGE.napEndHour, String(settings.napEndHour));
+        localStorage.setItem(STORAGE.milkDisplayUnit, settings.milkDisplayUnit);
+      }
 
       function makeId() {
-        if (window.crypto && crypto.randomUUID) {
-          return crypto.randomUUID();
-        }
-
+        if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
         return (
           "bt-" +
           Date.now().toString(36) +
@@ -1207,23 +1687,152 @@
           Math.random().toString(36).slice(2, 10)
         );
       }
-
       function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+      function localDateTimeValue(date = new Date()) {
+        const p = (n) => String(n).padStart(2, "0");
+        return `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())}T${p(date.getHours())}:${p(date.getMinutes())}`;
+      }
+      function parseManualDateTime(value, message) {
+        const d = new Date(value);
+        if (!value || Number.isNaN(d.getTime())) throw new Error(message);
+        return d;
+      }
+      function formatClock(iso) {
+        if (!iso) return "—";
+        return new Date(iso).toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+        });
+      }
+      function formatDateShort(iso) {
+        if (!iso) return "";
+        const d = new Date(iso),
+          t = new Date();
+        if (d.toDateString() === t.toDateString()) return "Today";
+        const y = new Date(t);
+        y.setDate(t.getDate() - 1);
+        if (d.toDateString() === y.toDateString()) return "Yesterday";
+        return d.toLocaleDateString([], { month: "short", day: "numeric" });
+      }
+      function formatEventTime(iso) {
+        if (!iso) return "";
+        const label = formatDateShort(iso);
+        return label === "Today"
+          ? formatClock(iso)
+          : `${label} ${formatClock(iso)}`;
+      }
+      function formatDuration(minutes) {
+        const total = Math.max(0, Math.floor(Number(minutes) || 0)),
+          h = Math.floor(total / 60),
+          m = total % 60;
+        return h ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}m`;
+      }
+      function minutesSince(iso) {
+        if (!iso) return null;
+        return Math.max(
+          0,
+          Math.floor((Date.now() - new Date(iso).getTime()) / 60000),
+        );
+      }
+      function formatAgo(iso) {
+        const m = minutesSince(iso);
+        if (m === null) return "";
+        if (m < 1) return "just now";
+        if (m < 60) return `${m}m ago`;
+        const h = Math.floor(m / 60),
+          r = m % 60;
+        if (h < 24) return r ? `${h}h ${r}m ago` : `${h}h ago`;
+        const d = Math.floor(h / 24);
+        return `${d}d ago`;
+      }
+      function nearlySameTime(a, b) {
+        if (!a || !b) return !a && !b;
+        return Math.abs(new Date(a).getTime() - new Date(b).getTime()) < 61000;
+      }
+      function isDaytimeNap(iso) {
+        if (!iso) return false;
+        const h = new Date(iso).getHours();
+        return h >= settings.napStartHour && h < settings.napEndHour;
+      }
+      function activeSleepMinutes() {
+        return appState.activeSleep
+          ? minutesSince(appState.activeSleep.startTime)
+          : 0;
+      }
+      function getLastCompletedSleep() {
+        return (
+          appState.recent
+            .filter((x) => x.type === "Sleep" && x.endTime)
+            .sort((a, b) => new Date(b.endTime) - new Date(a.endTime))[0] ||
+          null
+        );
+      }
+      function awakeMinutesSinceLastSleep() {
+        const s = getLastCompletedSleep();
+        return s
+          ? Math.max(
+              0,
+              Math.floor((Date.now() - new Date(s.endTime).getTime()) / 60000),
+            )
+          : null;
+      }
+      function getHistoryItem(id) {
+        return (
+          appState.recent.find((x) => x.id === id) ||
+          [
+            ...(appState.rolling24.feedEvents || []),
+            ...(appState.rolling24.diaperEvents || []),
+            ...(appState.rolling24.medicineEvents || []),
+            ...(appState.sleepSummary.napsToday || []),
+            ...(appState.sleepSummary.nightSessions || []),
+          ].find((x) => x.id === id) ||
+          null
+        );
+      }
+      function displayMilk(oz) {
+        const n = Number(oz || 0);
+        if (settings.milkDisplayUnit === "mL")
+          return `${Math.round(n * 29.5735)} mL`;
+        return `${Number(n.toFixed(2))} oz`;
       }
 
       function showToast(message, isError = false) {
         clearTimeout(toastTimer);
-        const toast = $("toast");
-        toast.textContent = message;
-        toast.classList.toggle("error", isError);
-        toast.classList.add("show");
-        toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
+        const t = $("toast");
+        t.textContent = message;
+        t.classList.toggle("error", isError);
+        t.classList.add("show");
+        toastTimer = setTimeout(() => t.classList.remove("show"), 2800);
       }
-
+      function showUndo(message, callback) {
+        clearTimeout(undoTimer);
+        undoCallback = callback;
+        $("undoMessage").textContent = message;
+        $("undoBar").classList.add("show");
+        undoTimer = setTimeout(hideUndo, 8000);
+      }
+      function hideUndo() {
+        $("undoBar").classList.remove("show");
+        undoCallback = null;
+      }
+      function openModal(id) {
+        $(id).classList.add("open");
+      }
+      function closeModal(id) {
+        $(id).classList.remove("open");
+      }
       function setBusy(value) {
         busy = value;
-
         [
           "sleepButton",
           "feedButton",
@@ -1234,57 +1843,25 @@
           "saveMedicine",
           "saveDiaper",
           "saveSleepEdit",
+          "saveEventEdit",
+          "deleteEvent",
+          "deleteSleep",
         ].forEach((id) => {
           if ($(id)) $(id).disabled = value;
         });
       }
 
-      function openModal(id) {
-        $(id).classList.add("open");
-      }
-
-      function closeModal(id) {
-        $(id).classList.remove("open");
-      }
-
-      function localDateTimeValue(date = new Date()) {
-        const pad = (n) => String(n).padStart(2, "0");
-
-        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-      }
-
-      function startOfLocalDayIso() {
-        const d = new Date();
-        d.setHours(0, 0, 0, 0);
-        return d.toISOString();
-      }
-
-      function endOfLocalDayIso() {
-        const d = new Date();
-        d.setHours(0, 0, 0, 0);
-        d.setDate(d.getDate() + 1);
-        return d.toISOString();
-      }
-
       function sleepAnalyticsRanges() {
         const now = new Date();
-
         const napStart = new Date(now);
-        napStart.setHours(SLEEP_SETTINGS.napStartHour, 0, 0, 0);
-
+        napStart.setHours(settings.napStartHour, 0, 0, 0);
         const napEnd = new Date(now);
-        napEnd.setHours(SLEEP_SETTINGS.napEndHour, 0, 0, 0);
-
-        // "Last night" is the overnight period that began the prior evening
-        // and runs through this morning. After midnight it naturally includes
-        // the currently-running overnight sleep.
+        napEnd.setHours(settings.napEndHour, 0, 0, 0);
         const nightEnd = new Date(now);
-        nightEnd.setHours(SLEEP_SETTINGS.napStartHour, 0, 0, 0);
-
+        nightEnd.setHours(settings.napStartHour, 0, 0, 0);
         const nightStart = new Date(nightEnd);
         nightStart.setDate(nightStart.getDate() - 1);
-        nightStart.setHours(SLEEP_SETTINGS.napEndHour, 0, 0, 0);
-
+        nightStart.setHours(settings.napEndHour, 0, 0, 0);
         return {
           napStart: napStart.toISOString(),
           napEnd: napEnd.toISOString(),
@@ -1292,321 +1869,260 @@
           nightEnd: nightEnd.toISOString(),
         };
       }
-
-      function isDaytimeNap(iso) {
-        if (!iso) return false;
-
-        const date = new Date(iso);
-        const hour = date.getHours();
-
-        return (
-          hour >= SLEEP_SETTINGS.napStartHour &&
-          hour < SLEEP_SETTINGS.napEndHour
-        );
+      function dayRanges() {
+        const s = new Date();
+        s.setHours(0, 0, 0, 0);
+        const e = new Date(s);
+        e.setDate(e.getDate() + 1);
+        return { dayStart: s.toISOString(), dayEnd: e.toISOString() };
       }
 
-      function formatEventTime(iso) {
-        if (!iso) return "";
-
-        const date = new Date(iso);
-        const now = new Date();
-
-        if (date.toDateString() === now.toDateString()) {
-          return formatClock(iso);
-        }
-
-        const yesterday = new Date(now);
-        yesterday.setDate(now.getDate() - 1);
-
-        if (date.toDateString() === yesterday.toDateString()) {
-          return `Yesterday ${formatClock(iso)}`;
-        }
-
-        return `${date.toLocaleDateString([], { month: "short", day: "numeric" })} ${formatClock(iso)}`;
-      }
-
-      function formatClock(iso) {
-        if (!iso) return "—";
-        return new Date(iso).toLocaleTimeString([], {
-          hour: "numeric",
-          minute: "2-digit",
-        });
-      }
-
-      function formatDateShort(iso) {
-        if (!iso) return "";
-
-        const date = new Date(iso);
-        const today = new Date();
-
-        if (date.toDateString() === today.toDateString()) return "Today";
-
-        const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
-
-        if (date.toDateString() === yesterday.toDateString())
-          return "Yesterday";
-
-        return date.toLocaleDateString([], { month: "short", day: "numeric" });
-      }
-
-      function formatDuration(minutes) {
-        const total = Math.max(0, Math.floor(Number(minutes) || 0));
-        const h = Math.floor(total / 60);
-        const m = total % 60;
-
-        if (!h) return `${m}m`;
-        return `${h}h ${String(m).padStart(2, "0")}m`;
-      }
-
-      function activeSleepMinutes() {
-        if (!appState.activeSleep || !appState.activeSleep.startTime) return 0;
-
-        return Math.max(
-          0,
-          Math.floor(
-            (Date.now() - new Date(appState.activeSleep.startTime).getTime()) /
-              60000,
-          ),
-        );
-      }
-
-      function getLastCompletedSleep() {
-        return appState.recent
-          .filter((item) => item.type === "Sleep" && item.endTime)
-          .reduce((latest, item) => {
-            if (!latest) return item;
-            return new Date(item.endTime).getTime() >
-              new Date(latest.endTime).getTime()
-              ? item
-              : latest;
-          }, null);
-      }
-
-      function awakeMinutesSinceLastSleep() {
-        const lastSleep = getLastCompletedSleep();
-        if (!lastSleep || !lastSleep.endTime) return null;
-
-        const wokeAt = new Date(lastSleep.endTime).getTime();
-        if (!Number.isFinite(wokeAt)) return null;
-
-        return Math.max(0, Math.floor((Date.now() - wokeAt) / 60000));
-      }
-
-      function escapeHtml(value) {
-        return String(value ?? "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      function parseManualDateTime(value, message) {
-        if (!value) throw new Error(message);
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) throw new Error(message);
-        return date;
-      }
-
-      function nearlySameTime(a, b) {
-        if (!a || !b) return !a && !b;
-        return Math.abs(new Date(a).getTime() - new Date(b).getTime()) < 61000;
-      }
-
-      function getHistoryItem(id) {
-        return appState.recent.find((item) => item.id === id) || null;
-      }
-
-      /* ============================================================
-   JSONP READ
-   ============================================================ */
-
-      function jsonpState(keyOverride = familyKey) {
+      /* ---------- JSONP reads / form writes ---------- */
+      function jsonpState(keyOverride = familyKey, lookupId = "") {
         return new Promise((resolve, reject) => {
-          if (!API_URL.startsWith("https://script.google.com/")) {
-            reject(
+          if (!API_URL.startsWith("https://script.google.com/"))
+            return reject(
               new Error(
                 "Paste your Apps Script /exec URL into index.html first.",
               ),
             );
-            return;
-          }
-
-          const callbackName =
-            "btCallback_" +
-            Date.now() +
-            "_" +
-            Math.floor(Math.random() * 100000);
-          const script = document.createElement("script");
-          let finished = false;
-
+          const cb =
+              "bt_" + Date.now() + "_" + Math.floor(Math.random() * 100000),
+            script = document.createElement("script");
+          let done = false;
           const cleanup = () => {
-            if (finished) return;
-            finished = true;
-            delete window[callbackName];
+            if (done) return;
+            done = true;
+            delete window[cb];
             script.remove();
           };
-
           const timeout = setTimeout(() => {
             cleanup();
-            reject(
-              new Error("Could not reach Baby Tracker. Check your connection."),
-            );
+            reject(new Error("Could not reach Baby Tracker."));
           }, 10000);
-
-          window[callbackName] = (data) => {
+          window[cb] = (data) => {
             clearTimeout(timeout);
             cleanup();
-
-            if (!data || data.ok !== true) {
+            if (!data || data.ok !== true)
               reject(
                 new Error(
                   (data && data.error) || "Baby Tracker returned an error.",
                 ),
               );
-              return;
-            }
-
-            resolve(data);
+            else resolve(data);
           };
-
           script.onerror = () => {
             clearTimeout(timeout);
             cleanup();
             reject(new Error("Could not load Baby Tracker data."));
           };
-
-          const sleepRanges = sleepAnalyticsRanges();
-
-          const query = new URLSearchParams({
+          const q = new URLSearchParams({
             action: "state",
             key: keyOverride,
-            callback: callbackName,
-            dayStart: startOfLocalDayIso(),
-            dayEnd: endOfLocalDayIso(),
-            napStart: sleepRanges.napStart,
-            napEnd: sleepRanges.napEnd,
-            nightStart: sleepRanges.nightStart,
-            nightEnd: sleepRanges.nightEnd,
+            callback: cb,
             _: String(Date.now()),
+            ...sleepAnalyticsRanges(),
+            ...dayRanges(),
           });
-
-          script.src = `${API_URL}?${query.toString()}`;
+          if (lookupId) q.set("lookupId", lookupId);
+          script.src = `${API_URL}?${q.toString()}`;
           document.body.appendChild(script);
         });
       }
-
-      /* ============================================================
-   HIDDEN FORM WRITE
-   ============================================================ */
-
       function postAction(payload) {
-        if (!API_URL.startsWith("https://script.google.com/")) {
+        if (!API_URL.startsWith("https://script.google.com/"))
           throw new Error(
             "Paste your Apps Script /exec URL into index.html first.",
           );
-        }
-
         const form = document.createElement("form");
         form.method = "POST";
         form.action = API_URL;
         form.target = "babyTrackerWriteSink";
         form.style.display = "none";
-
-        const fields = { ...payload, key: familyKey };
-
-        Object.entries(fields).forEach(([name, value]) => {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = name;
-          input.value = value == null ? "" : String(value);
-          form.appendChild(input);
-        });
-
+        Object.entries({ ...payload, key: familyKey }).forEach(
+          ([name, value]) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value == null ? "" : String(value);
+            form.appendChild(input);
+          },
+        );
         document.body.appendChild(form);
         form.submit();
         setTimeout(() => form.remove(), 1000);
       }
 
-      /* ============================================================
-   SYNC
-   ============================================================ */
+      /* ---------- persistent offline queue ---------- */
+      function getPendingWrites() {
+        try {
+          return JSON.parse(
+            localStorage.getItem(STORAGE.pendingWrites) || "[]",
+          );
+        } catch {
+          return [];
+        }
+      }
+      function setPendingWrites(items) {
+        localStorage.setItem(STORAGE.pendingWrites, JSON.stringify(items));
+        renderPending();
+      }
+      function queuePayload(payload, label) {
+        const q = getPendingWrites();
+        const key =
+          payload.action + ":" + (payload.id || makeId()) + ":" + Date.now();
+        q.push({
+          key,
+          payload,
+          label: label || "Change",
+          createdAt: Date.now(),
+        });
+        setPendingWrites(q);
+        return key;
+      }
+      function removeQueuedKey(key) {
+        setPendingWrites(getPendingWrites().filter((x) => x.key !== key));
+      }
+      function removeQueuedForId(id) {
+        setPendingWrites(getPendingWrites().filter((x) => x.payload.id !== id));
+      }
+      function renderPending() {
+        const q = getPendingWrites();
+        $("pendingBanner").classList.toggle("show", q.length > 0);
+        $("pendingText").innerHTML = q.length
+          ? `<span class="offline-dot"></span>${q.length} ${q.length === 1 ? "change" : "changes"} saved on this phone · waiting to sync`
+          : "";
+        updateSyncLabels();
+      }
+
+      function payloadConfirmed(payload, lookup) {
+        if (payload.action === "deleteEntry") return !lookup;
+        if (!lookup) return false;
+        if (payload.action === "endSleep") return !!lookup.endTime;
+        if (payload.action === "updateSleep")
+          return (
+            nearlySameTime(lookup.startTime, payload.startTime) &&
+            nearlySameTime(lookup.endTime, payload.endTime || null)
+          );
+        if (payload.action === "updateEntry") {
+          if (!nearlySameTime(lookup.startTime, payload.timestamp))
+            return false;
+          if (lookup.type === "Feed")
+            return (
+              Math.abs(Number(lookup.amount) - Number(payload.amount)) < 0.001
+            );
+          if (lookup.type === "Medicine")
+            return (
+              lookup.medicine === payload.medicine &&
+              Math.abs(Number(lookup.amount) - Number(payload.amount)) <
+                0.001 &&
+              lookup.unit === payload.unit
+            );
+          if (lookup.type === "Diaper")
+            return lookup.details === payload.details;
+        }
+        return true;
+      }
+      async function sendAndConfirm(payload) {
+        postAction(payload);
+        for (let i = 0; i < 14; i++) {
+          await delay(i === 0 ? 650 : 500);
+          try {
+            const data = await jsonpState(familyKey, payload.id || "");
+            if (payloadConfirmed(payload, data.lookup)) return data;
+          } catch (_) {}
+        }
+        throw new Error(
+          "Sent, but not yet confirmed. It will retry automatically.",
+        );
+      }
+      async function commitWrite(
+        payload,
+        { label = "Change", successMessage = "", undo = null } = {},
+      ) {
+        const qKey = queuePayload(payload, label);
+        if (!navigator.onLine) {
+          showToast(`${label} saved on this phone · waiting to sync`);
+          if (undo) showUndo(successMessage || `${label} saved`, undo);
+          return { queued: true };
+        }
+        setBusy(true);
+        try {
+          await sendAndConfirm(payload);
+          removeQueuedKey(qKey);
+          await refreshState(false);
+          if (undo) showUndo(successMessage || `${label} saved`, undo);
+          else if (successMessage) showToast(successMessage);
+          return { queued: false };
+        } catch (error) {
+          showToast(`${label} saved locally. Waiting to sync.`, true);
+          throw error;
+        } finally {
+          setBusy(false);
+        }
+      }
+      async function flushPendingQueue(showResult = false) {
+        if (!currentUser || !familyKey || !navigator.onLine) return;
+        let q = getPendingWrites();
+        if (!q.length) {
+          renderPending();
+          return;
+        }
+        for (const item of [...q]) {
+          try {
+            await sendAndConfirm(item.payload);
+            removeQueuedKey(item.key);
+          } catch (_) {
+            break;
+          }
+        }
+        try {
+          await refreshState(false);
+        } catch (_) {}
+        if (showResult && !getPendingWrites().length)
+          showToast("Everything is synced");
+      }
 
       async function refreshState(showErrors = true) {
         try {
           const data = await jsonpState();
-
           appState = {
             activeSleep: data.activeSleep || null,
             recent: Array.isArray(data.recent) ? data.recent : [],
-            today: data.today || appState.today,
-            sleepSummary: data.sleepSummary || appState.sleepSummary,
-            lastEvents: data.lastEvents || appState.lastEvents,
+            today: data.today || emptyState().today,
+            rolling24: data.rolling24 || emptyState().rolling24,
+            sleepSummary: data.sleepSummary || emptyState().sleepSummary,
+            lastEvents: data.lastEvents || emptyState().lastEvents,
           };
-
           lastSyncAt = new Date();
           render();
           return appState;
         } catch (error) {
-          $("syncStatus").textContent = "Not synced";
+          updateSyncLabels();
           if (showErrors) showToast(error.message, true);
           throw error;
         }
       }
 
-      async function writeAndConfirm(payload, predicate, successMessage) {
-        setBusy(true);
-
-        try {
-          postAction(payload);
-
-          for (let attempt = 0; attempt < 12; attempt++) {
-            await delay(attempt === 0 ? 650 : 500);
-
-            try {
-              const state = await refreshState(false);
-
-              if (predicate(state)) {
-                if (successMessage) showToast(successMessage);
-                return;
-              }
-            } catch (_) {
-              // Keep checking during brief mobile-network hiccups.
-            }
-          }
-
-          throw new Error(
-            "The change was sent, but I could not confirm it. Refresh before tapping again.",
-          );
-        } finally {
-          setBusy(false);
-        }
-      }
-
-      /* ============================================================
-   RENDER
-   ============================================================ */
-
+      /* ---------- render ---------- */
       function render() {
         const now = new Date();
-
         $("todayLabel").textContent = now.toLocaleDateString([], {
           weekday: "short",
           month: "short",
           day: "numeric",
         });
-
         $("personChip").textContent = currentUser || "Setup";
-
         const lastFeed =
           appState.lastEvents.feed ||
-          appState.recent.find((item) => item.type === "Feed");
-
+          appState.recent.find((x) => x.type === "Feed");
         const lastDiaper =
           appState.lastEvents.diaper ||
-          appState.recent.find((item) => item.type === "Diaper");
-
+          appState.recent.find((x) => x.type === "Diaper");
+        const lastDirty =
+          appState.lastEvents.dirtyDiaper ||
+          appState.rolling24.lastDirtyDiaper ||
+          null;
         const lastMedicine = appState.lastEvents.medicine || null;
 
         if (appState.activeSleep) {
@@ -1615,170 +2131,158 @@
           )
             ? "Napping now"
             : "Sleeping now";
-
           $("statusMain").textContent = formatDuration(activeSleepMinutes());
           $("statusSub").textContent =
             `Started ${formatClock(appState.activeSleep.startTime)} · ${appState.activeSleep.recordedBy || "Recorded"}`;
           $("editActiveSleep").classList.add("show");
-
           $("sleepButton").classList.add("active");
           $("sleepEyebrow").textContent = isDaytimeNap(
             appState.activeSleep.startTime,
           )
             ? "Nap in progress"
             : "Sleep in progress";
-
           $("sleepTitle").textContent = "End Sleep";
           $("sleepSub").textContent =
             `Started at ${formatClock(appState.activeSleep.startTime)}`;
+          $("sleepAge").textContent = formatAgo(appState.activeSleep.startTime);
         } else {
-          const lastSleep = getLastCompletedSleep();
-          const awakeMinutes = awakeMinutesSinceLastSleep();
-
-          if (lastSleep && awakeMinutes !== null) {
+          const lastSleep = getLastCompletedSleep(),
+            awake = awakeMinutesSinceLastSleep();
+          if (lastSleep && awake !== null) {
             $("statusLabel").textContent = "Awake now";
-            $("statusMain").textContent = formatDuration(awakeMinutes);
-
-            const feedDetail = lastFeed
-              ? ` · Last feed ${formatClock(lastFeed.startTime)}`
-              : "";
-
-            $("statusSub").textContent =
-              `Awake since ${formatClock(lastSleep.endTime)}${feedDetail}`;
+            $("statusMain").textContent = formatDuration(awake);
+            let parts = [`Awake since ${formatClock(lastSleep.endTime)}`];
+            if (
+              settings.wakeTargetMinutes !== null &&
+              Number.isFinite(settings.wakeTargetMinutes) &&
+              settings.wakeTargetMinutes > 0
+            ) {
+              const target = new Date(
+                new Date(lastSleep.endTime).getTime() +
+                  settings.wakeTargetMinutes * 60000,
+              );
+              const diff = Math.round((target.getTime() - Date.now()) / 60000);
+              parts.push(
+                `Target nap around ${formatClock(target.toISOString())}${diff > 0 ? ` · ${formatDuration(diff)} to target` : diff >= -15 ? " · target window now" : ` · ${formatDuration(Math.abs(diff))} past target`}`,
+              );
+            }
+            if (lastFeed)
+              parts.push(`Last feed ${formatClock(lastFeed.startTime)}`);
+            $("statusSub").textContent = parts.join(" · ");
           } else {
             $("statusLabel").textContent = "Ready";
             $("statusMain").textContent = lastFeed
               ? `Last feed ${formatClock(lastFeed.startTime)}`
               : "All caught up";
-
             $("statusSub").textContent = lastFeed
-              ? `${lastFeed.amount} oz · ${formatDateShort(lastFeed.startTime)}`
+              ? `${displayMilk(lastFeed.amount)} · ${formatDateShort(lastFeed.startTime)}`
               : "Tap Sleep or Feed to record an event";
           }
-
           $("editActiveSleep").classList.remove("show");
-
           $("sleepButton").classList.remove("active");
           $("sleepEyebrow").textContent = "Sleep";
           $("sleepTitle").textContent = "Start Sleep";
-          $("sleepSub").textContent = "Timestamp the start now";
+          $("sleepSub").textContent = getLastCompletedSleep()
+            ? `Last sleep ended ${formatEventTime(getLastCompletedSleep().endTime)}`
+            : "Timestamp the start now";
+          $("sleepAge").textContent = getLastCompletedSleep()
+            ? formatAgo(getLastCompletedSleep().endTime)
+            : "";
         }
 
-        // Sleep has its own day/night logic instead of resetting at midnight.
-        const sleepSummary = appState.sleepSummary || {};
-
+        const ss = appState.sleepSummary || {};
         $("statLastNight").textContent = formatDuration(
-          sleepSummary.lastNightMinutes || 0,
+          ss.lastNightMinutes || 0,
         );
+        $("statLastNightMeta").textContent = ss.bedtime
+          ? `${formatClock(ss.bedtime)}${ss.morningWake ? `–${formatClock(ss.morningWake)}` : " · still sleeping"}`
+          : "Night sleep";
+        $("statNaps").textContent = formatDuration(ss.napMinutesToday || 0);
+        const nc = Number(ss.napCountToday || 0);
+        $("statNapCount").textContent = `${nc} ${nc === 1 ? "nap" : "naps"}`;
+        const r = appState.rolling24 || {};
+        $("statMilk").textContent = displayMilk(r.feedOunces || 0);
+        $("statFeeds").textContent = String(r.feeds || 0);
+        $("statDiapers").textContent = String(r.diapers || 0);
+        $("statDiaperMeta").textContent =
+          `${r.wetDiapers || 0} wet · ${r.dirtyDiapers || 0} dirty`;
+        $("statMilkMeta").textContent = "Rolling 24 hours";
 
-        $("statNaps").textContent = formatDuration(
-          sleepSummary.napMinutesToday || 0,
-        );
-
-        const napCount = Number(sleepSummary.napCountToday || 0);
-        $("statNapCount").textContent =
-          `${napCount} ${napCount === 1 ? "nap" : "naps"}`;
-
-        // Feed/diaper totals remain normal midnight-to-midnight daily totals.
-        $("statMilk").textContent =
-          `${Number(appState.today.feedOunces || 0).toLocaleString([], { maximumFractionDigits: 2 })} oz`;
-
-        $("statFeeds").textContent = String(appState.today.feeds || 0);
-
-        $("statDiapers").textContent = String(appState.today.diapers || 0);
-
-        // Last-event details directly on the action cards.
         $("feedSub").textContent = lastFeed
-          ? `Last Feeding: ${formatEventTime(lastFeed.startTime)} | ${lastFeed.amount} oz`
+          ? `Last Feeding: ${formatEventTime(lastFeed.startTime)} | ${displayMilk(lastFeed.amount)}`
           : "Record breastmilk ounces";
-
+        $("feedAge").textContent = lastFeed
+          ? formatAgo(lastFeed.startTime)
+          : "";
         $("diaperSub").textContent = lastDiaper
           ? `Last Diaper Change: ${lastDiaper.details || "Diaper"} | ${formatEventTime(lastDiaper.startTime)}`
           : "Record a diaper change";
-
+        $("diaperAge").textContent = lastDiaper
+          ? `${formatAgo(lastDiaper.startTime)}${lastDirty ? ` · Last dirty ${formatEventTime(lastDirty.startTime)}` : ""}`
+          : "";
         $("medicineSub").textContent = lastMedicine
           ? `Last Meds: ${lastMedicine.medicine || "Medicine"} (${lastMedicine.amount} ${lastMedicine.unit}) | ${formatEventTime(lastMedicine.startTime)}`
           : "";
+        $("medicineAge").textContent = lastMedicine
+          ? formatAgo(lastMedicine.startTime)
+          : "";
 
         renderNapBreakdown();
-
-        const recent = appState.recent.slice(0, 12);
-
+        const recent = appState.recent.slice(0, 16);
         $("historyList").innerHTML = recent.length
           ? recent.map(historyRow).join("")
           : '<div class="empty">No activity yet.</div>';
+        updateSyncLabels();
+        renderPending();
+      }
 
-        if (lastSyncAt) {
-          $("syncStatus").textContent =
-            `Synced ${formatClock(lastSyncAt.toISOString())}`;
-        } else {
-          $("syncStatus").textContent = "Connecting";
-        }
+      function updateSyncLabels() {
+        const pending = getPendingWrites().length;
+        let text;
+        if (!navigator.onLine)
+          text = pending ? `Offline · ${pending} pending` : "Offline";
+        else if (pending) text = `${pending} pending`;
+        else if (lastSyncAt)
+          text = `Synced ${formatClock(lastSyncAt.toISOString())}`;
+        else text = "Connecting";
+        if ($("syncStatus")) $("syncStatus").textContent = text;
+        if ($("settingsSyncStatus"))
+          $("settingsSyncStatus").innerHTML =
+            `<strong>Sync:</strong> ${escapeHtml(text)}<br><strong>Connection:</strong> ${navigator.onLine ? "Online" : "Offline"}<br><strong>Pending changes:</strong> ${pending}`;
       }
 
       function renderNapBreakdown() {
-        const naps =
-          appState.sleepSummary &&
-          Array.isArray(appState.sleepSummary.napsToday)
-            ? appState.sleepSummary.napsToday
-            : [];
-
+        const naps = Array.isArray(appState.sleepSummary.napsToday)
+          ? appState.sleepSummary.napsToday
+          : [];
         const section = $("napBreakdown");
-        const list = $("napList");
-
         if (!naps.length) {
           section.classList.remove("show");
-          list.innerHTML = "";
+          $("napList").innerHTML = "";
           return;
         }
-
-        const total = appState.sleepSummary.napMinutesToday || 0;
-        const count = naps.length;
-
+        section.classList.add("show");
         $("napBreakdownTotal").textContent =
-          `${count} ${count === 1 ? "nap" : "naps"} · ${formatDuration(total)}`;
-
-        list.innerHTML = naps
-          .map((nap) => {
-            const active = !nap.endTime;
-            const endLabel = active ? "Now" : formatClock(nap.endTime);
-
-            const duration = active
-              ? Math.max(
-                  0,
-                  Math.floor(
-                    (Date.now() - new Date(nap.startTime).getTime()) / 60000,
-                  ),
-                )
-              : Number(nap.durationMinutes || 0);
-
-            return `
-      <button class="nap-row" type="button" data-nap-id="${escapeHtml(nap.id)}">
-        <span class="nap-row-time">
-          ${formatClock(nap.startTime)}–${endLabel}${active ? " · Snoozing" : ""}
-        </span>
-        <span class="nap-row-duration">${formatDuration(duration)}</span>
-      </button>
-    `;
-          })
+          `${naps.length} ${naps.length === 1 ? "nap" : "naps"} · ${formatDuration(appState.sleepSummary.napMinutesToday || 0)}`;
+        $("napList").innerHTML = naps
+          .map(
+            (n) =>
+              `<button class="nap-row" type="button" data-event-id="${escapeHtml(n.id)}"><span class="nap-row-time">${formatClock(n.startTime)}–${n.endTime ? formatClock(n.endTime) : "Now · Snoozing"}</span><span class="nap-row-duration">${formatDuration(n.endTime ? n.durationMinutes : minutesSince(n.startTime))}</span></button>`,
+          )
           .join("");
       }
 
       function historyRow(item) {
-        let icon = "•";
-        let name = item.type;
-        let detail = item.recordedBy || "";
-        let timeIso = item.endTime || item.startTime;
-
+        let icon = "•",
+          name = item.type,
+          detail = item.recordedBy || "",
+          timeIso = item.endTime || item.startTime;
         if (item.type === "Feed") {
           icon = "🍼";
           name = "Feed";
-          detail = `${item.amount} oz · ${escapeHtml(item.recordedBy)}`;
-        }
-
-        if (item.type === "Sleep") {
+          detail = `${displayMilk(item.amount)} · ${escapeHtml(item.recordedBy)}`;
+        } else if (item.type === "Sleep") {
           const nap = isDaytimeNap(item.startTime);
-
           icon = nap ? "☀︎" : "☾";
           name = item.endTime
             ? nap
@@ -1787,321 +2291,281 @@
             : nap
               ? "Napping"
               : "Sleeping";
-
           detail = item.endTime
             ? `${formatDuration(item.durationMinutes)} · ${formatClock(item.startTime)}–${formatClock(item.endTime)}`
             : `Started ${formatClock(item.startTime)} · ${escapeHtml(item.recordedBy)}`;
-        }
-
-        if (item.type === "Medicine") {
+        } else if (item.type === "Medicine") {
           icon = "＋";
           name = item.medicine || "Medicine";
           detail = `${item.amount} ${escapeHtml(item.unit)} · ${escapeHtml(item.recordedBy)}`;
-        }
-
-        if (item.type === "Diaper") {
+        } else if (item.type === "Diaper") {
           icon = "◌";
           name = `${item.details || "Diaper"} diaper`;
           detail = escapeHtml(item.recordedBy);
         }
-
-        const tag = item.type === "Sleep" ? "button" : "div";
-        const attrs =
-          item.type === "Sleep"
-            ? ` type="button" data-sleep-id="${escapeHtml(item.id)}"`
-            : "";
-
-        return `
-    <${tag} class="history-row"${attrs}>
-      <div class="history-icon">${icon}</div>
-      <div>
-        <div class="history-name">${escapeHtml(name)}</div>
-        <div class="history-detail">${detail}</div>
-      </div>
-      <div class="history-time">
-        ${formatDateShort(timeIso)}<br>${formatClock(timeIso)}
-      </div>
-    </${tag}>
-  `;
+        return `<button class="history-row" type="button" data-event-id="${escapeHtml(item.id)}"><div class="history-icon">${icon}</div><div><div class="history-name">${escapeHtml(name)}</div><div class="history-detail">${detail}</div></div><div class="history-time">${formatDateShort(timeIso)}<br>${formatClock(timeIso)}</div></button>`;
       }
 
-      /* ============================================================
-   SLEEP
-   ============================================================ */
+      /* ---------- detail sheets ---------- */
+      function openDetail(kind) {
+        const r = appState.rolling24 || {},
+          ss = appState.sleepSummary || {};
+        let title = "Details",
+          summary = "",
+          rows = [];
+        if (kind === "night") {
+          title = "Sleep Last Night";
+          summary = `<div class="summary-grid"><div class="summary-box"><strong>${formatDuration(ss.lastNightMinutes || 0)}</strong><span>Total asleep</span></div><div class="summary-box"><strong>${ss.overnightWakeups || 0}</strong><span>Overnight wakeups</span></div><div class="summary-box"><strong>${ss.bedtime ? formatClock(ss.bedtime) : "—"}</strong><span>Bedtime</span></div><div class="summary-box"><strong>${ss.morningWake ? formatClock(ss.morningWake) : appState.activeSleep && !isDaytimeNap(appState.activeSleep.startTime) ? "Still asleep" : "—"}</strong><span>Morning wake</span></div><div class="summary-box"><strong>${formatDuration(ss.awakeOvernightMinutes || 0)}</strong><span>Awake overnight</span></div></div>`;
+          rows = (ss.nightSessions || []).map((x) =>
+            detailEventRow(x, "Sleep segment"),
+          );
+        } else if (kind === "naps") {
+          title = "Today's Naps";
+          summary = `<div class="summary-grid"><div class="summary-box"><strong>${formatDuration(ss.napMinutesToday || 0)}</strong><span>Total nap time</span></div><div class="summary-box"><strong>${ss.napCountToday || 0}</strong><span>Naps</span></div></div>`;
+          rows = (ss.napsToday || []).map((x) => detailEventRow(x, "Nap"));
+        } else if (kind === "milk" || kind === "feeds") {
+          title =
+            kind === "milk" ? "Milk · Last 24 Hours" : "Feeds · Last 24 Hours";
+          summary = `<div class="summary-grid"><div class="summary-box"><strong>${displayMilk(r.feedOunces || 0)}</strong><span>Total milk</span></div><div class="summary-box"><strong>${r.feeds || 0}</strong><span>Feeds</span></div></div>`;
+          rows = (r.feedEvents || []).map((x) => detailEventRow(x, "Feed"));
+        } else if (kind === "diapers") {
+          title = "Diapers · Last 24 Hours";
+          summary = `<div class="summary-grid"><div class="summary-box"><strong>${r.diapers || 0}</strong><span>Total changes</span></div><div class="summary-box"><strong>${r.wetDiapers || 0}</strong><span>Wet</span></div><div class="summary-box"><strong>${r.dirtyDiapers || 0}</strong><span>Dirty</span></div><div class="summary-box"><strong>${r.lastDirtyDiaper ? formatEventTime(r.lastDirtyDiaper.startTime) : "—"}</strong><span>Last dirty</span></div></div>`;
+          rows = (r.diaperEvents || []).map((x) =>
+            detailEventRow(x, `${x.details || "Diaper"} diaper`),
+          );
+        }
+        $("detailTitle").textContent = title;
+        $("detailSummary").innerHTML = summary;
+        $("detailList").innerHTML = rows.length
+          ? rows.join("")
+          : '<div class="empty">No entries in this period.</div>';
+        openModal("detailBackdrop");
+      }
+      function detailEventRow(item, label) {
+        let main = label,
+          sub = "";
+        if (item.type === "Feed")
+          sub = `${displayMilk(item.amount)} · ${item.recordedBy || ""}`;
+        else if (item.type === "Sleep")
+          sub = item.endTime
+            ? `${formatClock(item.startTime)}–${formatClock(item.endTime)} · ${formatDuration(item.durationMinutes)}`
+            : `Started ${formatClock(item.startTime)} · still sleeping`;
+        else if (item.type === "Diaper") sub = `${item.recordedBy || ""}`;
+        return `<button class="detail-row" type="button" data-event-id="${escapeHtml(item.id)}"><div><div class="detail-main">${escapeHtml(main)}</div><div class="detail-sub">${escapeHtml(sub)}</div></div><div class="detail-right">${formatDateShort(item.startTime)}<br>${formatClock(item.startTime)}</div></button>`;
+      }
 
+      /* ---------- sleep ---------- */
       async function handleSleep() {
         if (busy || !currentUser || !familyKey) return;
-
         if (appState.activeSleep) {
-          const sleepId = appState.activeSleep.id;
-
-          await writeAndConfirm(
-            {
-              action: "endSleep",
-              id: sleepId,
-              timestamp: new Date().toISOString(),
-              recordedBy: currentUser,
+          const s = { ...appState.activeSleep };
+          const payload = {
+            action: "endSleep",
+            id: s.id,
+            timestamp: new Date().toISOString(),
+            recordedBy: currentUser,
+          };
+          await commitWrite(payload, {
+            label: "Sleep",
+            successMessage: "Sleep ended",
+            undo: async () => {
+              await commitWrite(
+                {
+                  action: "updateSleep",
+                  id: s.id,
+                  startTime: s.startTime,
+                  endTime: "",
+                  recordedBy: currentUser,
+                },
+                { label: "Undo sleep end", successMessage: "Sleep reopened" },
+              );
             },
-            (state) => !state.activeSleep || state.activeSleep.id !== sleepId,
-            "Sleep ended",
-          );
+          });
         } else {
-          const id = makeId();
-
-          await writeAndConfirm(
-            {
+          const id = makeId(),
+            payload = {
               action: "startSleep",
               id,
               timestamp: new Date().toISOString(),
               recordedBy: currentUser,
-            },
-            (state) => state.activeSleep && state.activeSleep.id === id,
-            "Sleep started",
-          );
+            };
+          await commitWrite(payload, {
+            label: "Sleep",
+            successMessage: "Sleep started",
+            undo: async () => undoNewEvent(id),
+          });
         }
       }
-
-      function setSleepStatus(stillSnoozing) {
-        sleepStillSnoozing = stillSnoozing;
-
-        $("sleepEndedOption").classList.toggle("selected", !stillSnoozing);
-        $("sleepSnoozingOption").classList.toggle("selected", stillSnoozing);
-        $("sleepEndWrap").style.display = stillSnoozing ? "none" : "";
-
-        // If an active sleep is changed to "Ended", make "now" the sensible default.
-        if (!stillSnoozing && !$("sleepEndTime").value) {
-          $("sleepEndTime").value = localDateTimeValue(new Date());
-        }
-
-        if (sleepEditMode === "new") {
-          $("sleepEditNote").textContent = stillSnoozing
-            ? "Set when sleep began. It will stay active until either of you taps End Sleep."
-            : "Use this if you forgot to start or stop the sleep timer at the correct time.";
-
-          $("saveSleepEdit").textContent = stillSnoozing
+      function setSleepStatus(still) {
+        sleepStillSnoozing = still;
+        $("sleepEndedOption").classList.toggle("selected", !still);
+        $("sleepSnoozingOption").classList.toggle("selected", still);
+        $("sleepEndWrap").style.display = still ? "none" : "";
+        $("sleepStatusHelp").textContent = still
+          ? "No end time will be recorded; the sleep timer will keep running."
+          : "Record the time this sleep ended.";
+        $("saveSleepEdit").textContent = still
+          ? sleepEditMode === "new"
             ? "Start Sleep From This Time"
-            : "Save Sleep";
-
-          return;
-        }
-
-        $("sleepEditNote").textContent = stillSnoozing
-          ? "Adjust the start time. No end time will be recorded, and the sleep timer will keep running."
-          : "Adjust either timestamp. The duration will be recalculated automatically.";
-
-        $("saveSleepEdit").textContent = stillSnoozing
-          ? "Save & Keep Snoozing"
-          : "Save Correction";
+            : "Save & Keep Snoozing"
+          : sleepEditMode === "new"
+            ? "Save Sleep"
+            : "Save Correction";
       }
-
       function openNewPastSleep() {
         sleepEditMode = "new";
         sleepEditId = null;
         sleepEditOriginalEnd = null;
-
-        const end = new Date();
-        const start = new Date(end.getTime() - 60 * 60000);
-
+        const end = new Date(),
+          start = new Date(end.getTime() - 60 * 60000);
         $("sleepEditTitle").textContent = "Add Past Sleep";
+        $("sleepEditNote").textContent =
+          "Use this if you forgot to start or stop the sleep timer at the correct time.";
         $("sleepStartTime").value = localDateTimeValue(start);
         $("sleepEndTime").value = localDateTimeValue(end);
+        $("deleteSleep").style.display = "none";
         setSleepStatus(false);
-
         openModal("sleepEditBackdrop");
       }
-
       function openSleepCorrection(item) {
         if (!item || item.type !== "Sleep") return;
-
         sleepEditMode = "edit";
         sleepEditId = item.id;
         sleepEditOriginalEnd = item.endTime || null;
-
-        $("sleepEditTitle").textContent = item.endTime
-          ? "Correct Sleep"
-          : "Correct Start Time";
+        $("sleepEditTitle").textContent = "Correct Sleep";
+        $("sleepEditNote").textContent = item.endTime
+          ? "Adjust either timestamp or mark the sleep as still snoozing."
+          : "This sleep is active. Correct the start time or enter an end time.";
         $("sleepStartTime").value = localDateTimeValue(
           new Date(item.startTime),
         );
         $("sleepEndTime").value = item.endTime
           ? localDateTimeValue(new Date(item.endTime))
-          : "";
-
+          : localDateTimeValue(new Date());
+        $("deleteSleep").style.display = "";
         setSleepStatus(!item.endTime);
         openModal("sleepEditBackdrop");
       }
-
       async function saveSleepCorrection() {
         const start = parseManualDateTime(
-          $("sleepStartTime").value,
-          "Choose a valid sleep start time.",
-        );
-        const startIso = start.toISOString();
-
-        if (sleepEditMode === "new") {
-          const id = makeId();
-
-          if (sleepStillSnoozing) {
-            await writeAndConfirm(
-              {
-                action: "startSleep",
-                id,
-                timestamp: startIso,
-                recordedBy: currentUser,
-              },
-              (state) => state.activeSleep && state.activeSleep.id === id,
-              "Sleep started",
-            );
-
-            closeModal("sleepEditBackdrop");
-            return;
-          }
-
-          const end = parseManualDateTime(
-            $("sleepEndTime").value,
-            "Choose a valid sleep end time.",
+            $("sleepStartTime").value,
+            "Choose a valid sleep start time.",
+          ),
+          end = sleepStillSnoozing
+            ? null
+            : parseManualDateTime(
+                $("sleepEndTime").value,
+                "Choose a valid sleep end time.",
+              );
+        if (end && end <= start)
+          return showToast(
+            "Sleep end time must be after the start time.",
+            true,
           );
-
-          if (end <= start) {
-            showToast("Sleep end time must be after the start time.", true);
-            return;
-          }
-
-          const endIso = end.toISOString();
-
-          await writeAndConfirm(
-            {
+        if (sleepEditMode === "new") {
+          const id = makeId(),
+            payload = {
               action: "addSleep",
               id,
-              startTime: startIso,
-              endTime: endIso,
+              startTime: start.toISOString(),
+              endTime: end ? end.toISOString() : "",
               recordedBy: currentUser,
-            },
-            (state) => state.recent.some((item) => item.id === id),
-            "Past sleep added",
-          );
-
+            };
+          await commitWrite(payload, {
+            label: "Sleep",
+            successMessage: end
+              ? "Past sleep added"
+              : "Sleep started from corrected time",
+            undo: async () => undoNewEvent(id),
+          });
           closeModal("sleepEditBackdrop");
           return;
         }
-
-        let end = null;
-
-        if (!sleepStillSnoozing) {
-          end = parseManualDateTime(
-            $("sleepEndTime").value,
-            "Choose a valid sleep end time.",
-          );
-
-          if (end <= start) {
-            showToast("Sleep end time must be after the start time.", true);
-            return;
-          }
-        }
-
-        const endIso = end ? end.toISOString() : "";
+        const payload = {
+          action: "updateSleep",
+          id: sleepEditId,
+          startTime: start.toISOString(),
+          endTime: end ? end.toISOString() : "",
+          recordedBy: currentUser,
+        };
+        await commitWrite(payload, {
+          label: "Sleep correction",
+          successMessage: "Sleep corrected",
+        });
+        closeModal("sleepEditBackdrop");
+      }
+      async function deleteSleepEntry() {
+        if (!sleepEditId || !confirm("Delete this sleep entry?")) return;
         const id = sleepEditId;
-
-        await writeAndConfirm(
-          {
-            action: "updateSleep",
-            id,
-            startTime: startIso,
-            endTime: endIso,
-            recordedBy: currentUser,
-          },
-          (state) => {
-            const item = state.recent.find((row) => row.id === id);
-            if (!item) return false;
-
-            const timesMatch =
-              nearlySameTime(item.startTime, startIso) &&
-              nearlySameTime(item.endTime, endIso || null);
-
-            const activeStateMatches = sleepStillSnoozing
-              ? state.activeSleep && state.activeSleep.id === id
-              : !state.activeSleep || state.activeSleep.id !== id;
-
-            return timesMatch && activeStateMatches;
-          },
-          sleepStillSnoozing
-            ? "Sleep corrected — still snoozing"
-            : "Sleep corrected",
+        await commitWrite(
+          { action: "deleteEntry", id },
+          { label: "Delete sleep", successMessage: "Sleep deleted" },
         );
-
         closeModal("sleepEditBackdrop");
       }
 
-      /* ============================================================
-   FEED
-   ============================================================ */
-
-      function setFeedTimeMode(useNow) {
-        feedUsesNow = useNow;
-        $("feedNow").classList.toggle("selected", useNow);
-        $("feedManual").classList.toggle("selected", !useNow);
-        $("feedManualWrap").classList.toggle("show", !useNow);
-        if (!useNow) $("feedTime").value = localDateTimeValue();
+      /* ---------- adds ---------- */
+      function setTimeMode(prefix, useNow) {
+        const map = {
+          feed: ["feedNow", "feedManual", "feedManualWrap", "feedTime"],
+          medicine: [
+            "medicineNow",
+            "medicineManual",
+            "medicineManualWrap",
+            "medicineTime",
+          ],
+          diaper: [
+            "diaperNow",
+            "diaperManual",
+            "diaperManualWrap",
+            "diaperTime",
+          ],
+        };
+        const [a, b, w, t] = map[prefix];
+        $(a).classList.toggle("selected", useNow);
+        $(b).classList.toggle("selected", !useNow);
+        $(w).classList.toggle("show", !useNow);
+        if (!useNow) $(t).value = localDateTimeValue();
+        if (prefix === "feed") feedUsesNow = useNow;
+        if (prefix === "medicine") medicineUsesNow = useNow;
+        if (prefix === "diaper") diaperUsesNow = useNow;
       }
-
       function openFeed() {
         const remembered = Number(localStorage.getItem(STORAGE.feedAmount));
-        $("feedAmount").value = remembered > 0 ? remembered : 2.0;
-        setFeedTimeMode(true);
+        $("feedAmount").value = remembered > 0 ? remembered : 2;
+        setTimeMode("feed", true);
         openModal("feedBackdrop");
       }
-
       function adjustFeed(delta) {
-        const current = Number($("feedAmount").value) || 0;
-        const next = Math.max(0.5, Math.round((current + delta) * 10) / 10);
-        $("feedAmount").value = next.toFixed(1);
+        const cur = Number($("feedAmount").value) || 0;
+        $("feedAmount").value = Math.max(
+          0.5,
+          Math.round((cur + delta) * 10) / 10,
+        ).toFixed(1);
       }
-
       async function saveFeed() {
         const amount = Number($("feedAmount").value);
-
-        if (!Number.isFinite(amount) || amount <= 0) {
-          showToast("Enter the number of ounces.", true);
-          return;
-        }
-
+        if (!Number.isFinite(amount) || amount <= 0)
+          return showToast("Enter the number of ounces.", true);
         const timestamp = feedUsesNow
           ? new Date().toISOString()
           : parseManualDateTime(
               $("feedTime").value,
               "Choose a valid feed time.",
             ).toISOString();
-
         const id = makeId();
-
-        await writeAndConfirm(
-          {
-            action: "addFeed",
-            id,
-            timestamp,
-            amount,
-            recordedBy: currentUser,
-          },
-          (state) => state.recent.some((item) => item.id === id),
-          `${amount} oz feed saved`,
-        );
-
         localStorage.setItem(STORAGE.feedAmount, String(amount));
         closeModal("feedBackdrop");
+        await commitWrite(
+          { action: "addFeed", id, timestamp, amount, recordedBy: currentUser },
+          {
+            label: "Feed",
+            successMessage: `${amount} oz feed saved`,
+            undo: async () => undoNewEvent(id),
+          },
+        );
       }
-
-      /* ============================================================
-   MEDICINE
-   ============================================================ */
-
-      function setMedicineTimeMode(useNow) {
-        medicineUsesNow = useNow;
-        $("medicineNow").classList.toggle("selected", useNow);
-        $("medicineManual").classList.toggle("selected", !useNow);
-        $("medicineManualWrap").classList.toggle("show", !useNow);
-        if (!useNow) $("medicineTime").value = localDateTimeValue();
-      }
-
       function openMedicine() {
         $("medicineName").value =
           localStorage.getItem(STORAGE.medicineName) || "";
@@ -2109,35 +2573,28 @@
           localStorage.getItem(STORAGE.medicineAmount) || "";
         $("medicineUnit").value =
           localStorage.getItem(STORAGE.medicineUnit) || "mL";
-        setMedicineTimeMode(true);
+        setTimeMode("medicine", true);
         openModal("medicineBackdrop");
       }
-
       async function saveMedicine() {
-        const medicine = $("medicineName").value.trim();
-        const amount = Number($("medicineAmount").value);
-        const unit = $("medicineUnit").value;
-
-        if (!medicine) {
-          showToast("Enter the medicine name.", true);
-          return;
-        }
-
-        if (!Number.isFinite(amount) || amount <= 0) {
-          showToast("Enter the dose.", true);
-          return;
-        }
-
+        const medicine = $("medicineName").value.trim(),
+          amount = Number($("medicineAmount").value),
+          unit = $("medicineUnit").value;
+        if (!medicine) return showToast("Enter the medicine name.", true);
+        if (!Number.isFinite(amount) || amount <= 0)
+          return showToast("Enter the dose.", true);
         const timestamp = medicineUsesNow
-          ? new Date().toISOString()
-          : parseManualDateTime(
-              $("medicineTime").value,
-              "Choose a valid medicine time.",
-            ).toISOString();
-
-        const id = makeId();
-
-        await writeAndConfirm(
+            ? new Date().toISOString()
+            : parseManualDateTime(
+                $("medicineTime").value,
+                "Choose a valid medicine time.",
+              ).toISOString(),
+          id = makeId();
+        localStorage.setItem(STORAGE.medicineName, medicine);
+        localStorage.setItem(STORAGE.medicineAmount, String(amount));
+        localStorage.setItem(STORAGE.medicineUnit, unit);
+        closeModal("medicineBackdrop");
+        await commitWrite(
           {
             action: "addMedicine",
             id,
@@ -2147,51 +2604,33 @@
             unit,
             recordedBy: currentUser,
           },
-          (state) => state.recent.some((item) => item.id === id),
-          "Medicine saved",
+          {
+            label: "Medicine",
+            successMessage: "Medicine saved",
+            undo: async () => undoNewEvent(id),
+          },
         );
-
-        localStorage.setItem(STORAGE.medicineName, medicine);
-        localStorage.setItem(STORAGE.medicineAmount, String(amount));
-        localStorage.setItem(STORAGE.medicineUnit, unit);
-        closeModal("medicineBackdrop");
       }
-
-      /* ============================================================
-   DIAPER
-   ============================================================ */
-
-      function setDiaperTimeMode(useNow) {
-        diaperUsesNow = useNow;
-        $("diaperNow").classList.toggle("selected", useNow);
-        $("diaperManual").classList.toggle("selected", !useNow);
-        $("diaperManualWrap").classList.toggle("show", !useNow);
-        if (!useNow) $("diaperTime").value = localDateTimeValue();
-      }
-
       function openDiaper() {
         selectedDiaper = "Wet";
-        document.querySelectorAll(".diaper-option").forEach((button) => {
-          button.classList.toggle(
-            "selected",
-            button.dataset.diaper === selectedDiaper,
+        document
+          .querySelectorAll(".diaper-option")
+          .forEach((b) =>
+            b.classList.toggle("selected", b.dataset.diaper === selectedDiaper),
           );
-        });
-        setDiaperTimeMode(true);
+        setTimeMode("diaper", true);
         openModal("diaperBackdrop");
       }
-
       async function saveDiaper() {
         const timestamp = diaperUsesNow
-          ? new Date().toISOString()
-          : parseManualDateTime(
-              $("diaperTime").value,
-              "Choose a valid diaper time.",
-            ).toISOString();
-
-        const id = makeId();
-
-        await writeAndConfirm(
+            ? new Date().toISOString()
+            : parseManualDateTime(
+                $("diaperTime").value,
+                "Choose a valid diaper time.",
+              ).toISOString(),
+          id = makeId();
+        closeModal("diaperBackdrop");
+        await commitWrite(
           {
             action: "addDiaper",
             id,
@@ -2199,70 +2638,203 @@
             details: selectedDiaper,
             recordedBy: currentUser,
           },
-          (state) => state.recent.some((item) => item.id === id),
-          `${selectedDiaper} diaper saved`,
+          {
+            label: "Diaper",
+            successMessage: `${selectedDiaper} diaper saved`,
+            undo: async () => undoNewEvent(id),
+          },
         );
-
-        closeModal("diaperBackdrop");
+      }
+      async function undoNewEvent(id) {
+        removeQueuedForId(id);
+        await commitWrite(
+          { action: "deleteEntry", id },
+          { label: "Undo", successMessage: "Entry removed" },
+        );
+        hideUndo();
       }
 
-      /* ============================================================
-   DEVICE SETUP
-   ============================================================ */
+      /* ---------- edit any non-sleep event ---------- */
+      function openEventEdit(item) {
+        if (!item || item.type === "Sleep") return openSleepCorrection(item);
+        editingEvent = item;
+        $("eventEditTitle").textContent = `Edit ${item.type}`;
+        $("eventEditTime").value = localDateTimeValue(new Date(item.startTime));
+        ["editFeedGroup", "editMedicineGroup", "editDiaperGroup"].forEach(
+          (id) => $(id).classList.remove("show"),
+        );
+        if (item.type === "Feed") {
+          $("editFeedGroup").classList.add("show");
+          $("editFeedAmount").value = item.amount;
+        }
+        if (item.type === "Medicine") {
+          $("editMedicineGroup").classList.add("show");
+          $("editMedicineName").value = item.medicine || "";
+          $("editMedicineAmount").value = item.amount;
+          $("editMedicineUnit").value = item.unit || "mL";
+        }
+        if (item.type === "Diaper") {
+          $("editDiaperGroup").classList.add("show");
+          selectedEditDiaper = item.details || "Wet";
+          renderEditDiaperOptions();
+        }
+        openModal("eventEditBackdrop");
+      }
+      function renderEditDiaperOptions() {
+        document.querySelectorAll(".diaper-edit-option").forEach((b) => {
+          b.className =
+            "diaper-option diaper-edit-option" +
+            (b.dataset.editDiaper === selectedEditDiaper ? " selected" : "");
+        });
+      }
+      async function saveEventEdit() {
+        if (!editingEvent) return;
+        const timestamp = parseManualDateTime(
+          $("eventEditTime").value,
+          "Choose a valid event time.",
+        ).toISOString();
+        const payload = {
+          action: "updateEntry",
+          id: editingEvent.id,
+          timestamp,
+          recordedBy: currentUser,
+        };
+        if (editingEvent.type === "Feed") {
+          const amount = Number($("editFeedAmount").value);
+          if (!Number.isFinite(amount) || amount <= 0)
+            return showToast("Enter the ounces.", true);
+          payload.amount = amount;
+        } else if (editingEvent.type === "Medicine") {
+          const medicine = $("editMedicineName").value.trim(),
+            amount = Number($("editMedicineAmount").value),
+            unit = $("editMedicineUnit").value;
+          if (!medicine) return showToast("Enter the medicine name.", true);
+          if (!Number.isFinite(amount) || amount <= 0)
+            return showToast("Enter the dose.", true);
+          Object.assign(payload, { medicine, amount, unit });
+        } else if (editingEvent.type === "Diaper") {
+          payload.details = selectedEditDiaper;
+        }
+        await commitWrite(payload, {
+          label: `Edit ${editingEvent.type}`,
+          successMessage: "Changes saved",
+        });
+        closeModal("eventEditBackdrop");
+      }
+      async function deleteEventEntry() {
+        if (
+          !editingEvent ||
+          !confirm(`Delete this ${editingEvent.type.toLowerCase()} entry?`)
+        )
+          return;
+        const id = editingEvent.id;
+        await commitWrite(
+          { action: "deleteEntry", id },
+          { label: "Delete entry", successMessage: "Entry deleted" },
+        );
+        closeModal("eventEditBackdrop");
+      }
 
+      /* ---------- settings / setup ---------- */
+      function populateHourSelect(selectId) {
+        const el = $(selectId);
+        el.innerHTML = "";
+        for (let h = 0; h < 24; h++) {
+          const d = new Date();
+          d.setHours(h, 0, 0, 0);
+          const o = document.createElement("option");
+          o.value = String(h);
+          o.textContent = d.toLocaleTimeString([], { hour: "numeric" });
+          el.appendChild(o);
+        }
+      }
+      function openSettings() {
+        if (!currentUser || !familyKey) return openSetup();
+        selectedSettingsUser = currentUser;
+        document
+          .querySelectorAll(".settings-person")
+          .forEach((b) =>
+            b.classList.toggle(
+              "selected",
+              b.dataset.settingsPerson === selectedSettingsUser,
+            ),
+          );
+        $("wakeTargetMinutes").value = settings.wakeTargetMinutes ?? "";
+        $("napStartHour").value = String(settings.napStartHour);
+        $("napEndHour").value = String(settings.napEndHour);
+        $("milkDisplayUnit").value = settings.milkDisplayUnit;
+        const standalone =
+          window.navigator.standalone === true ||
+          window.matchMedia("(display-mode: standalone)").matches;
+        $("homeScreenStatus").textContent = standalone
+          ? "Running from the Home Screen / standalone mode."
+          : "Currently running in the browser.";
+        updateSyncLabels();
+        openModal("settingsBackdrop");
+      }
+      async function saveSettings() {
+        const targetRaw = $("wakeTargetMinutes").value.trim(),
+          napStart = Number($("napStartHour").value),
+          napEnd = Number($("napEndHour").value);
+        if (napStart === napEnd)
+          return showToast("Nap start and end times must be different.", true);
+        settings = {
+          wakeTargetMinutes: targetRaw === "" ? null : Number(targetRaw),
+          napStartHour: napStart,
+          napEndHour: napEnd,
+          milkDisplayUnit: $("milkDisplayUnit").value,
+        };
+        currentUser = selectedSettingsUser || currentUser;
+        localStorage.setItem(STORAGE.user, currentUser);
+        saveSettingsLocal();
+        closeModal("settingsBackdrop");
+        render();
+        try {
+          await refreshState(false);
+        } catch (_) {}
+        showToast("Settings saved");
+      }
       function openSetup() {
         selectedSetupUser = currentUser;
-
-        document.querySelectorAll(".person-option").forEach((button) => {
-          button.classList.toggle(
-            "selected",
-            button.dataset.person === selectedSetupUser,
+        document
+          .querySelectorAll(".setup-person")
+          .forEach((b) =>
+            b.classList.toggle(
+              "selected",
+              b.dataset.person === selectedSetupUser,
+            ),
           );
-        });
-
         $("familyCode").value = familyKey;
         $("setupClose").style.display = currentUser && familyKey ? "" : "none";
         openModal("setupBackdrop");
       }
-
       async function saveSetup() {
         const key = $("familyCode").value.trim();
-
-        if (!selectedSetupUser) {
-          showToast("Choose Michael or Alison.", true);
-          return;
-        }
-
-        if (!key) {
-          showToast("Enter the family code.", true);
-          return;
-        }
-
+        if (!selectedSetupUser)
+          return showToast("Choose Michael or Alison.", true);
+        if (!key) return showToast("Enter the family code.", true);
         const button = $("saveSetup");
         button.disabled = true;
         button.textContent = "Connecting…";
-
         try {
           const data = await jsonpState(key);
-
           currentUser = selectedSetupUser;
           familyKey = key;
-
           localStorage.setItem(STORAGE.user, currentUser);
           localStorage.setItem(STORAGE.key, familyKey);
-
           appState = {
             activeSleep: data.activeSleep || null,
             recent: data.recent || [],
-            today: data.today || appState.today,
-            sleepSummary: data.sleepSummary || appState.sleepSummary,
-            lastEvents: data.lastEvents || appState.lastEvents,
+            today: data.today || emptyState().today,
+            rolling24: data.rolling24 || emptyState().rolling24,
+            sleepSummary: data.sleepSummary || emptyState().sleepSummary,
+            lastEvents: data.lastEvents || emptyState().lastEvents,
           };
-
           lastSyncAt = new Date();
           closeModal("setupBackdrop");
           render();
           showToast(`Connected as ${currentUser}`);
+          await flushPendingQueue(false);
         } catch (error) {
           showToast(error.message, true);
         } finally {
@@ -2270,31 +2842,20 @@
           button.textContent = "Connect Phone";
         }
       }
-
-      /* ============================================================
-   HOME SCREEN TIP
-   ============================================================ */
-
-      function maybeShowInstallTip() {
-        const ua = navigator.userAgent || "";
-        const isiOS = /iPhone|iPad|iPod/i.test(ua);
-        const standalone =
-          window.navigator.standalone === true ||
-          window.matchMedia("(display-mode: standalone)").matches;
-        const dismissed =
-          localStorage.getItem(STORAGE.installDismissed) === "1";
-
-        if (isiOS && !standalone && !dismissed) {
+      function maybeShowInstallTip(force = false) {
+        const ua = navigator.userAgent || "",
+          isiOS = /iPhone|iPad|iPod/i.test(ua),
+          standalone =
+            window.navigator.standalone === true ||
+            window.matchMedia("(display-mode: standalone)").matches,
+          dismissed = localStorage.getItem(STORAGE.installDismissed) === "1";
+        if ((force || isiOS) && !standalone && (force || !dismissed))
           $("installTip").classList.add("show");
-        }
       }
 
-      /* ============================================================
-   EVENTS
-   ============================================================ */
-
+      /* ---------- events ---------- */
       $("sleepButton").addEventListener("click", () =>
-        handleSleep().catch((error) => showToast(error.message, true)),
+        handleSleep().catch(() => {}),
       );
       $("pastSleepButton").addEventListener("click", openNewPastSleep);
       $("editActiveSleep").addEventListener("click", () =>
@@ -2303,34 +2864,32 @@
       $("feedButton").addEventListener("click", openFeed);
       $("diaperButton").addEventListener("click", openDiaper);
       $("medicineButton").addEventListener("click", openMedicine);
-      $("personChip").addEventListener("click", openSetup);
-
+      $("personChip").addEventListener("click", openSettings);
       $("feedMinus").addEventListener("click", () => adjustFeed(-0.5));
       $("feedPlus").addEventListener("click", () => adjustFeed(0.5));
-      $("feedNow").addEventListener("click", () => setFeedTimeMode(true));
-      $("feedManual").addEventListener("click", () => setFeedTimeMode(false));
-      $("saveFeed").addEventListener("click", () =>
-        saveFeed().catch((error) => showToast(error.message, true)),
+      $("feedNow").addEventListener("click", () => setTimeMode("feed", true));
+      $("feedManual").addEventListener("click", () =>
+        setTimeMode("feed", false),
       );
-
+      $("saveFeed").addEventListener("click", () => saveFeed().catch(() => {}));
       $("medicineNow").addEventListener("click", () =>
-        setMedicineTimeMode(true),
+        setTimeMode("medicine", true),
       );
       $("medicineManual").addEventListener("click", () =>
-        setMedicineTimeMode(false),
+        setTimeMode("medicine", false),
       );
       $("saveMedicine").addEventListener("click", () =>
-        saveMedicine().catch((error) => showToast(error.message, true)),
+        saveMedicine().catch(() => {}),
       );
-
-      $("diaperNow").addEventListener("click", () => setDiaperTimeMode(true));
+      $("diaperNow").addEventListener("click", () =>
+        setTimeMode("diaper", true),
+      );
       $("diaperManual").addEventListener("click", () =>
-        setDiaperTimeMode(false),
+        setTimeMode("diaper", false),
       );
       $("saveDiaper").addEventListener("click", () =>
-        saveDiaper().catch((error) => showToast(error.message, true)),
+        saveDiaper().catch(() => {}),
       );
-
       $("sleepEndedOption").addEventListener("click", () =>
         setSleepStatus(false),
       );
@@ -2338,97 +2897,137 @@
         setSleepStatus(true),
       );
       $("saveSleepEdit").addEventListener("click", () =>
-        saveSleepCorrection().catch((error) => showToast(error.message, true)),
+        saveSleepCorrection().catch(() => {}),
       );
-
-      $("historyList").addEventListener("click", (event) => {
-        const row = event.target.closest("[data-sleep-id]");
+      $("deleteSleep").addEventListener("click", () =>
+        deleteSleepEntry().catch(() => {}),
+      );
+      $("saveEventEdit").addEventListener("click", () =>
+        saveEventEdit().catch(() => {}),
+      );
+      $("deleteEvent").addEventListener("click", () =>
+        deleteEventEntry().catch(() => {}),
+      );
+      $("historyList").addEventListener("click", (e) => {
+        const row = e.target.closest("[data-event-id]");
         if (!row) return;
-        const item = getHistoryItem(row.dataset.sleepId);
+        const item = getHistoryItem(row.dataset.eventId);
+        if (item) openEventEdit(item);
+      });
+      $("napList").addEventListener("click", (e) => {
+        const row = e.target.closest("[data-event-id]");
+        if (!row) return;
+        const item = getHistoryItem(row.dataset.eventId);
         if (item) openSleepCorrection(item);
       });
-
-      $("napList").addEventListener("click", (event) => {
-        const row = event.target.closest("[data-nap-id]");
+      $("detailList").addEventListener("click", (e) => {
+        const row = e.target.closest("[data-event-id]");
         if (!row) return;
-
-        const naps =
-          appState.sleepSummary &&
-          Array.isArray(appState.sleepSummary.napsToday)
-            ? appState.sleepSummary.napsToday
-            : [];
-
-        const item = naps.find((nap) => nap.id === row.dataset.napId);
-
+        const item = getHistoryItem(row.dataset.eventId);
         if (item) {
-          openSleepCorrection(item);
+          closeModal("detailBackdrop");
+          openEventEdit(item);
         }
       });
-
-      document.querySelectorAll("[data-close]").forEach((button) => {
-        button.addEventListener("click", () =>
-          closeModal(button.dataset.close),
+      $("lastNightStat").addEventListener("click", () => openDetail("night"));
+      $("napsStat").addEventListener("click", () => openDetail("naps"));
+      $("milkStat").addEventListener("click", () => openDetail("milk"));
+      $("feedsStat").addEventListener("click", () => openDetail("feeds"));
+      $("diapersStat").addEventListener("click", () => openDetail("diapers"));
+      document
+        .querySelectorAll("[data-close]")
+        .forEach((b) =>
+          b.addEventListener("click", () => closeModal(b.dataset.close)),
         );
-      });
-
-      document.querySelectorAll(".person-option").forEach((button) => {
-        button.addEventListener("click", () => {
-          selectedSetupUser = button.dataset.person;
-          document.querySelectorAll(".person-option").forEach((option) => {
-            option.classList.toggle("selected", option === button);
-          });
-        });
-      });
-
-      document.querySelectorAll(".diaper-option").forEach((button) => {
-        button.addEventListener("click", () => {
-          selectedDiaper = button.dataset.diaper;
-          document.querySelectorAll(".diaper-option").forEach((option) => {
-            option.classList.toggle("selected", option === button);
-          });
-        });
-      });
-
+      document.querySelectorAll(".setup-person").forEach((b) =>
+        b.addEventListener("click", () => {
+          selectedSetupUser = b.dataset.person;
+          document
+            .querySelectorAll(".setup-person")
+            .forEach((o) => o.classList.toggle("selected", o === b));
+        }),
+      );
+      document.querySelectorAll(".settings-person").forEach((b) =>
+        b.addEventListener("click", () => {
+          selectedSettingsUser = b.dataset.settingsPerson;
+          document
+            .querySelectorAll(".settings-person")
+            .forEach((o) => o.classList.toggle("selected", o === b));
+        }),
+      );
+      document
+        .querySelectorAll(".diaper-option:not(.diaper-edit-option)")
+        .forEach((b) =>
+          b.addEventListener("click", () => {
+            selectedDiaper = b.dataset.diaper;
+            document
+              .querySelectorAll(".diaper-option:not(.diaper-edit-option)")
+              .forEach((o) => o.classList.toggle("selected", o === b));
+          }),
+        );
+      document.querySelectorAll(".diaper-edit-option").forEach((b) =>
+        b.addEventListener("click", () => {
+          selectedEditDiaper = b.dataset.editDiaper;
+          renderEditDiaperOptions();
+        }),
+      );
       $("saveSetup").addEventListener("click", saveSetup);
       $("setupClose").addEventListener("click", () =>
         closeModal("setupBackdrop"),
       );
-
+      $("saveSettings").addEventListener("click", () =>
+        saveSettings().catch(() => {}),
+      );
+      $("reconnectButton").addEventListener("click", () => {
+        closeModal("settingsBackdrop");
+        openSetup();
+      });
+      $("showInstallTip").addEventListener("click", () => {
+        localStorage.removeItem(STORAGE.installDismissed);
+        closeModal("settingsBackdrop");
+        maybeShowInstallTip(true);
+      });
       $("installDismiss").addEventListener("click", () => {
         localStorage.setItem(STORAGE.installDismissed, "1");
         $("installTip").classList.remove("show");
       });
+      $("retrySync").addEventListener("click", () => flushPendingQueue(true));
+      $("undoButton").addEventListener("click", async () => {
+        const cb = undoCallback;
+        hideUndo();
+        if (cb)
+          try {
+            await cb();
+          } catch (error) {
+            showToast(error.message, true);
+          }
+      });
 
-      /* ============================================================
-   AUTO SYNC
-   ============================================================ */
-
+      window.addEventListener("online", () => {
+        updateSyncLabels();
+        flushPendingQueue(true);
+      });
+      window.addEventListener("offline", () => updateSyncLabels());
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden && currentUser && familyKey && !busy) {
+          flushPendingQueue(false);
           refreshState(false).catch(() => {});
         }
       });
-
-      // Keep the live sleep/awake duration current between server syncs.
-      // We only display whole minutes, so a 10-second UI refresh is plenty.
-      setInterval(() => {
-        render();
-      }, 10000);
-
+      setInterval(() => render(), 10000);
       setInterval(() => {
         if (!document.hidden && currentUser && familyKey && !busy) {
+          flushPendingQueue(false);
           refreshState(false).catch(() => {});
         }
       }, 30000);
 
-      /* ============================================================
-   BOOT
-   ============================================================ */
-
       async function boot() {
+        populateHourSelect("napStartHour");
+        populateHourSelect("napEndHour");
         render();
+        renderPending();
         maybeShowInstallTip();
-
         if (!currentUser || !familyKey) {
           openSetup();
           $("statusMain").textContent = "Set up phone";
@@ -2436,17 +3035,16 @@
             "Choose a user and enter the family code";
           return;
         }
-
         try {
           await refreshState(false);
+          await flushPendingQueue(false);
         } catch (_) {
           showToast(
-            "Could not sync. Tap your name to check the family code.",
+            "Could not sync. Your phone will keep pending changes locally.",
             true,
           );
         }
       }
-
       boot();
     </script>
   </body>
