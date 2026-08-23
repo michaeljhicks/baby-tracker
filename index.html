@@ -15,7 +15,7 @@
     />
     <meta name="apple-mobile-web-app-title" content="Baby Tracker" />
     <title>Baby Tracker</title>
-    <!-- Baby Tracker UI v2.1 -->
+    <!-- Baby Tracker UI v2.3 -->
 
     <style>
       :root {
@@ -31,6 +31,10 @@
         --sleep-2: #7a68f4;
         --feed: #8de7c9;
         --feed-2: #59cda8;
+        --diaper: #ffd786;
+        --diaper-2: #f5bd5d;
+        --medicine: #f5aec8;
+        --medicine-2: #df86aa;
         --warm: #ffd38d;
         --danger: #ffb0b0;
         --shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
@@ -172,9 +176,9 @@
 
       .stats {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(6, 1fr);
         gap: 8px;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
       }
 
       .stat {
@@ -183,6 +187,13 @@
         border-radius: 18px;
         padding: 13px 10px;
         min-width: 0;
+      }
+
+      .stat-primary {
+        grid-column: span 3;
+      }
+      .stat-secondary {
+        grid-column: span 2;
       }
 
       .stat-value {
@@ -194,11 +205,86 @@
         text-overflow: ellipsis;
       }
 
+      .stat-primary .stat-value {
+        font-size: 22px;
+      }
+
       .stat-label {
         color: var(--muted);
         font-size: 10px;
         font-weight: 800;
         margin-top: 3px;
+        white-space: nowrap;
+      }
+
+      .stat-meta {
+        color: #747d90;
+        font-size: 9px;
+        font-weight: 750;
+        margin-top: 2px;
+        min-height: 11px;
+      }
+
+      .nap-breakdown {
+        border: 1px solid var(--line);
+        background: var(--panel-3);
+        border-radius: 18px;
+        padding: 12px 14px;
+        margin: 0 0 12px;
+        display: none;
+      }
+
+      .nap-breakdown.show {
+        display: block;
+      }
+
+      .nap-breakdown-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+
+      .nap-breakdown-head strong {
+        font-size: 12px;
+        font-weight: 850;
+      }
+
+      .nap-breakdown-head span {
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 750;
+      }
+
+      .nap-row {
+        width: 100%;
+        border: 0;
+        border-top: 1px solid var(--line);
+        background: transparent;
+        color: var(--text);
+        padding: 9px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .nap-row:first-child {
+        border-top: 0;
+      }
+
+      .nap-row-time {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .nap-row-duration {
+        font-size: 12px;
+        font-weight: 850;
         white-space: nowrap;
       }
 
@@ -225,8 +311,7 @@
       .action-button:active {
         transform: scale(0.985);
       }
-      .action-button:disabled,
-      .compact-action:disabled {
+      .action-button:disabled {
         opacity: 0.5;
         cursor: default;
       }
@@ -267,31 +352,15 @@
       .feed-button {
         background: linear-gradient(135deg, #a9efd9, var(--feed));
       }
-
-      .compact-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
+      .diaper-button {
+        background: linear-gradient(135deg, #ffe4aa, var(--diaper));
+      }
+      .medicine-button {
+        background: linear-gradient(135deg, #ffc6da, var(--medicine));
       }
 
-      .compact-action {
-        min-height: 68px;
-        border: 1px solid var(--line);
-        background: var(--panel);
-        color: var(--text);
-        border-radius: 19px;
-        padding: 0 16px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        font-weight: 850;
-        cursor: pointer;
-      }
-
-      .compact-action span:last-child {
-        color: var(--muted);
-        font-size: 18px;
+      .action-button .sub:empty {
+        display: none;
       }
 
       .past-sleep-button {
@@ -649,7 +718,10 @@
 
       @media (max-width: 390px) {
         .stat-value {
-          font-size: 17px;
+          font-size: 16px;
+        }
+        .stat-primary .stat-value {
+          font-size: 19px;
         }
         .stat {
           padding: 12px 8px;
@@ -685,23 +757,45 @@
         <div class="status-sub" id="statusSub">Checking the shared log</div>
       </section>
 
-      <section class="stats" aria-label="Today's totals">
-        <div class="stat">
-          <div class="stat-value" id="statSleep">0m</div>
-          <div class="stat-label">Sleep</div>
+      <section class="stats" aria-label="Baby totals">
+        <div class="stat stat-primary">
+          <div class="stat-value" id="statLastNight">0m</div>
+          <div class="stat-label">Sleep Last Night</div>
+          <div class="stat-meta">Night sleep</div>
         </div>
-        <div class="stat">
+
+        <div class="stat stat-primary">
+          <div class="stat-value" id="statNaps">0m</div>
+          <div class="stat-label">Naps Today</div>
+          <div class="stat-meta" id="statNapCount">0 naps</div>
+        </div>
+
+        <div class="stat stat-secondary">
           <div class="stat-value" id="statMilk">0 oz</div>
-          <div class="stat-label">Milk</div>
+          <div class="stat-label">Milk Today</div>
         </div>
-        <div class="stat">
+
+        <div class="stat stat-secondary">
           <div class="stat-value" id="statFeeds">0</div>
-          <div class="stat-label">Feeds</div>
+          <div class="stat-label">Feeds Today</div>
         </div>
-        <div class="stat">
+
+        <div class="stat stat-secondary">
           <div class="stat-value" id="statDiapers">0</div>
-          <div class="stat-label">Diapers</div>
+          <div class="stat-label">Diapers Today</div>
         </div>
+      </section>
+
+      <section
+        class="nap-breakdown"
+        id="napBreakdown"
+        aria-label="Today's naps"
+      >
+        <div class="nap-breakdown-head">
+          <strong>Today's naps</strong>
+          <span id="napBreakdownTotal"></span>
+        </div>
+        <div id="napList"></div>
       </section>
 
       <section class="actions">
@@ -722,18 +816,28 @@
         <button class="action-button feed-button" id="feedButton" type="button">
           <span class="eyebrow">Bottle</span>
           <span class="title">Feed</span>
-          <span class="sub">Record breastmilk ounces</span>
+          <span class="sub" id="feedSub">Record breastmilk ounces</span>
         </button>
 
-        <div class="compact-grid">
-          <button class="compact-action" id="diaperButton" type="button">
-            <span>Diaper</span><span>›</span>
-          </button>
+        <button
+          class="action-button diaper-button"
+          id="diaperButton"
+          type="button"
+        >
+          <span class="eyebrow">Care</span>
+          <span class="title">Diaper</span>
+          <span class="sub" id="diaperSub">Record a diaper change</span>
+        </button>
 
-          <button class="compact-action" id="medicineButton" type="button">
-            <span>Medicine</span><span>›</span>
-          </button>
-        </div>
+        <button
+          class="action-button medicine-button"
+          id="medicineButton"
+          type="button"
+        >
+          <span class="eyebrow">Meds</span>
+          <span class="title">Medicine</span>
+          <span class="sub" id="medicineSub"></span>
+        </button>
       </section>
 
       <div class="section-title">
@@ -1020,6 +1124,13 @@
       const API_URL =
         "https://script.google.com/macros/s/AKfycbxDavCMbRwi4e6wLWmGPy8D1SCdVaBDEK-V2ZHVhl7QG8HmdYu5YdNDwsSJAKESDGti/exec";
 
+      // Sleep classification is based on the sleep START time.
+      // Change these two numbers later if your preferred nap window changes.
+      const SLEEP_SETTINGS = Object.freeze({
+        napStartHour: 6,
+        napEndHour: 18,
+      });
+
       /* ============================================================
    LOCAL STORAGE
    ============================================================ */
@@ -1049,6 +1160,17 @@
           wetDiapers: 0,
           dirtyDiapers: 0,
           medicine: 0,
+        },
+        sleepSummary: {
+          lastNightMinutes: 0,
+          napMinutesToday: 0,
+          napCountToday: 0,
+          napsToday: [],
+        },
+        lastEvents: {
+          feed: null,
+          diaper: null,
+          medicine: null,
         },
       };
 
@@ -1142,6 +1264,65 @@
         d.setHours(0, 0, 0, 0);
         d.setDate(d.getDate() + 1);
         return d.toISOString();
+      }
+
+      function sleepAnalyticsRanges() {
+        const now = new Date();
+
+        const napStart = new Date(now);
+        napStart.setHours(SLEEP_SETTINGS.napStartHour, 0, 0, 0);
+
+        const napEnd = new Date(now);
+        napEnd.setHours(SLEEP_SETTINGS.napEndHour, 0, 0, 0);
+
+        // "Last night" is the overnight period that began the prior evening
+        // and runs through this morning. After midnight it naturally includes
+        // the currently-running overnight sleep.
+        const nightEnd = new Date(now);
+        nightEnd.setHours(SLEEP_SETTINGS.napStartHour, 0, 0, 0);
+
+        const nightStart = new Date(nightEnd);
+        nightStart.setDate(nightStart.getDate() - 1);
+        nightStart.setHours(SLEEP_SETTINGS.napEndHour, 0, 0, 0);
+
+        return {
+          napStart: napStart.toISOString(),
+          napEnd: napEnd.toISOString(),
+          nightStart: nightStart.toISOString(),
+          nightEnd: nightEnd.toISOString(),
+        };
+      }
+
+      function isDaytimeNap(iso) {
+        if (!iso) return false;
+
+        const date = new Date(iso);
+        const hour = date.getHours();
+
+        return (
+          hour >= SLEEP_SETTINGS.napStartHour &&
+          hour < SLEEP_SETTINGS.napEndHour
+        );
+      }
+
+      function formatEventTime(iso) {
+        if (!iso) return "";
+
+        const date = new Date(iso);
+        const now = new Date();
+
+        if (date.toDateString() === now.toDateString()) {
+          return formatClock(iso);
+        }
+
+        const yesterday = new Date(now);
+        yesterday.setDate(now.getDate() - 1);
+
+        if (date.toDateString() === yesterday.toDateString()) {
+          return `Yesterday ${formatClock(iso)}`;
+        }
+
+        return `${date.toLocaleDateString([], { month: "short", day: "numeric" })} ${formatClock(iso)}`;
       }
 
       function formatClock(iso) {
@@ -1296,12 +1477,18 @@
             reject(new Error("Could not load Baby Tracker data."));
           };
 
+          const sleepRanges = sleepAnalyticsRanges();
+
           const query = new URLSearchParams({
             action: "state",
             key: keyOverride,
             callback: callbackName,
             dayStart: startOfLocalDayIso(),
             dayEnd: endOfLocalDayIso(),
+            napStart: sleepRanges.napStart,
+            napEnd: sleepRanges.napEnd,
+            nightStart: sleepRanges.nightStart,
+            nightEnd: sleepRanges.nightEnd,
             _: String(Date.now()),
           });
 
@@ -1354,6 +1541,8 @@
             activeSleep: data.activeSleep || null,
             recent: Array.isArray(data.recent) ? data.recent : [],
             today: data.today || appState.today,
+            sleepSummary: data.sleepSummary || appState.sleepSummary,
+            lastEvents: data.lastEvents || appState.lastEvents,
           };
 
           lastSyncAt = new Date();
@@ -1401,6 +1590,7 @@
 
       function render() {
         const now = new Date();
+
         $("todayLabel").textContent = now.toLocaleDateString([], {
           weekday: "short",
           month: "short",
@@ -1409,20 +1599,39 @@
 
         $("personChip").textContent = currentUser || "Setup";
 
+        const lastFeed =
+          appState.lastEvents.feed ||
+          appState.recent.find((item) => item.type === "Feed");
+
+        const lastDiaper =
+          appState.lastEvents.diaper ||
+          appState.recent.find((item) => item.type === "Diaper");
+
+        const lastMedicine = appState.lastEvents.medicine || null;
+
         if (appState.activeSleep) {
-          $("statusLabel").textContent = "Sleeping now";
+          $("statusLabel").textContent = isDaytimeNap(
+            appState.activeSleep.startTime,
+          )
+            ? "Napping now"
+            : "Sleeping now";
+
           $("statusMain").textContent = formatDuration(activeSleepMinutes());
           $("statusSub").textContent =
             `Started ${formatClock(appState.activeSleep.startTime)} · ${appState.activeSleep.recordedBy || "Recorded"}`;
           $("editActiveSleep").classList.add("show");
 
           $("sleepButton").classList.add("active");
-          $("sleepEyebrow").textContent = "Sleep in progress";
+          $("sleepEyebrow").textContent = isDaytimeNap(
+            appState.activeSleep.startTime,
+          )
+            ? "Nap in progress"
+            : "Sleep in progress";
+
           $("sleepTitle").textContent = "End Sleep";
           $("sleepSub").textContent =
             `Started at ${formatClock(appState.activeSleep.startTime)}`;
         } else {
-          const lastFeed = appState.recent.find((item) => item.type === "Feed");
           const lastSleep = getLastCompletedSleep();
           const awakeMinutes = awakeMinutesSinceLastSleep();
 
@@ -1441,6 +1650,7 @@
             $("statusMain").textContent = lastFeed
               ? `Last feed ${formatClock(lastFeed.startTime)}`
               : "All caught up";
+
             $("statusSub").textContent = lastFeed
               ? `${lastFeed.amount} oz · ${formatDateShort(lastFeed.startTime)}`
               : "Tap Sleep or Feed to record an event";
@@ -1454,15 +1664,45 @@
           $("sleepSub").textContent = "Timestamp the start now";
         }
 
-        $("statSleep").textContent = formatDuration(
-          appState.today.sleepMinutes || 0,
+        // Sleep has its own day/night logic instead of resetting at midnight.
+        const sleepSummary = appState.sleepSummary || {};
+
+        $("statLastNight").textContent = formatDuration(
+          sleepSummary.lastNightMinutes || 0,
         );
+
+        $("statNaps").textContent = formatDuration(
+          sleepSummary.napMinutesToday || 0,
+        );
+
+        const napCount = Number(sleepSummary.napCountToday || 0);
+        $("statNapCount").textContent =
+          `${napCount} ${napCount === 1 ? "nap" : "naps"}`;
+
+        // Feed/diaper totals remain normal midnight-to-midnight daily totals.
         $("statMilk").textContent =
           `${Number(appState.today.feedOunces || 0).toLocaleString([], { maximumFractionDigits: 2 })} oz`;
+
         $("statFeeds").textContent = String(appState.today.feeds || 0);
+
         $("statDiapers").textContent = String(appState.today.diapers || 0);
 
-        const recent = appState.recent.slice(0, 10);
+        // Last-event details directly on the action cards.
+        $("feedSub").textContent = lastFeed
+          ? `Last Feeding: ${formatEventTime(lastFeed.startTime)} | ${lastFeed.amount} oz`
+          : "Record breastmilk ounces";
+
+        $("diaperSub").textContent = lastDiaper
+          ? `Last Diaper Change: ${lastDiaper.details || "Diaper"} | ${formatEventTime(lastDiaper.startTime)}`
+          : "Record a diaper change";
+
+        $("medicineSub").textContent = lastMedicine
+          ? `Last Meds: ${lastMedicine.medicine || "Medicine"} (${lastMedicine.amount} ${lastMedicine.unit}) | ${formatEventTime(lastMedicine.startTime)}`
+          : "";
+
+        renderNapBreakdown();
+
+        const recent = appState.recent.slice(0, 12);
 
         $("historyList").innerHTML = recent.length
           ? recent.map(historyRow).join("")
@@ -1474,6 +1714,54 @@
         } else {
           $("syncStatus").textContent = "Connecting";
         }
+      }
+
+      function renderNapBreakdown() {
+        const naps =
+          appState.sleepSummary &&
+          Array.isArray(appState.sleepSummary.napsToday)
+            ? appState.sleepSummary.napsToday
+            : [];
+
+        const section = $("napBreakdown");
+        const list = $("napList");
+
+        if (!naps.length) {
+          section.classList.remove("show");
+          list.innerHTML = "";
+          return;
+        }
+
+        const total = appState.sleepSummary.napMinutesToday || 0;
+        const count = naps.length;
+
+        $("napBreakdownTotal").textContent =
+          `${count} ${count === 1 ? "nap" : "naps"} · ${formatDuration(total)}`;
+
+        list.innerHTML = naps
+          .map((nap) => {
+            const active = !nap.endTime;
+            const endLabel = active ? "Now" : formatClock(nap.endTime);
+
+            const duration = active
+              ? Math.max(
+                  0,
+                  Math.floor(
+                    (Date.now() - new Date(nap.startTime).getTime()) / 60000,
+                  ),
+                )
+              : Number(nap.durationMinutes || 0);
+
+            return `
+      <button class="nap-row" type="button" data-nap-id="${escapeHtml(nap.id)}">
+        <span class="nap-row-time">
+          ${formatClock(nap.startTime)}–${endLabel}${active ? " · Snoozing" : ""}
+        </span>
+        <span class="nap-row-duration">${formatDuration(duration)}</span>
+      </button>
+    `;
+          })
+          .join("");
       }
 
       function historyRow(item) {
@@ -1489,8 +1777,17 @@
         }
 
         if (item.type === "Sleep") {
-          icon = "☾";
-          name = item.endTime ? "Sleep" : "Sleeping";
+          const nap = isDaytimeNap(item.startTime);
+
+          icon = nap ? "☀︎" : "☾";
+          name = item.endTime
+            ? nap
+              ? "Nap"
+              : "Night Sleep"
+            : nap
+              ? "Napping"
+              : "Sleeping";
+
           detail = item.endTime
             ? `${formatDuration(item.durationMinutes)} · ${formatClock(item.startTime)}–${formatClock(item.endTime)}`
             : `Started ${formatClock(item.startTime)} · ${escapeHtml(item.recordedBy)}`;
@@ -1958,6 +2255,8 @@
             activeSleep: data.activeSleep || null,
             recent: data.recent || [],
             today: data.today || appState.today,
+            sleepSummary: data.sleepSummary || appState.sleepSummary,
+            lastEvents: data.lastEvents || appState.lastEvents,
           };
 
           lastSyncAt = new Date();
@@ -2047,6 +2346,23 @@
         if (!row) return;
         const item = getHistoryItem(row.dataset.sleepId);
         if (item) openSleepCorrection(item);
+      });
+
+      $("napList").addEventListener("click", (event) => {
+        const row = event.target.closest("[data-nap-id]");
+        if (!row) return;
+
+        const naps =
+          appState.sleepSummary &&
+          Array.isArray(appState.sleepSummary.napsToday)
+            ? appState.sleepSummary.napsToday
+            : [];
+
+        const item = naps.find((nap) => nap.id === row.dataset.napId);
+
+        if (item) {
+          openSleepCorrection(item);
+        }
       });
 
       document.querySelectorAll("[data-close]").forEach((button) => {
