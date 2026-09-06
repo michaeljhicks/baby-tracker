@@ -15,7 +15,7 @@
     />
     <meta name="apple-mobile-web-app-title" content="Baby Tracker" />
     <title>Baby Tracker</title>
-    <!-- Baby Tracker UI v2.7.2 -->
+    <!-- Baby Tracker UI v2.7.3 -->
     <style>
       :root {
         color-scheme: dark;
@@ -1050,6 +1050,19 @@
         background: linear-gradient(135deg, var(--baby2-a), var(--baby2-b));
         color: #0e1714;
       }
+      .dashboard-baby-age {
+        display: none;
+        align-items: center;
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1;
+        font-weight: 850;
+        white-space: nowrap;
+        letter-spacing: 0.01em;
+      }
+      .dashboard-baby-age.show {
+        display: inline-flex;
+      }
       .hero.baby-one {
         border-color: rgba(125, 158, 239, 0.24);
       }
@@ -1462,6 +1475,11 @@
             <span class="dashboard-baby-badge baby-one" id="dashboardBabyBadge"
               >Malcolm</span
             >
+            <span
+              class="dashboard-baby-age"
+              id="dashboardBabyAge"
+              aria-label="Baby age"
+            ></span>
             <span class="status-label" id="statusLabel">Current status</span>
           </div>
           <button class="edit-active" id="editActiveSleep" type="button">
@@ -2013,6 +2031,14 @@
           />
         </div>
         <div class="field">
+          <label>Date of birth</label
+          ><input class="input" id="babyDobSetting" type="date" />
+          <div class="field-help">
+            Used to show this baby's age on the dashboard. This is shared with
+            every connected phone.
+          </div>
+        </div>
+        <div class="field">
           <label>Wake-window planning target</label
           ><input
             class="input"
@@ -2039,8 +2065,9 @@
           </div>
         </div>
         <div class="shared-note">
-          Baby name and sleep-planning settings are shared with every connected
-          phone. Milk display units remain a preference for this device only.
+          Baby name, date of birth, and sleep-planning settings are shared with
+          every connected phone. Milk display units remain a preference for this
+          device only.
         </div>
         <div class="field">
           <label>Milk display units</label
@@ -2215,6 +2242,7 @@
             {
               id: "baby1",
               name: "Malcolm",
+              dateOfBirth: "",
               wakeTargetMinutes: null,
               napStartHour: 6,
               napEndHour: 18,
@@ -2222,6 +2250,7 @@
             {
               id: "baby2",
               name: "Baby 2",
+              dateOfBirth: "",
               wakeTargetMinutes: null,
               napStartHour: 6,
               napEndHour: 18,
@@ -2231,6 +2260,7 @@
           babySettings: {
             id: "baby1",
             name: "Malcolm",
+            dateOfBirth: "",
             wakeTargetMinutes: null,
             napStartHour: 6,
             napEndHour: 18,
@@ -2335,6 +2365,7 @@
           appState.babies[0] || {
             id: DEFAULTS.babyId,
             name: "Baby",
+            dateOfBirth: "",
             wakeTargetMinutes: null,
             napStartHour: 6,
             napEndHour: 18,
@@ -2369,6 +2400,57 @@
       function localDateTimeValue(date = new Date()) {
         const p = (n) => String(n).padStart(2, "0");
         return `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())}T${p(date.getHours())}:${p(date.getMinutes())}`;
+      }
+      function localDateValue(date = new Date()) {
+        const p = (n) => String(n).padStart(2, "0");
+        return `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())}`;
+      }
+      function parseDateOnlyLocal(value) {
+        const m = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return null;
+        const y = Number(m[1]),
+          mo = Number(m[2]) - 1,
+          d = Number(m[3]);
+        const dt = new Date(y, mo, d, 12, 0, 0, 0);
+        return dt.getFullYear() === y &&
+          dt.getMonth() === mo &&
+          dt.getDate() === d
+          ? dt
+          : null;
+      }
+      function addMonthsClamped(date, months) {
+        const targetMonth = date.getMonth() + months;
+        const y = date.getFullYear() + Math.floor(targetMonth / 12);
+        const m = ((targetMonth % 12) + 12) % 12;
+        const lastDay = new Date(y, m + 1, 0).getDate();
+        return new Date(y, m, Math.min(date.getDate(), lastDay), 12, 0, 0, 0);
+      }
+      function formatBabyAge(dateOfBirth) {
+        const birth = parseDateOnlyLocal(dateOfBirth);
+        if (!birth) return "";
+        const now = new Date();
+        const today = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          12,
+          0,
+          0,
+          0,
+        );
+        if (birth > today) return "";
+        let totalMonths =
+          (today.getFullYear() - birth.getFullYear()) * 12 +
+          (today.getMonth() - birth.getMonth());
+        if (addMonthsClamped(birth, totalMonths) > today) totalMonths--;
+        totalMonths = Math.max(0, totalMonths);
+        const years = Math.floor(totalMonths / 12),
+          months = totalMonths % 12;
+        if (years === 0 && months === 0) return "<1 mo";
+        const parts = [];
+        if (years > 0) parts.push(`${years} ${years === 1 ? "yr" : "yrs"}`);
+        if (months > 0) parts.push(`${months} mo`);
+        return parts.join(" ");
       }
       function parseManualDateTime(value, message) {
         const d = new Date(value);
@@ -3099,6 +3181,7 @@
           const baby = babyById(payload.babyId);
           if (baby) {
             baby.name = payload.name;
+            baby.dateOfBirth = String(payload.dateOfBirth || "");
             baby.wakeTargetMinutes =
               String(payload.wakeTargetMinutes ?? "").trim() === ""
                 ? null
@@ -3459,6 +3542,12 @@
           "style",
           babyInlineStyle(activeBaby.id, true),
         );
+        const babyAge = formatBabyAge(activeBaby.dateOfBirth);
+        $("dashboardBabyAge").textContent = babyAge;
+        $("dashboardBabyAge").classList.toggle("show", !!babyAge);
+        $("dashboardBabyAge").title = babyAge
+          ? `${activeBaby.name} is ${babyAge} old`
+          : "";
         $("heroCard").className = `hero ${babyClass}`;
 
         const lastFeed =
@@ -4338,6 +4427,8 @@
         setSettingsRole(roleForUser(currentUser));
         const baby = currentBaby();
         $("babyNameSetting").value = baby.name || "";
+        $("babyDobSetting").value = baby.dateOfBirth || "";
+        $("babyDobSetting").max = localDateValue();
         $("wakeTargetMinutes").value = settings.wakeTargetMinutes ?? "";
         $("napStartHour").value = String(settings.napStartHour);
         $("napEndHour").value = String(settings.napEndHour);
@@ -4356,8 +4447,16 @@
         const targetRaw = $("wakeTargetMinutes").value.trim(),
           napStart = Number($("napStartHour").value),
           napEnd = Number($("napEndHour").value),
-          babyName = $("babyNameSetting").value.trim();
+          babyName = $("babyNameSetting").value.trim(),
+          babyDob = $("babyDobSetting").value.trim();
         if (!babyName) return showToast("Enter the baby name.", true);
+        if (babyDob) {
+          const dob = parseDateOnlyLocal(babyDob),
+            today = parseDateOnlyLocal(localDateValue());
+          if (!dob) return showToast("Choose a valid date of birth.", true);
+          if (dob > today)
+            return showToast("Date of birth cannot be in the future.", true);
+        }
         if (napStart === napEnd)
           return showToast("Nap start and end times must be different.", true);
         if (
@@ -4384,6 +4483,7 @@
         localStorage.setItem(STORAGE.profileMigrated, "1");
         const baby = currentBaby();
         baby.name = babyName;
+        baby.dateOfBirth = babyDob;
         baby.wakeTargetMinutes = settings.wakeTargetMinutes;
         baby.napStartHour = napStart;
         baby.napEndHour = napEnd;
@@ -4392,6 +4492,7 @@
           action: "updateBaby",
           babyId: selectedBabyId,
           name: babyName,
+          dateOfBirth: babyDob,
           wakeTargetMinutes: targetRaw,
           napStartHour: napStart,
           napEndHour: napEnd,
