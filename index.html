@@ -318,6 +318,55 @@
         color: var(--sleep);
         font-weight: 850;
       }
+      .state-sub {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        white-space: normal;
+      }
+      .wake-plan-line {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-wrap: wrap;
+        color: #b9c1cf;
+      }
+      .wake-countdown {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 4px 8px;
+        background: rgba(141, 231, 201, 0.11);
+        border: 1px solid rgba(141, 231, 201, 0.24);
+        color: #aef0d9;
+        font-size: 11px;
+        font-weight: 950;
+        line-height: 1;
+      }
+      .wake-countdown.passed {
+        background: rgba(255, 211, 141, 0.09);
+        border-color: rgba(255, 211, 141, 0.25);
+        color: #ffdba0;
+      }
+      .wake-window-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+      }
+      .insight-preview {
+        margin: -4px 0 14px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.025);
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.45;
+      }
+      .insight-preview strong {
+        color: #c8cfda;
+        font-weight: 900;
+      }
 
       .section-title {
         font-size: 11px;
@@ -1456,15 +1505,36 @@
           ><input class="input" id="settingsDob" type="date" />
         </div>
         <div class="field">
-          <label>Wake-window planning target (minutes)</label
-          ><input
-            class="input"
-            id="settingsWake"
-            type="number"
-            min="0"
-            max="1440"
-            placeholder="Optional"
-          />
+          <label>Typical wake window</label>
+          <div class="wake-window-grid">
+            <input
+              class="input"
+              id="settingsWakeHours"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              max="24"
+              step="1"
+              placeholder="Hours"
+            /><input
+              class="input"
+              id="settingsWakeMinutes"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              max="59"
+              step="1"
+              placeholder="Minutes"
+            />
+          </div>
+          <p class="note" style="margin: 8px 0 0">
+            Used only as a planning target while this baby is awake. Leave both
+            blank to hide the countdown.
+          </p>
+        </div>
+        <div class="insight-preview" id="settingsWakeObserved">
+          As more sleep is logged, Insights can learn this baby's typical wake
+          pattern.
         </div>
         <div class="two-col">
           <div class="field">
@@ -2084,6 +2154,68 @@
           };
         }
 
+        function wakePlan(a, baby = currentBaby()) {
+          const target = Number(baby?.wake_target_minutes);
+          if (
+            !Number.isFinite(target) ||
+            target <= 0 ||
+            a?.active ||
+            !a?.lastSleep?.endTime
+          )
+            return null;
+          const wakeAt = new Date(a.lastSleep.endTime);
+          const targetAt = new Date(wakeAt.getTime() + target * 60000);
+          const remaining = Math.ceil(
+            (targetAt.getTime() - Date.now()) / 60000,
+          );
+          return {
+            targetMinutes: target,
+            wakeAt,
+            targetAt,
+            remainingMinutes: remaining,
+          };
+        }
+        function compactMinutes(mins) {
+          const n = Math.max(0, Math.round(Number(mins) || 0)),
+            h = Math.floor(n / 60),
+            m = n % 60;
+          if (h && m) return `${h}h ${m}m`;
+          if (h) return `${h}h`;
+          return `${m}m`;
+        }
+        function observedWakeWindows(events = state.events) {
+          const sleeps = [...events]
+            .filter((e) => e.type === "Sleep" && e.startTime)
+            .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+          const gaps = [];
+          for (let i = 0; i < sleeps.length - 1; i++) {
+            const end = sleeps[i].endTime
+              ? new Date(sleeps[i].endTime).getTime()
+              : NaN;
+            const next = new Date(sleeps[i + 1].startTime).getTime();
+            if (!Number.isFinite(end) || !Number.isFinite(next) || next <= end)
+              continue;
+            const mins = Math.round((next - end) / 60000);
+            // Ignore tiny overnight wakeups and very large gaps caused by missing history.
+            if (mins < 30 || mins > 720) continue;
+            gaps.push({
+              minutes: mins,
+              endedAt: sleeps[i].endTime,
+              nextSleepAt: sleeps[i + 1].startTime,
+            });
+          }
+          return gaps.slice(-7);
+        }
+        function observedWakeAverageText() {
+          const gaps = observedWakeWindows();
+          if (gaps.length < 2)
+            return `As more sleep is logged, Insights can learn this baby's typical wake pattern.`;
+          const avg = Math.round(
+            gaps.reduce((sum, x) => sum + x.minutes, 0) / gaps.length,
+          );
+          return `Recent observed wake average: ${compactMinutes(avg)} across ${gaps.length} wake windows. This is based on logged history, not a recommendation.`;
+        }
+
         function render() {
           const now = new Date();
           $("dateLabel").textContent = now
@@ -2132,17 +2264,19 @@
             const aw = a.lastSleep ? since(a.lastSleep.endTime) : null;
             $("stateLabel").textContent = "AWAKE NOW";
             $("stateMain").textContent = aw == null ? "—" : duration(aw);
-            let sub = a.lastSleep
-              ? `Awake since ${clock(a.lastSleep.endTime)}`
-              : "No completed sleep yet";
-            const target = Number(baby.wake_target_minutes);
-            if (Number.isFinite(target) && target > 0 && a.lastSleep) {
-              const t = new Date(
-                new Date(a.lastSleep.endTime).getTime() + target * 60000,
-              );
-              sub += ` · Target ${clock(t)}`;
-            }
-            $("stateSub").textContent = sub;
+            const plan = wakePlan(a, baby);
+            if (a.lastSleep) {
+              let html = `<span>Awake since ${esc(clock(a.lastSleep.endTime))}</span>`;
+              if (plan) {
+                const passed = plan.remainingMinutes < 0,
+                  delta = Math.abs(plan.remainingMinutes);
+                const status = passed
+                  ? `Wake target passed by ${compactMinutes(delta)}`
+                  : `${compactMinutes(delta)} remaining`;
+                html += `<span class="wake-plan-line">Next sleep around ${esc(clock(plan.targetAt))}<span class="wake-countdown${passed ? " passed" : ""}">${esc(status)}</span></span>`;
+              }
+              $("stateSub").innerHTML = html;
+            } else $("stateSub").textContent = "No completed sleep yet";
             $("sleepTiny").textContent = "Start";
             $("sleepActionLabel").textContent = "Start Sleep";
           }
@@ -3075,24 +3209,33 @@
         $("personChip").onclick = openSettings;
         function openSettings() {
           if (!state.member) return openModal("setupModal");
-          const b = currentBaby();
+          const b = currentBaby(),
+            wake = Number(b.wake_target_minutes);
           $("settingsUser").value = state.member.display_name;
           $("settingsBabyName").value = b.name || "";
           $("settingsDob").value = b.date_of_birth || "";
           $("settingsDob").max = new Date().toISOString().slice(0, 10);
-          $("settingsWake").value = b.wake_target_minutes ?? "";
+          if (Number.isFinite(wake) && wake > 0) {
+            $("settingsWakeHours").value = String(Math.floor(wake / 60));
+            $("settingsWakeMinutes").value = String(wake % 60);
+          } else {
+            $("settingsWakeHours").value = "";
+            $("settingsWakeMinutes").value = "";
+          }
+          $("settingsWakeObserved").textContent = observedWakeAverageText();
           $("settingsNapStart").value = String(b.nap_start_hour ?? 6);
           $("settingsNapEnd").value = String(b.nap_end_hour ?? 18);
           $("settingsMilk").value = localStorage.getItem(LS.milk) || "oz";
           $("connectionInfo").textContent =
-            `Supabase V3.3.1 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
+            `Supabase V3.4 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
           openModal("settingsModal");
         }
         $("saveSettings").onclick = async () => {
           const name = $("settingsUser").value.trim(),
             babyName = $("settingsBabyName").value.trim(),
             dob = $("settingsDob").value || null,
-            wake = $("settingsWake").value.trim(),
+            wakeHoursRaw = $("settingsWakeHours").value.trim(),
+            wakeMinutesRaw = $("settingsWakeMinutes").value.trim(),
             ns = Number($("settingsNapStart").value),
             ne = Number($("settingsNapEnd").value);
           if (!name || !babyName) return showToast("Enter both names.", true);
@@ -3100,6 +3243,20 @@
             return showToast("Nap start and end must be different.", true);
           if (dob && new Date(dob + "T12:00:00") > new Date())
             return showToast("Date of birth cannot be in the future.", true);
+          const wakeBlank = wakeHoursRaw === "" && wakeMinutesRaw === "";
+          const wh = wakeHoursRaw === "" ? 0 : Number(wakeHoursRaw),
+            wm = wakeMinutesRaw === "" ? 0 : Number(wakeMinutesRaw);
+          if (
+            !wakeBlank &&
+            (!Number.isInteger(wh) ||
+              wh < 0 ||
+              wh > 24 ||
+              !Number.isInteger(wm) ||
+              wm < 0 ||
+              wm > 59)
+          )
+            return showToast("Enter a valid wake window.", true);
+          const wake = wakeBlank ? null : wh * 60 + wm || null;
           try {
             let { error } = await db
               .from("family_members")
@@ -3112,7 +3269,7 @@
               .update({
                 name: babyName,
                 date_of_birth: dob,
-                wake_target_minutes: wake === "" ? null : Number(wake),
+                wake_target_minutes: wake,
                 nap_start_hour: ns,
                 nap_end_hour: ne,
               })
