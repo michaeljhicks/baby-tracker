@@ -747,16 +747,31 @@
       }
       .file-tab {
         border: 0;
-        min-height: 54px;
+        min-height: 64px;
         border-radius: 18px 18px 11px 11px;
         color: #0b0d12;
-        font-size: 24px;
         font-weight: 950;
         cursor: pointer;
         opacity: 0.62;
         transform: translateY(6px);
         transition: 0.16s ease;
         box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 7px 4px 8px;
+      }
+      .file-tab .tab-icon {
+        font-size: 23px;
+        line-height: 1;
+      }
+      .file-tab .tab-label {
+        font-size: 11px;
+        line-height: 1;
+        font-weight: 950;
+        letter-spacing: -0.01em;
       }
       .file-tab[data-summary-tab="sleep"] {
         background: linear-gradient(145deg, #bbb3ff, var(--sleep));
@@ -927,8 +942,13 @@
       }
       @media (max-width: 380px) {
         .file-tab {
-          min-height: 48px;
+          min-height: 58px;
+        }
+        .file-tab .tab-icon {
           font-size: 21px;
+        }
+        .file-tab .tab-label {
+          font-size: 10px;
         }
         .file-panel {
           padding: 15px 13px 13px;
@@ -985,7 +1005,8 @@
               aria-label="Sleep summary"
               title="Sleep"
             >
-              🌙
+              <span class="tab-icon">🌙</span
+              ><span class="tab-label">Sleep</span>
             </button>
             <button
               class="file-tab"
@@ -994,7 +1015,8 @@
               aria-label="Feed summary"
               title="Feed"
             >
-              🍼
+              <span class="tab-icon">🍼</span
+              ><span class="tab-label">Feed</span>
             </button>
             <button
               class="file-tab"
@@ -1003,7 +1025,8 @@
               aria-label="Diaper summary"
               title="Diaper"
             >
-              🧷
+              <span class="tab-icon">🧷</span
+              ><span class="tab-label">Diaper</span>
             </button>
             <button
               class="file-tab"
@@ -1012,7 +1035,8 @@
               aria-label="Medicine summary"
               title="Medicine"
             >
-              ＋
+              <span class="tab-icon">＋</span
+              ><span class="tab-label">Meds</span>
             </button>
           </div>
           <div class="file-panels">
@@ -1031,7 +1055,11 @@
               </div>
               <button class="panel-action sleep-action" id="sleepQuick">
                 <span id="sleepActionLabel">Start Sleep</span
-                ><span class="action-sub" id="sleepTiny">Start</span>
+                ><span
+                  class="action-sub hidden"
+                  id="sleepTiny"
+                  aria-hidden="true"
+                ></span>
               </button>
             </div>
 
@@ -1902,15 +1930,15 @@
             (n, e) => n + (Number(e.amount) || 0),
             0,
           );
-          let feedSummary = "0 feeds";
+          let feedSummary = "0 Feeds";
           if (feeds.length) {
-            const parts = [];
-            if (liquid.length) parts.push(displayMilk(ounces));
+            const details = [];
             if (solids.length)
-              parts.push(
-                `${solids.length} ${solids.length === 1 ? "meal" : "meals"}`,
+              details.push(
+                `${solids.length} ${solids.length === 1 ? "Meal" : "Meals"}`,
               );
-            feedSummary = `${parts.join(" · ")} · ${feeds.length} ${feeds.length === 1 ? "feed" : "feeds"}`;
+            if (liquid.length) details.push(displayMilk(ounces));
+            feedSummary = `${feeds.length} ${feeds.length === 1 ? "Feed" : "Feeds"}${details.length ? `: ${details.join(" | ")}` : ""}`;
           }
           $("feedTodaySummary").textContent = feedSummary;
           $("feedTodayList").innerHTML = feeds.length
@@ -1930,10 +1958,10 @@
             ).length,
             dirty = diapers.filter(
               (e) => e.details === "Dirty" || e.details === "Both",
-            ).length;
-          $("diaperTodaySummary").textContent = diapers.length
-            ? `${diapers.length} · ${wet} wet · ${dirty} dirty`
-            : "0 changes";
+            ).length,
+            both = diapers.filter((e) => e.details === "Both").length;
+          $("diaperTodaySummary").textContent =
+            `${wet} wet · ${dirty} dirty · ${both} both`;
           $("diaperTodayList").innerHTML = diapers.length
             ? diapers
                 .map((e) =>
@@ -3057,7 +3085,7 @@
           $("settingsNapEnd").value = String(b.nap_end_hour ?? 18);
           $("settingsMilk").value = localStorage.getItem(LS.milk) || "oz";
           $("connectionInfo").textContent =
-            `Supabase V3.3 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
+            `Supabase V3.3.1 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
           openModal("settingsModal");
         }
         $("saveSettings").onclick = async () => {
