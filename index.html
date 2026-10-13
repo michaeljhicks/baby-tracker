@@ -678,6 +678,48 @@
         color: var(--muted);
         font-size: 12px;
       }
+      .history-filters {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 5px;
+        margin: -4px 0 14px;
+        padding: 4px;
+        border: 1px solid var(--line);
+        background: #0f1218;
+        border-radius: 15px;
+        position: sticky;
+        top: -20px;
+        z-index: 3;
+      }
+      .history-filter {
+        min-width: 0;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        border-radius: 11px;
+        padding: 9px 4px;
+        font-size: 10px;
+        font-weight: 900;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+      .history-filter.active {
+        color: #0b0d12;
+        background: #f4f5f8;
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18);
+      }
+      .history-filter[data-history-filter="Sleep"].active {
+        background: var(--sleep);
+      }
+      .history-filter[data-history-filter="Feed"].active {
+        background: var(--feed);
+      }
+      .history-filter[data-history-filter="Diaper"].active {
+        background: var(--diaper);
+      }
+      .history-filter[data-history-filter="Medicine"].active {
+        background: var(--medicine);
+      }
       .handoff-card {
         border: 1px solid var(--line);
         background: #0f1218;
@@ -1390,6 +1432,19 @@
           <h3>History</h3>
           <button class="close" data-close="historyModal">×</button>
         </div>
+        <div class="history-filters" id="historyFilters">
+          <button class="history-filter active" data-history-filter="All">
+            All</button
+          ><button class="history-filter" data-history-filter="Sleep">
+            Sleep</button
+          ><button class="history-filter" data-history-filter="Feed">
+            Feed</button
+          ><button class="history-filter" data-history-filter="Diaper">
+            Diaper</button
+          ><button class="history-filter" data-history-filter="Medicine">
+            Meds
+          </button>
+        </div>
         <div class="history-list" id="historyList"></div>
       </div>
     </div>
@@ -1627,6 +1682,7 @@
           sleepEditMode = "new",
           editingSleep = null,
           editingEvent = null,
+          historyFilter = "All",
           toastTimer = null,
           refreshTimer = null;
         let activeSummaryTab =
@@ -3014,17 +3070,36 @@
         };
 
         $("historyLink").onclick = openHistory;
+        document.querySelectorAll(".history-filter").forEach(
+          (btn) =>
+            (btn.onclick = () => {
+              historyFilter = btn.dataset.historyFilter || "All";
+              renderHistory();
+            }),
+        );
         function openHistory() {
           renderHistory();
           openModal("historyModal");
         }
         function renderHistory() {
-          const rows = [...state.events].sort(
-            (a, b) => new Date(b.startTime) - new Date(a.startTime),
-          );
+          document
+            .querySelectorAll(".history-filter")
+            .forEach((btn) =>
+              btn.classList.toggle(
+                "active",
+                (btn.dataset.historyFilter || "All") === historyFilter,
+              ),
+            );
+          const rows = [...state.events]
+            .filter((e) => historyFilter === "All" || e.type === historyFilter)
+            .sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+          const emptyLabel =
+            historyFilter === "All"
+              ? "No activity yet."
+              : `No ${historyFilter === "Medicine" ? "medicine" : historyFilter.toLowerCase()} history yet.`;
           $("historyList").innerHTML = rows.length
             ? rows.map(historyRow).join("")
-            : '<div class="empty">No activity yet.</div>';
+            : `<div class="empty">${emptyLabel}</div>`;
           document
             .querySelectorAll(".history-row")
             .forEach(
@@ -3227,7 +3302,7 @@
           $("settingsNapEnd").value = String(b.nap_end_hour ?? 18);
           $("settingsMilk").value = localStorage.getItem(LS.milk) || "oz";
           $("connectionInfo").textContent =
-            `Supabase V3.4 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
+            `Supabase V3.4.1 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
           openModal("settingsModal");
         }
         $("saveSettings").onclick = async () => {
