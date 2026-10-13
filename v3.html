@@ -77,7 +77,7 @@
         margin: 0 auto;
         padding: 16px 16px calc(14px + env(safe-area-inset-bottom));
         display: grid;
-        grid-template-rows: auto auto auto minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
         gap: 12px;
         overflow: hidden;
       }
@@ -736,6 +736,211 @@
           font-size: 17px;
         }
       }
+
+      /* V3.3 filing-tab summary */
+      .file-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin: 12px 0 0;
+        align-items: end;
+      }
+      .file-tab {
+        border: 0;
+        min-height: 54px;
+        border-radius: 18px 18px 11px 11px;
+        color: #0b0d12;
+        font-size: 24px;
+        font-weight: 950;
+        cursor: pointer;
+        opacity: 0.62;
+        transform: translateY(6px);
+        transition: 0.16s ease;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+      }
+      .file-tab[data-summary-tab="sleep"] {
+        background: linear-gradient(145deg, #bbb3ff, var(--sleep));
+      }
+      .file-tab[data-summary-tab="feed"] {
+        background: linear-gradient(145deg, #b0f1dc, var(--feed));
+      }
+      .file-tab[data-summary-tab="diaper"] {
+        background: linear-gradient(145deg, #ffe6ad, var(--diaper));
+      }
+      .file-tab[data-summary-tab="medicine"] {
+        background: linear-gradient(145deg, #ffc8dc, var(--medicine));
+      }
+      .file-tab.active {
+        opacity: 1;
+        transform: translateY(1px);
+        box-shadow:
+          inset 0 0 0 2px rgba(255, 255, 255, 0.3),
+          0 10px 22px rgba(0, 0, 0, 0.2);
+      }
+      .file-tab:active {
+        transform: translateY(2px) scale(0.98);
+      }
+      .file-panels {
+        border: 1px solid var(--line);
+        border-radius: 0 0 20px 20px;
+        background: rgba(10, 13, 19, 0.34);
+        overflow: hidden;
+        margin-bottom: 2px;
+      }
+      .file-panel {
+        display: none;
+        padding: 18px 16px 16px;
+        min-height: 260px;
+      }
+      .file-panel.active {
+        display: block;
+      }
+      .file-panel-title {
+        font-size: 21px;
+        font-weight: 950;
+        letter-spacing: -0.04em;
+        margin: 0 0 14px;
+      }
+      .panel-stat {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .panel-stat-label {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 850;
+      }
+      .panel-stat-value {
+        font-size: 21px;
+        font-weight: 950;
+        letter-spacing: -0.04em;
+        text-align: right;
+      }
+      .panel-list {
+        display: grid;
+        gap: 1px;
+        margin: 6px 0 2px;
+      }
+      .panel-event {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        padding: 8px 0;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.25;
+      }
+      .panel-event:last-child {
+        border-bottom: 0;
+      }
+      .panel-event-time {
+        color: var(--muted);
+        white-space: nowrap;
+        font-weight: 750;
+      }
+      .panel-empty {
+        color: var(--muted);
+        font-size: 13px;
+        padding: 10px 0;
+      }
+      .panel-action {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: var(--panel2);
+        color: var(--text);
+        font-weight: 950;
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .panel-action.sleep-action {
+        border-color: rgba(169, 156, 255, 0.35);
+        background: rgba(169, 156, 255, 0.12);
+        color: #ddd6ff;
+      }
+      .panel-action.feed-action {
+        border-color: rgba(141, 231, 201, 0.35);
+        background: rgba(141, 231, 201, 0.1);
+        color: #c8fae8;
+      }
+      .panel-action.diaper-action {
+        border-color: rgba(255, 215, 134, 0.35);
+        background: rgba(255, 215, 134, 0.1);
+        color: #ffe7b7;
+      }
+      .panel-action.medicine-action {
+        border-color: rgba(245, 174, 200, 0.35);
+        background: rgba(245, 174, 200, 0.1);
+        color: #ffd6e5;
+      }
+      .panel-action .action-sub {
+        font-size: 11px;
+        opacity: 0.7;
+        font-weight: 800;
+      }
+      .sleep-night-mini {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: baseline;
+      }
+      .sleep-night-mini .label {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 850;
+      }
+      .sleep-night-mini .value {
+        font-size: 17px;
+        font-weight: 950;
+      }
+      .sleep-night-mini .sub {
+        grid-column: 1/-1;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .summary-row.file-last {
+        grid-template-columns: 110px minmax(0, 1fr);
+        padding: 10px 0;
+      }
+      .summary-row.file-last .row-label {
+        font-size: 11px;
+      }
+      .summary-row.file-last .row-content {
+        font-size: 15px;
+      }
+      @media (max-width: 380px) {
+        .file-tab {
+          min-height: 48px;
+          font-size: 21px;
+        }
+        .file-panel {
+          padding: 15px 13px 13px;
+          min-height: 230px;
+        }
+        .file-panel-title {
+          font-size: 19px;
+        }
+        .panel-stat-value {
+          font-size: 18px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -750,24 +955,6 @@
       <div class="baby-tabs" id="babyTabs">
         <button class="baby-tab selected" data-id="baby1">Malcolm</button
         ><button class="baby-tab" data-id="baby2">Baby 2</button>
-      </div>
-      <div class="quick-actions">
-        <button class="quick sleep" id="sleepQuick">
-          <span class="icon">☾</span><span class="label">Sleep</span
-          ><span class="tiny" id="sleepTiny">Start</span>
-        </button>
-        <button class="quick feed" id="feedQuick">
-          <span class="icon">🍼</span><span class="label">Feed</span
-          ><span class="tiny" id="feedTiny">Add</span>
-        </button>
-        <button class="quick diaper" id="diaperQuick">
-          <span class="icon">🧷</span><span class="label">Diaper</span
-          ><span class="tiny" id="diaperTiny">Add</span>
-        </button>
-        <button class="quick medicine" id="medicineQuick">
-          <span class="icon">＋</span><span class="label">Meds</span
-          ><span class="tiny" id="medicineTiny">Add</span>
-        </button>
       </div>
       <section class="summary">
         <div class="summary-scroll">
@@ -786,34 +973,119 @@
             <span class="state-main" id="stateMain">—</span>
           </div>
 
-          <div class="section-title">Today</div>
-          <div class="summary-row">
-            <div class="row-label">Naps today</div>
-            <div class="row-content">
-              <div id="napSummary"><strong>—</strong></div>
+          <div
+            class="file-tabs"
+            id="summaryTabs"
+            aria-label="Summary categories"
+          >
+            <button
+              class="file-tab active"
+              type="button"
+              data-summary-tab="sleep"
+              aria-label="Sleep summary"
+              title="Sleep"
+            >
+              🌙
+            </button>
+            <button
+              class="file-tab"
+              type="button"
+              data-summary-tab="feed"
+              aria-label="Feed summary"
+              title="Feed"
+            >
+              🍼
+            </button>
+            <button
+              class="file-tab"
+              type="button"
+              data-summary-tab="diaper"
+              aria-label="Diaper summary"
+              title="Diaper"
+            >
+              🧷
+            </button>
+            <button
+              class="file-tab"
+              type="button"
+              data-summary-tab="medicine"
+              aria-label="Medicine summary"
+              title="Medicine"
+            >
+              ＋
+            </button>
+          </div>
+          <div class="file-panels">
+            <div class="file-panel active" data-panel="sleep">
+              <h2 class="file-panel-title">Sleep Summary</h2>
+              <div class="panel-stat">
+                <span class="panel-stat-label">Naps today</span
+                ><span class="panel-stat-value" id="napSummary">—</span>
+              </div>
               <div class="nap-list" id="napList"></div>
               <button class="add-nap" id="addNap">+ Add nap</button>
+              <div class="sleep-night-mini clickable" id="lastNightRow">
+                <span class="label">Last night's sleep</span
+                ><span class="value" id="lastNightMain">—</span
+                ><span class="sub" id="lastNightSub"></span>
+              </div>
+              <button class="panel-action sleep-action" id="sleepQuick">
+                <span id="sleepActionLabel">Start Sleep</span
+                ><span class="action-sub" id="sleepTiny">Start</span>
+              </button>
             </div>
-          </div>
 
-          <div class="section-title">Latest</div>
-          <div class="summary-row clickable" id="lastFeedRow">
-            <div class="row-label">Last feed</div>
-            <div class="row-content" id="lastFeed">—</div>
-          </div>
-          <div class="summary-row clickable" id="lastDiaperRow">
-            <div class="row-label">Last diaper</div>
-            <div class="row-content" id="lastDiaper">—</div>
-          </div>
-          <div class="summary-row clickable" id="lastMedicineRow">
-            <div class="row-label">Last medicine</div>
-            <div class="row-content" id="lastMedicine">—</div>
-          </div>
-          <div class="summary-row clickable last-night-row" id="lastNightRow">
-            <div class="row-label">Last night's sleep</div>
-            <div class="row-content">
-              <strong id="lastNightMain">—</strong>
-              <div class="row-sub" id="lastNightSub"></div>
+            <div class="file-panel" data-panel="feed">
+              <h2 class="file-panel-title">Feed Summary</h2>
+              <div class="panel-stat">
+                <span class="panel-stat-label">Today</span
+                ><span class="panel-stat-value" id="feedTodaySummary">—</span>
+              </div>
+              <div class="panel-list" id="feedTodayList"></div>
+              <div class="summary-row clickable file-last" id="lastFeedRow">
+                <div class="row-label">Last feed</div>
+                <div class="row-content" id="lastFeed">—</div>
+              </div>
+              <button class="panel-action feed-action" id="feedQuick">
+                <span>+ Add Feed</span
+                ><span class="action-sub" id="feedTiny">Add</span>
+              </button>
+            </div>
+
+            <div class="file-panel" data-panel="diaper">
+              <h2 class="file-panel-title">Diaper Summary</h2>
+              <div class="panel-stat">
+                <span class="panel-stat-label">Today</span
+                ><span class="panel-stat-value" id="diaperTodaySummary">—</span>
+              </div>
+              <div class="panel-list" id="diaperTodayList"></div>
+              <div class="summary-row clickable file-last" id="lastDiaperRow">
+                <div class="row-label">Last diaper</div>
+                <div class="row-content" id="lastDiaper">—</div>
+              </div>
+              <button class="panel-action diaper-action" id="diaperQuick">
+                <span>+ Add Diaper</span
+                ><span class="action-sub" id="diaperTiny">Add</span>
+              </button>
+            </div>
+
+            <div class="file-panel" data-panel="medicine">
+              <h2 class="file-panel-title">Medicine Summary</h2>
+              <div class="panel-stat">
+                <span class="panel-stat-label">Today</span
+                ><span class="panel-stat-value" id="medicineTodaySummary"
+                  >—</span
+                >
+              </div>
+              <div class="panel-list" id="medicineTodayList"></div>
+              <div class="summary-row clickable file-last" id="lastMedicineRow">
+                <div class="row-label">Last medicine</div>
+                <div class="row-content" id="lastMedicine">—</div>
+              </div>
+              <button class="panel-action medicine-action" id="medicineQuick">
+                <span>+ Add Medicine</span
+                ><span class="action-sub" id="medicineTiny">Add</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1259,6 +1531,8 @@
           editingEvent = null,
           toastTimer = null,
           refreshTimer = null;
+        let activeSummaryTab =
+          localStorage.getItem("bt3.summaryTab") || "sleep";
 
         function showToast(msg, error = false) {
           const t = $("toast");
@@ -1563,6 +1837,133 @@
           renderSync();
         }
 
+        function setSummaryTab(tab) {
+          if (!["sleep", "feed", "diaper", "medicine"].includes(tab))
+            tab = "sleep";
+          activeSummaryTab = tab;
+          localStorage.setItem("bt3.summaryTab", tab);
+          document
+            .querySelectorAll(".file-tab")
+            .forEach((b) =>
+              b.classList.toggle("active", b.dataset.summaryTab === tab),
+            );
+          document
+            .querySelectorAll(".file-panel")
+            .forEach((p) =>
+              p.classList.toggle("active", p.dataset.panel === tab),
+            );
+        }
+        document
+          .querySelectorAll(".file-tab")
+          .forEach((b) =>
+            b.addEventListener("click", () =>
+              setSummaryTab(b.dataset.summaryTab),
+            ),
+          );
+        setSummaryTab(activeSummaryTab);
+
+        function isTodayEvent(e) {
+          if (!e?.startTime) return false;
+          return (
+            new Date(e.startTime).toDateString() === new Date().toDateString()
+          );
+        }
+        function todayOfType(type) {
+          return state.events
+            .filter(
+              (e) =>
+                e.type === type &&
+                isTodayEvent(e) &&
+                new Date(e.startTime).getTime() <= Date.now(),
+            )
+            .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+        }
+        function eventButton(e, label, timeText) {
+          return `<button class="panel-event" type="button" data-panel-event-id="${esc(e.id)}"><span>${esc(label)}</span><span class="panel-event-time">${esc(timeText || clock(e.startTime))}</span></button>`;
+        }
+        function bindPanelEvents() {
+          document.querySelectorAll("[data-panel-event-id]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                const e = findEvent(b.dataset.panelEventId);
+                if (e) openEventOrSleep(e);
+              }),
+          );
+        }
+        function renderTabbedSummaries(a) {
+          const feeds = todayOfType("Feed"),
+            diapers = todayOfType("Diaper"),
+            meds = todayOfType("Medicine");
+          const liquid = feeds.filter(
+              (e) => (e.feedKind || "Liquid") === "Liquid",
+            ),
+            solids = feeds.filter((e) => (e.feedKind || "Liquid") === "Solid");
+          const ounces = liquid.reduce(
+            (n, e) => n + (Number(e.amount) || 0),
+            0,
+          );
+          let feedSummary = "0 feeds";
+          if (feeds.length) {
+            const parts = [];
+            if (liquid.length) parts.push(displayMilk(ounces));
+            if (solids.length)
+              parts.push(
+                `${solids.length} ${solids.length === 1 ? "meal" : "meals"}`,
+              );
+            feedSummary = `${parts.join(" · ")} · ${feeds.length} ${feeds.length === 1 ? "feed" : "feeds"}`;
+          }
+          $("feedTodaySummary").textContent = feedSummary;
+          $("feedTodayList").innerHTML = feeds.length
+            ? feeds
+                .map((e) =>
+                  eventButton(
+                    e,
+                    `${(e.feedKind || "Liquid") === "Solid" ? "🍽️" : "🍼"} ${feedLabel(e)}`,
+                    clock(e.startTime),
+                  ),
+                )
+                .join("")
+            : '<div class="panel-empty">No feeds yet today</div>';
+
+          const wet = diapers.filter(
+              (e) => e.details === "Wet" || e.details === "Both",
+            ).length,
+            dirty = diapers.filter(
+              (e) => e.details === "Dirty" || e.details === "Both",
+            ).length;
+          $("diaperTodaySummary").textContent = diapers.length
+            ? `${diapers.length} · ${wet} wet · ${dirty} dirty`
+            : "0 changes";
+          $("diaperTodayList").innerHTML = diapers.length
+            ? diapers
+                .map((e) =>
+                  eventButton(
+                    e,
+                    `🧷 ${e.details || "Diaper"}`,
+                    clock(e.startTime),
+                  ),
+                )
+                .join("")
+            : '<div class="panel-empty">No diaper changes yet today</div>';
+
+          $("medicineTodaySummary").textContent = meds.length
+            ? `${meds.length} ${meds.length === 1 ? "dose" : "doses"}`
+            : "0 doses";
+          $("medicineTodayList").innerHTML = meds.length
+            ? meds
+                .map((e) =>
+                  eventButton(
+                    e,
+                    `＋ ${e.medicine || "Medicine"} · ${e.amount} ${e.unit}`,
+                    clock(e.startTime),
+                  ),
+                )
+                .join("")
+            : '<div class="panel-empty">No medicine yet today</div>';
+          bindPanelEvents();
+          setSummaryTab(activeSummaryTab);
+        }
+
         function analytics(events = state.events, baby = currentBaby()) {
           const now = new Date(),
             nowMs = now.getTime();
@@ -1690,12 +2091,14 @@
               $("stateSub").textContent =
                 "This open sleep starts in the future · tap Sleep to correct it";
               $("sleepTiny").textContent = "Fix";
+              $("sleepActionLabel").textContent = "Correct Sleep";
             } else {
               $("stateLabel").textContent = "SLEEPING NOW";
               $("stateMain").textContent = duration(since(a.active.startTime));
               $("stateSub").textContent =
                 `Started ${clock(a.active.startTime)} · ${a.active.recordedBy || ""}`;
               $("sleepTiny").textContent = "End";
+              $("sleepActionLabel").textContent = "End Sleep";
             }
           } else {
             const aw = a.lastSleep ? since(a.lastSleep.endTime) : null;
@@ -1713,13 +2116,14 @@
             }
             $("stateSub").textContent = sub;
             $("sleepTiny").textContent = "Start";
+            $("sleepActionLabel").textContent = "Start Sleep";
           }
           $("lastNightMain").textContent = duration(a.nightMin);
           $("lastNightSub").textContent = a.bedtime
             ? `${clock(a.bedtime)}${a.morningWake ? "–" + clock(a.morningWake) : " · still sleeping"}`
             : "No night sleep recorded";
           $("napSummary").innerHTML =
-            `<strong>${duration(a.napMin)}</strong> <span class="row-sub">· ${a.naps.length} ${a.naps.length === 1 ? "nap" : "naps"}</span>`;
+            `${duration(a.napMin)} · ${a.naps.length} ${a.naps.length === 1 ? "nap" : "naps"}`;
           $("napList").innerHTML = a.naps.length
             ? a.naps
                 .map(
@@ -1764,6 +2168,7 @@
           $("medicineTiny").textContent = a.lastMed
             ? ago(a.lastMed.startTime)
             : "Add";
+          renderTabbedSummaries(a);
           renderSync();
         }
         function renderLast(id, e, main) {
@@ -2652,7 +3057,7 @@
           $("settingsNapEnd").value = String(b.nap_end_hour ?? 18);
           $("settingsMilk").value = localStorage.getItem(LS.milk) || "oz";
           $("connectionInfo").textContent =
-            `Supabase V3.2.1 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
+            `Supabase V3.3 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
           openModal("settingsModal");
         }
         $("saveSettings").onclick = async () => {

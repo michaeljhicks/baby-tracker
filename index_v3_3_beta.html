@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#0b0d12" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Baby Tracker" />
+  <title>Baby Tracker V3.2.1</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#0b0d12;--bg2:#0e1118;--panel:#141821;--panel2:#1b202b;--panel3:#10141b;
+      --text:#f7f8fb;--muted:#98a1b3;--muted2:#7e879a;--line:rgba(255,255,255,.09);
+      --sleep:#a99cff;--feed:#8de7c9;--diaper:#ffd786;--medicine:#f5aec8;
+      --baby1:#83a9ff;--baby2:#79c8ad;--danger:#ffb1b1;--shadow:0 18px 46px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;height:100%;background:radial-gradient(circle at top, #121826 0%, var(--bg) 28%, var(--bg) 100%);color:var(--text);overflow:hidden}
+    body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+    button,input,select,textarea{font:inherit}
+    button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+    .app{width:min(100%,560px);height:100dvh;max-height:100dvh;margin:0 auto;padding:16px 16px calc(14px + env(safe-area-inset-bottom));display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:12px;overflow:hidden}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px}
+    .brand small{display:block;color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;margin-bottom:5px}
+    .brand h1{font-size:31px;line-height:1;margin:0;letter-spacing:-.055em}
+    .person-chip{border:1px solid var(--line);background:rgba(20,24,33,.82);backdrop-filter:blur(8px);color:var(--text);border-radius:999px;padding:11px 16px;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.18)}
+
+    .baby-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:5px;border:1px solid var(--line);border-radius:999px;background:#0f1218;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+    .baby-tab{border:0;border-radius:999px;min-height:48px;font-weight:950;font-size:16px;color:#10141b;opacity:.68;transition:.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .baby-tab[data-id="baby1"]{background:var(--baby1)}
+    .baby-tab[data-id="baby2"]{background:var(--baby2)}
+    .baby-tab.selected{opacity:1;box-shadow:inset 0 0 0 2px rgba(255,255,255,.36),0 8px 20px rgba(0,0,0,.24);transform:translateY(-1px)}
+
+    .quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .quick{border:0;border-radius:20px;min-height:90px;padding:10px 8px;color:#0b0d12;font-weight:950;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;box-shadow:0 12px 28px rgba(0,0,0,.18)}
+    .quick:active{transform:scale(.97)}
+    .quick .icon{font-size:25px;line-height:1}
+    .quick .label{font-size:16px;line-height:1.05;letter-spacing:-.03em}
+    .quick .tiny{font-size:11px;line-height:1.1;opacity:.68;max-width:100%;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .quick.sleep{background:linear-gradient(145deg,#bbb3ff,var(--sleep))}
+    .quick.feed{background:linear-gradient(145deg,#b0f1dc,var(--feed))}
+    .quick.diaper{background:linear-gradient(145deg,#ffe6ad,var(--diaper))}
+    .quick.medicine{background:linear-gradient(145deg,#ffc8dc,var(--medicine))}
+
+    .summary{min-height:0;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012));border-radius:28px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+    .summary-scroll{min-height:0;overflow:auto;overscroll-behavior:contain;padding:18px 18px 14px;scrollbar-width:none}
+    .summary-scroll::-webkit-scrollbar{display:none}
+
+    .summary-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    .summary-head-left{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}
+    .baby-badge{border-radius:999px;padding:7px 12px;font-size:13px;font-weight:950;color:#10141b;background:var(--baby1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+    .baby-badge.baby2{background:var(--baby2)}
+    .age{color:var(--muted);font-size:13px;font-weight:850;white-space:nowrap}
+    .history-link{border:0;background:transparent;color:#b8bfcd;font-size:13px;font-weight:900;padding:4px;cursor:pointer}
+
+    .state-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start;padding:16px 0 18px;border-bottom:1px solid var(--line);margin-bottom:6px}
+    .state-copy{min-width:0}
+    .state-label{display:block;font-size:12px;color:var(--muted);font-weight:950;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px}
+    .state-main{font-size:52px;line-height:.95;font-weight:950;letter-spacing:-.065em;text-align:right;align-self:start}
+    .state-sub{grid-column:1/2;color:#b3bbca;font-size:16px;line-height:1.35;margin-top:-1px}
+    .target{color:var(--sleep);font-weight:850}
+
+    .section-title{font-size:11px;color:var(--muted2);font-weight:950;letter-spacing:.14em;text-transform:uppercase;margin:14px 0 6px}
+    .summary-row{display:grid;grid-template-columns:124px minmax(0,1fr);gap:14px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
+    .summary-row:last-child{border-bottom:0}
+    .row-label{font-size:12px;color:var(--muted);font-weight:950;letter-spacing:.12em;text-transform:uppercase;padding-top:3px}
+    .row-content{min-width:0;font-size:17px;font-weight:800;line-height:1.28;letter-spacing:-.02em}
+    .row-content strong{font-size:19px;letter-spacing:-.04em}
+    .row-sub{color:#a7afbe;font-size:12px;font-weight:700;margin-top:3px;line-height:1.35}
+    .clickable{cursor:pointer}
+    .clickable:active{opacity:.72}
+    .last-night-row{margin-top:2px;background:rgba(169,156,255,.035)}
+    .last-night-row .row-label{color:#8f96a8}
+
+    .nap-list{display:grid;gap:5px;margin-top:2px}
+    .nap-line{border:0;background:transparent;color:var(--text);padding:0;text-align:left;font-size:13px;font-weight:800;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .add-nap{margin-top:10px;border:1px solid rgba(169,156,255,.45);background:rgba(169,156,255,.11);color:#ddd6ff;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:950}
+    .no-data{color:var(--muted);font-weight:700}
+
+    .sync-strip{flex:0 0 auto;border-top:1px solid var(--line);padding:9px 12px;color:#737c8d;font-size:11px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .backdrop{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.65);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;padding:12px}
+    .backdrop.open{display:flex}
+    .modal{width:min(100%,520px);max-height:calc(100dvh - 24px - env(safe-area-inset-top));overflow:auto;background:#151922;border:1px solid var(--line);border-radius:26px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.55);margin-bottom:max(0px,env(safe-area-inset-bottom))}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}
+    .modal-head h3{margin:0;font-size:22px;letter-spacing:-.04em}
+    .close{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel2);color:var(--text);font-size:18px}
+    .field{margin-bottom:14px}.field label{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:7px}
+    .input,.select,.textarea{width:100%;min-height:50px;border:1px solid var(--line);background:#0f1218;color:var(--text);border-radius:15px;padding:0 13px;outline:none}
+    .input:focus,.select:focus,.textarea:focus{border-color:rgba(169,156,255,.75)}
+    .textarea{padding:12px 13px;min-height:88px;resize:vertical;font:inherit}
+    .stepper{display:grid;grid-template-columns:54px 1fr 54px;gap:8px}.stepper button{border:1px solid var(--line);border-radius:15px;background:var(--panel2);color:var(--text);font-size:24px}.amount{font-size:23px;font-weight:900;text-align:center}
+    .seg{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;padding:4px;border:1px solid var(--line);background:#0f1218;border-radius:14px}.seg.three{grid-template-columns:repeat(3,1fr)}.seg button{border:0;background:transparent;color:var(--muted);border-radius:10px;min-height:42px;font-weight:850}.seg button.selected{background:var(--panel2);color:var(--text)}
+    .primary,.secondary,.danger{width:100%;min-height:52px;border-radius:16px;font-weight:950;margin-top:8px}.primary{border:0;background:var(--text);color:#0b0d12}.secondary{border:1px solid var(--line);background:var(--panel2);color:var(--text)}.danger{border:1px solid rgba(255,177,177,.35);background:rgba(255,177,177,.08);color:var(--danger)}.note{color:var(--muted);font-size:11px;line-height:1.45;margin:-3px 0 14px}.divider{height:1px;background:var(--line);margin:16px 0}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:9px}.hidden{display:none!important}
+    .history-list{border:1px solid var(--line);border-radius:16px;overflow:hidden}.history-row{width:100%;border:0;border-bottom:1px solid var(--line);background:#0f1218;color:var(--text);display:grid;grid-template-columns:30px 1fr auto;gap:9px;align-items:center;padding:11px;text-align:left}.history-row:last-child{border-bottom:0}.history-icon{font-size:16px}.history-name{font-size:12px;font-weight:900}.history-detail,.history-time{color:var(--muted);font-size:10px}.history-time{text-align:right;line-height:1.3}.empty{padding:18px;text-align:center;color:var(--muted);font-size:12px}
+    .handoff-card{border:1px solid var(--line);background:#0f1218;border-radius:17px;padding:13px;margin-bottom:9px}.handoff-title{display:flex;justify-content:space-between;gap:10px;font-weight:950}.capsules{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.capsule{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 9px;font-size:10px;font-weight:850;color:var(--text)}
+    .toast{position:fixed;z-index:100;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,16px);width:calc(100% - 30px);max-width:460px;background:#f4f5f8;color:#111318;padding:12px 14px;border-radius:14px;font-size:12px;font-weight:850;text-align:center;opacity:0;pointer-events:none;transition:.18s;box-shadow:var(--shadow)}.toast.show{opacity:1;transform:translate(-50%,0)}.toast.error{background:#ffd9d9;color:#5c1212}
+
+    @media(max-width:380px){
+      .app{padding-left:12px;padding-right:12px;gap:9px}
+      .brand h1{font-size:28px}
+      .baby-tab{min-height:44px;font-size:15px}
+      .quick{min-height:82px;border-radius:18px}
+      .quick .icon{font-size:22px}
+      .quick .label{font-size:14px}
+      .quick .tiny{font-size:10px}
+      .summary-scroll{padding:15px 14px 12px}
+      .state-main{font-size:44px}
+      .state-sub{font-size:15px}
+      .summary-row{grid-template-columns:102px minmax(0,1fr);gap:10px;padding:10px 0}
+      .row-label{font-size:11px}
+      .row-content{font-size:15px}
+      .row-content strong{font-size:17px}
+    }
+  
+    /* V3.3 filing-tab summary */
+    .file-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 0;align-items:end}
+    .file-tab{border:0;min-height:54px;border-radius:18px 18px 11px 11px;color:#0b0d12;font-size:24px;font-weight:950;cursor:pointer;opacity:.62;transform:translateY(6px);transition:.16s ease;box-shadow:0 8px 18px rgba(0,0,0,.16)}
+    .file-tab[data-summary-tab="sleep"]{background:linear-gradient(145deg,#bbb3ff,var(--sleep))}
+    .file-tab[data-summary-tab="feed"]{background:linear-gradient(145deg,#b0f1dc,var(--feed))}
+    .file-tab[data-summary-tab="diaper"]{background:linear-gradient(145deg,#ffe6ad,var(--diaper))}
+    .file-tab[data-summary-tab="medicine"]{background:linear-gradient(145deg,#ffc8dc,var(--medicine))}
+    .file-tab.active{opacity:1;transform:translateY(1px);box-shadow:inset 0 0 0 2px rgba(255,255,255,.3),0 10px 22px rgba(0,0,0,.2)}
+    .file-tab:active{transform:translateY(2px) scale(.98)}
+    .file-panels{border:1px solid var(--line);border-radius:0 0 20px 20px;background:rgba(10,13,19,.34);overflow:hidden;margin-bottom:2px}
+    .file-panel{display:none;padding:18px 16px 16px;min-height:260px}
+    .file-panel.active{display:block}
+    .file-panel-title{font-size:21px;font-weight:950;letter-spacing:-.04em;margin:0 0 14px}
+    .panel-stat{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+    .panel-stat-label{color:var(--muted);font-size:13px;font-weight:850}
+    .panel-stat-value{font-size:21px;font-weight:950;letter-spacing:-.04em;text-align:right}
+    .panel-list{display:grid;gap:1px;margin:6px 0 2px}
+    .panel-event{width:100%;border:0;background:transparent;color:var(--text);padding:8px 0;display:grid;grid-template-columns:1fr auto;gap:10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.055);font-size:13px;font-weight:800;line-height:1.25}
+    .panel-event:last-child{border-bottom:0}.panel-event-time{color:var(--muted);white-space:nowrap;font-weight:750}
+    .panel-empty{color:var(--muted);font-size:13px;padding:10px 0}
+    .panel-action{width:100%;min-height:46px;border:1px solid var(--line);border-radius:15px;background:var(--panel2);color:var(--text);font-weight:950;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px}
+    .panel-action.sleep-action{border-color:rgba(169,156,255,.35);background:rgba(169,156,255,.12);color:#ddd6ff}
+    .panel-action.feed-action{border-color:rgba(141,231,201,.35);background:rgba(141,231,201,.1);color:#c8fae8}
+    .panel-action.diaper-action{border-color:rgba(255,215,134,.35);background:rgba(255,215,134,.1);color:#ffe7b7}
+    .panel-action.medicine-action{border-color:rgba(245,174,200,.35);background:rgba(245,174,200,.1);color:#ffd6e5}
+    .panel-action .action-sub{font-size:11px;opacity:.7;font-weight:800}
+    .sleep-night-mini{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:8px;align-items:baseline}
+    .sleep-night-mini .label{color:var(--muted);font-size:12px;font-weight:850}.sleep-night-mini .value{font-size:17px;font-weight:950}.sleep-night-mini .sub{grid-column:1/-1;color:var(--muted);font-size:11px}
+    .summary-row.file-last{grid-template-columns:110px minmax(0,1fr);padding:10px 0}
+    .summary-row.file-last .row-label{font-size:11px}
+    .summary-row.file-last .row-content{font-size:15px}
+    @media(max-width:380px){.file-tab{min-height:48px;font-size:21px}.file-panel{padding:15px 13px 13px;min-height:230px}.file-panel-title{font-size:19px}.panel-stat-value{font-size:18px}}
+
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar"><div class="brand"><small id="dateLabel">TODAY</small><h1>Baby Tracker</h1></div><button class="person-chip" id="personChip">Set up</button></header>
+  <div class="baby-tabs" id="babyTabs"><button class="baby-tab selected" data-id="baby1">Malcolm</button><button class="baby-tab" data-id="baby2">Baby 2</button></div>
+  <section class="summary">
+    <div class="summary-scroll">
+      <div class="summary-head">
+        <div class="summary-head-left"><span class="baby-badge" id="summaryBaby">Malcolm</span><span class="age" id="summaryAge"></span></div>
+        <button class="history-link" id="historyLink">History ›</button>
+      </div>
+      <div class="state-line">
+        <div class="state-copy"><span class="state-label" id="stateLabel">AWAKE NOW</span><div class="state-sub" id="stateSub">Loading…</div></div>
+        <span class="state-main" id="stateMain">—</span>
+      </div>
+
+      <div class="file-tabs" id="summaryTabs" aria-label="Summary categories">
+        <button class="file-tab active" type="button" data-summary-tab="sleep" aria-label="Sleep summary" title="Sleep">🌙</button>
+        <button class="file-tab" type="button" data-summary-tab="feed" aria-label="Feed summary" title="Feed">🍼</button>
+        <button class="file-tab" type="button" data-summary-tab="diaper" aria-label="Diaper summary" title="Diaper">🧷</button>
+        <button class="file-tab" type="button" data-summary-tab="medicine" aria-label="Medicine summary" title="Medicine">＋</button>
+      </div>
+      <div class="file-panels">
+        <div class="file-panel active" data-panel="sleep">
+          <h2 class="file-panel-title">Sleep Summary</h2>
+          <div class="panel-stat"><span class="panel-stat-label">Naps today</span><span class="panel-stat-value" id="napSummary">—</span></div>
+          <div class="nap-list" id="napList"></div>
+          <button class="add-nap" id="addNap">+ Add nap</button>
+          <div class="sleep-night-mini clickable" id="lastNightRow"><span class="label">Last night's sleep</span><span class="value" id="lastNightMain">—</span><span class="sub" id="lastNightSub"></span></div>
+          <button class="panel-action sleep-action" id="sleepQuick"><span id="sleepActionLabel">Start Sleep</span><span class="action-sub" id="sleepTiny">Start</span></button>
+        </div>
+
+        <div class="file-panel" data-panel="feed">
+          <h2 class="file-panel-title">Feed Summary</h2>
+          <div class="panel-stat"><span class="panel-stat-label">Today</span><span class="panel-stat-value" id="feedTodaySummary">—</span></div>
+          <div class="panel-list" id="feedTodayList"></div>
+          <div class="summary-row clickable file-last" id="lastFeedRow"><div class="row-label">Last feed</div><div class="row-content" id="lastFeed">—</div></div>
+          <button class="panel-action feed-action" id="feedQuick"><span>+ Add Feed</span><span class="action-sub" id="feedTiny">Add</span></button>
+        </div>
+
+        <div class="file-panel" data-panel="diaper">
+          <h2 class="file-panel-title">Diaper Summary</h2>
+          <div class="panel-stat"><span class="panel-stat-label">Today</span><span class="panel-stat-value" id="diaperTodaySummary">—</span></div>
+          <div class="panel-list" id="diaperTodayList"></div>
+          <div class="summary-row clickable file-last" id="lastDiaperRow"><div class="row-label">Last diaper</div><div class="row-content" id="lastDiaper">—</div></div>
+          <button class="panel-action diaper-action" id="diaperQuick"><span>+ Add Diaper</span><span class="action-sub" id="diaperTiny">Add</span></button>
+        </div>
+
+        <div class="file-panel" data-panel="medicine">
+          <h2 class="file-panel-title">Medicine Summary</h2>
+          <div class="panel-stat"><span class="panel-stat-label">Today</span><span class="panel-stat-value" id="medicineTodaySummary">—</span></div>
+          <div class="panel-list" id="medicineTodayList"></div>
+          <div class="summary-row clickable file-last" id="lastMedicineRow"><div class="row-label">Last medicine</div><div class="row-content" id="lastMedicine">—</div></div>
+          <button class="panel-action medicine-action" id="medicineQuick"><span>+ Add Medicine</span><span class="action-sub" id="medicineTiny">Add</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="sync-strip" id="syncStrip">Connecting to Supabase…</div>
+  </section>
+</div>
+
+<div class="backdrop" id="setupModal"><div class="modal"><div class="modal-head"><h3>Connect this device</h3></div><p class="note">Choose who is using this device and enter your private family code. You only need to do this once per browser/device.</p><div class="field"><label>Who is using this device?</label><div class="seg three" id="setupPeople"><button data-person="Michael" class="selected">Michael</button><button data-person="Alison">Alison</button><button data-person="Caregiver">Caregiver</button></div></div><div class="field hidden" id="caregiverWrap"><label>Caregiver name</label><input class="input" id="caregiverName" autocomplete="name" /></div><div class="field"><label>Family code</label><input class="input" id="familyCode" type="password" autocomplete="off" /></div><button class="primary" id="connectDevice">Connect Baby Tracker</button></div></div>
+
+<div class="backdrop" id="feedModal"><div class="modal"><div class="modal-head"><h3 id="feedTitle">Feed</h3><button class="close" data-close="feedModal">×</button></div>
+  <div class="field"><label>Feed type</label><div class="seg" id="feedKinds"><button class="selected" data-feed-kind="Liquid">🍼 Liquid</button><button data-feed-kind="Solid">🍽️ Solid</button></div></div>
+  <div id="liquidFeedFields"><div class="field"><label>Bottle ounces</label><div class="stepper"><button id="feedMinus">−</button><input class="input amount" id="feedAmount" type="number" inputmode="decimal" min="0.1" step="0.5" value="4"/><button id="feedPlus">+</button></div></div></div>
+  <div id="solidFeedFields" class="hidden"><div class="field"><label>Meal size</label><div class="seg three" id="mealSizes"><button data-meal-size="Small">Small</button><button class="selected" data-meal-size="Medium">Medium</button><button data-meal-size="Large">Large</button></div></div><div class="field"><label>Meal notes <span style="font-weight:600;opacity:.7">(optional)</span></label><textarea class="textarea" id="mealNotes" maxlength="500" placeholder="Chicken, peas, yogurt…"></textarea></div></div>
+  <div class="field"><label>When?</label><div class="seg"><button class="selected" data-feed-mode="now">Now</button><button data-feed-mode="manual">Choose time</button></div><input class="input hidden" id="feedTime" type="datetime-local" style="margin-top:9px"/></div><button class="primary" id="saveFeed">Save Feed</button></div></div>
+
+<div class="backdrop" id="diaperModal"><div class="modal"><div class="modal-head"><h3>Diaper</h3><button class="close" data-close="diaperModal">×</button></div><div class="field"><label>Type</label><div class="seg three" id="diaperTypes"><button class="selected" data-diaper="Wet">Wet</button><button data-diaper="Dirty">Dirty</button><button data-diaper="Both">Both</button></div></div><div class="field"><label>When?</label><div class="seg"><button class="selected" data-diaper-mode="now">Now</button><button data-diaper-mode="manual">Choose time</button></div><input class="input hidden" id="diaperTime" type="datetime-local" style="margin-top:9px"/></div><button class="primary" id="saveDiaper">Save Diaper</button></div></div>
+
+<div class="backdrop" id="medicineModal"><div class="modal"><div class="modal-head"><h3>Medicine</h3><button class="close" data-close="medicineModal">×</button></div><div class="field"><label>Medicine</label><input class="input" id="medicineName" placeholder="Tylenol"/></div><div class="two-col"><div class="field"><label>Dose</label><input class="input" id="medicineAmount" type="number" inputmode="decimal" min="0.01" step="0.1" placeholder="3.75"/></div><div class="field"><label>Unit</label><select class="select" id="medicineUnit"><option>mL</option><option>mg</option><option>tablet</option><option>tsp</option></select></div></div><div class="field"><label>When?</label><div class="seg"><button class="selected" data-med-mode="now">Now</button><button data-med-mode="manual">Choose time</button></div><input class="input hidden" id="medicineTime" type="datetime-local" style="margin-top:9px"/></div><button class="primary" id="saveMedicine">Save Medicine</button></div></div>
+
+<div class="backdrop" id="sleepEditModal"><div class="modal"><div class="modal-head"><h3 id="sleepEditTitle">Add Nap</h3><button class="close" data-close="sleepEditModal">×</button></div><p class="note" id="sleepEditNote"></p><div class="field"><label>Baby</label><select class="select" id="sleepBaby"></select></div><div class="field"><label>Sleep started</label><input class="input" id="sleepStart" type="datetime-local"/></div><div class="field"><label>Sleep status</label><div class="seg"><button id="sleepEnded" class="selected">Ended</button><button id="sleepOngoing">Still snoozing</button></div></div><div class="field" id="sleepEndWrap"><label>Sleep ended</label><input class="input" id="sleepEnd" type="datetime-local"/></div><button class="primary" id="saveSleepEdit">Save Sleep</button><button class="danger hidden" id="deleteSleep">Delete Sleep</button></div></div>
+
+<div class="backdrop" id="historyModal"><div class="modal"><div class="modal-head"><h3>History</h3><button class="close" data-close="historyModal">×</button></div><div class="history-list" id="historyList"></div></div></div>
+
+<div class="backdrop" id="eventEditModal"><div class="modal"><div class="modal-head"><h3 id="eventEditTitle">Edit Event</h3><button class="close" data-close="eventEditModal">×</button></div><div class="field"><label>Baby</label><select class="select" id="eventBaby"></select></div><div class="field"><label>Time</label><input class="input" id="eventTime" type="datetime-local"/></div><div id="feedEditFields" class="hidden"><div class="field"><label>Feed type</label><select class="select" id="eventFeedKind"><option value="Liquid">Liquid</option><option value="Solid">Solid</option></select></div><div id="eventLiquidFields"><div class="field"><label>Bottle ounces</label><input class="input" id="eventFeedAmount" type="number" min=".1" step=".5"/></div></div><div id="eventSolidFields" class="hidden"><div class="field"><label>Meal size</label><select class="select" id="eventMealSize"><option>Small</option><option>Medium</option><option>Large</option></select></div><div class="field"><label>Meal notes</label><textarea class="textarea" id="eventMealNotes" maxlength="500"></textarea></div></div></div><div id="diaperEditFields" class="hidden"><div class="field"><label>Diaper type</label><select class="select" id="eventDiaper"><option>Wet</option><option>Dirty</option><option>Both</option></select></div></div><div id="medicineEditFields" class="hidden"><div class="field"><label>Medicine</label><input class="input" id="eventMedicine"/></div><div class="two-col"><div class="field"><label>Dose</label><input class="input" id="eventMedicineAmount" type="number" step=".1"/></div><div class="field"><label>Unit</label><select class="select" id="eventMedicineUnit"><option>mL</option><option>mg</option><option>tablet</option><option>tsp</option></select></div></div></div><button class="primary" id="saveEventEdit">Save Changes</button><button class="danger" id="deleteEvent">Delete Entry</button></div></div>
+
+<div class="backdrop" id="settingsModal"><div class="modal"><div class="modal-head"><h3>Settings</h3><button class="close" data-close="settingsModal">×</button></div><div class="field"><label>Your display name</label><input class="input" id="settingsUser"/></div><div class="field"><label>Baby name</label><input class="input" id="settingsBabyName"/></div><div class="field"><label>Date of birth</label><input class="input" id="settingsDob" type="date"/></div><div class="field"><label>Wake-window planning target (minutes)</label><input class="input" id="settingsWake" type="number" min="0" max="1440" placeholder="Optional"/></div><div class="two-col"><div class="field"><label>Nap window starts</label><select class="select" id="settingsNapStart"></select></div><div class="field"><label>Nap window ends</label><select class="select" id="settingsNapEnd"></select></div></div><div class="field"><label>Milk display units</label><select class="select" id="settingsMilk"><option value="oz">ounces (oz)</option><option value="mL">milliliters (mL)</option></select></div><button class="primary" id="saveSettings">Save Settings</button><button class="secondary" id="openHandoff">Family Handoff</button><div class="divider"></div><p class="note" id="connectionInfo"></p></div></div>
+
+<div class="backdrop" id="handoffModal"><div class="modal"><div class="modal-head"><h3>Family Handoff</h3><button class="close" data-close="handoffModal">×</button></div><p class="note">A compact status check for both babies.</p><div id="handoffList"></div></div></div>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+(() => {
+  'use strict';
+  const SUPABASE_URL = 'https://grnhohejncjndhmcamyx.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_X6K7axK-rgTJM59hlz3ZZQ_Ouef_lTC';
+  const FAMILY_ID_FALLBACK = 'f7ed138e-39ce-4ceb-919c-78690de3d457';
+  const LS = { selectedBaby:'bt3.selectedBaby', milk:'bt3.milkUnit', cache:'bt3.cache', pending:'bt3.pending', feed:'bt3.feedAmount', feedKind:'bt3.feedKind', mealSize:'bt3.mealSize', medName:'bt3.medName', medAmount:'bt3.medAmount', medUnit:'bt3.medUnit' };
+  const $ = id => document.getElementById(id);
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false} });
+  const state = { user:null, member:null, familyId:null, babies:[], selectedBabyId:localStorage.getItem(LS.selectedBaby)||'baby1', events:[], loading:true, online:navigator.onLine, realtime:null, lastSync:null };
+  let setupPerson='Michael', feedMode='now', feedKind='Liquid', mealSize='Medium', diaperMode='now', medMode='now', diaperType='Wet', sleepOngoing=false, sleepEditMode='new', editingSleep=null, editingEvent=null, toastTimer=null, refreshTimer=null;
+  let activeSummaryTab=localStorage.getItem('bt3.summaryTab')||'sleep';
+
+  function showToast(msg,error=false){ const t=$('toast'); clearTimeout(toastTimer); t.textContent=msg; t.classList.toggle('error',error); t.classList.add('show'); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
+  function openModal(id){ $(id).classList.add('open'); }
+  function closeModal(id){ $(id).classList.remove('open'); }
+  document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>closeModal(b.dataset.close)));
+  document.querySelectorAll('.backdrop').forEach(x=>x.addEventListener('click',e=>{ if(e.target===x && x.id!=='setupModal') closeModal(x.id); }));
+
+  function makeId(){ return crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&3|8);return v.toString(16)}); }
+  function isoNow(){ return new Date().toISOString(); }
+  function localInput(d=new Date()){ const x=new Date(d.getTime()-d.getTimezoneOffset()*60000); return x.toISOString().slice(0,16); }
+  function inputToIso(v){ const d=new Date(v); return Number.isNaN(d.getTime())?null:d.toISOString(); }
+  function clock(v){ if(!v)return ''; return new Date(v).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}); }
+  function dateShort(v){ if(!v)return ''; const d=new Date(v),n=new Date(); if(d.toDateString()===n.toDateString())return 'Today'; const y=new Date(n);y.setDate(y.getDate()-1); if(d.toDateString()===y.toDateString())return 'Yesterday'; return d.toLocaleDateString([],{month:'short',day:'numeric'}); }
+  function eventTime(v){ const d=dateShort(v); return d==='Today'?clock(v):`${d} ${clock(v)}`; }
+  function duration(min){ const m=Math.max(0,Math.floor(Number(min)||0)),h=Math.floor(m/60),r=m%60; return h?`${h}h ${String(r).padStart(2,'0')}m`:`${r}m`; }
+  function since(v){ if(!v)return null; return Math.max(0,Math.floor((Date.now()-new Date(v).getTime())/60000)); }
+  function ago(v){ const m=since(v); if(m==null)return ''; if(m<1)return 'just now'; if(m<60)return `${m}m ago`; const h=Math.floor(m/60),r=m%60;if(h<24)return r?`${h}h ${r}m ago`:`${h}h ago`;return `${Math.floor(h/24)}d ago`; }
+  function ageText(dob){ if(!dob)return ''; const [y,m,d]=String(dob).split('-').map(Number); if(!y)return ''; const now=new Date(); let months=(now.getFullYear()-y)*12+(now.getMonth()+1-m); if(now.getDate()<d)months--; months=Math.max(0,months); if(months<1)return '<1 mo'; if(months<12)return `${months} mo`; const yrs=Math.floor(months/12),rem=months%12; return rem?`${yrs} yr ${rem} mo`:`${yrs} yr`; }
+  function displayMilk(oz){ const n=Number(oz)||0; return (localStorage.getItem(LS.milk)||'oz')==='mL'?`${Math.round(n*29.5735)} mL`:`${Number(n.toFixed(2))} oz`; }
+  function feedLabel(e,includeNotes=true){ if(!e)return ''; if((e.feedKind||'Liquid')==='Solid'){const size=e.mealSize||'Meal',notes=String(e.mealNotes||'').trim();return `${size} meal${includeNotes&&notes?` · ${notes}`:''}`;} return displayMilk(e.amount); }
+  function currentBaby(){ return state.babies.find(b=>b.id===state.selectedBabyId)||state.babies[0]||{id:'baby1',name:'Malcolm',nap_start_hour:6,nap_end_hour:18}; }
+  function normalizeEvent(r){ return { id:r.id,babyId:r.baby_id,type:r.type,startTime:r.start_time,endTime:r.end_time,durationMinutes:r.duration_minutes==null?null:Number(r.duration_minutes),amount:r.amount==null?null:Number(r.amount),unit:r.unit||'',medicine:r.medicine||'',recordedBy:r.recorded_by||'',details:r.details||'',feedKind:r.feed_kind||(r.type==='Feed'?(r.amount!=null?'Liquid':'Solid'):''),mealSize:r.meal_size||'',mealNotes:r.meal_notes||'',createdAt:r.created_at }; }
+  function denormalizeInsert(e){ return { id:e.id,family_id:state.familyId,baby_id:e.babyId,type:e.type,start_time:e.startTime,end_time:e.endTime||null,duration_minutes:e.durationMinutes,amount:e.amount,unit:e.unit||null,medicine:e.medicine||null,recorded_by:state.member.display_name,recorded_by_user_id:state.user.id,details:e.details||null,feed_kind:e.type==='Feed'?(e.feedKind||'Liquid'):null,meal_size:e.type==='Feed'&&e.feedKind==='Solid'?(e.mealSize||null):null,meal_notes:e.type==='Feed'&&e.feedKind==='Solid'?(e.mealNotes||null):null }; }
+
+  function saveCache(){ try{localStorage.setItem(LS.cache,JSON.stringify({familyId:state.familyId,babies:state.babies,selectedBabyId:state.selectedBabyId,events:state.events,member:state.member,lastSync:state.lastSync}));}catch(_){} }
+  function loadCache(){ try{const c=JSON.parse(localStorage.getItem(LS.cache)||'null');if(!c)return false;state.familyId=c.familyId;state.babies=c.babies||[];state.selectedBabyId=c.selectedBabyId||state.selectedBabyId;state.events=c.events||[];state.member=c.member||state.member;state.lastSync=c.lastSync||null;return true;}catch(_){return false;} }
+  function getPending(){ try{return JSON.parse(localStorage.getItem(LS.pending)||'[]')}catch(_){return []} }
+  function setPending(q){ localStorage.setItem(LS.pending,JSON.stringify(q)); renderSync(); }
+  function enqueue(op){ const q=getPending(); const i=q.findIndex(x=>x.opId===op.opId); if(i>=0)q[i]=op; else q.push(op); setPending(q); }
+  function removePending(opId){ setPending(getPending().filter(x=>x.opId!==opId)); }
+  async function sendOp(op){ if(op.action==='insert') return db.from('events').upsert(op.payload,{onConflict:'id'}); if(op.action==='update') return db.from('events').update(op.payload).eq('id',op.id); if(op.action==='delete') return db.from('events').delete().eq('id',op.id); throw new Error('Unknown queued operation'); }
+  function isPermanentWriteError(err){ const code=String(err?.code||''); const msg=String(err?.message||'').toLowerCase(); return ['23505','23514','23503','42501','22P02','PGRST204'].includes(code)||msg.includes('duplicate key')||msg.includes('violates check constraint')||msg.includes('column'); }
+  async function flushPending(){ if(!navigator.onLine||!state.member)return; const q=[...getPending()]; let refreshNeeded=false; for(const op of q){ try{const {error}=await sendOp(op); if(error)throw error; removePending(op.opId);}catch(err){ console.warn('pending sync',err); if(isPermanentWriteError(err)){removePending(op.opId);refreshNeeded=true;continue;} break; } } if(refreshNeeded){try{await loadEvents()}catch(_){}} renderSync(); }
+  async function queueWrite(op){ enqueue(op); if(navigator.onLine){ const {error}=await sendOp(op); if(error){ if(String(error.message||'').toLowerCase().includes('fetch')){renderSync();return;} if(isPermanentWriteError(error))removePending(op.opId); throw error; } removePending(op.opId); state.lastSync=new Date().toISOString(); } saveCache(); renderSync(); }
+
+  function setSummaryTab(tab){
+    if(!['sleep','feed','diaper','medicine'].includes(tab))tab='sleep';
+    activeSummaryTab=tab;localStorage.setItem('bt3.summaryTab',tab);
+    document.querySelectorAll('.file-tab').forEach(b=>b.classList.toggle('active',b.dataset.summaryTab===tab));
+    document.querySelectorAll('.file-panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===tab));
+  }
+  document.querySelectorAll('.file-tab').forEach(b=>b.addEventListener('click',()=>setSummaryTab(b.dataset.summaryTab)));
+  setSummaryTab(activeSummaryTab);
+
+  function isTodayEvent(e){ if(!e?.startTime)return false; return new Date(e.startTime).toDateString()===new Date().toDateString(); }
+  function todayOfType(type){ return state.events.filter(e=>e.type===type&&isTodayEvent(e)&&new Date(e.startTime).getTime()<=Date.now()).sort((a,b)=>new Date(a.startTime)-new Date(b.startTime)); }
+  function eventButton(e,label,timeText){ return `<button class="panel-event" type="button" data-panel-event-id="${esc(e.id)}"><span>${esc(label)}</span><span class="panel-event-time">${esc(timeText||clock(e.startTime))}</span></button>`; }
+  function bindPanelEvents(){ document.querySelectorAll('[data-panel-event-id]').forEach(b=>b.onclick=()=>{const e=findEvent(b.dataset.panelEventId);if(e)openEventOrSleep(e);}); }
+  function renderTabbedSummaries(a){
+    const feeds=todayOfType('Feed'), diapers=todayOfType('Diaper'), meds=todayOfType('Medicine');
+    const liquid=feeds.filter(e=>(e.feedKind||'Liquid')==='Liquid'), solids=feeds.filter(e=>(e.feedKind||'Liquid')==='Solid');
+    const ounces=liquid.reduce((n,e)=>n+(Number(e.amount)||0),0);
+    let feedSummary='0 feeds';
+    if(feeds.length){ const parts=[]; if(liquid.length)parts.push(displayMilk(ounces)); if(solids.length)parts.push(`${solids.length} ${solids.length===1?'meal':'meals'}`); feedSummary=`${parts.join(' · ')} · ${feeds.length} ${feeds.length===1?'feed':'feeds'}`; }
+    $('feedTodaySummary').textContent=feedSummary;
+    $('feedTodayList').innerHTML=feeds.length?feeds.map(e=>eventButton(e,`${(e.feedKind||'Liquid')==='Solid'?'🍽️':'🍼'} ${feedLabel(e)}`,clock(e.startTime))).join(''):'<div class="panel-empty">No feeds yet today</div>';
+
+    const wet=diapers.filter(e=>e.details==='Wet'||e.details==='Both').length, dirty=diapers.filter(e=>e.details==='Dirty'||e.details==='Both').length;
+    $('diaperTodaySummary').textContent=diapers.length?`${diapers.length} · ${wet} wet · ${dirty} dirty`:'0 changes';
+    $('diaperTodayList').innerHTML=diapers.length?diapers.map(e=>eventButton(e,`🧷 ${e.details||'Diaper'}`,clock(e.startTime))).join(''):'<div class="panel-empty">No diaper changes yet today</div>';
+
+    $('medicineTodaySummary').textContent=meds.length?`${meds.length} ${meds.length===1?'dose':'doses'}`:'0 doses';
+    $('medicineTodayList').innerHTML=meds.length?meds.map(e=>eventButton(e,`＋ ${e.medicine||'Medicine'} · ${e.amount} ${e.unit}`,clock(e.startTime))).join(''):'<div class="panel-empty">No medicine yet today</div>';
+    bindPanelEvents();
+    setSummaryTab(activeSummaryTab);
+  }
+
+  function analytics(events=state.events,baby=currentBaby()){
+    const now=new Date(), nowMs=now.getTime(); const sorted=[...events].sort((a,b)=>new Date(b.startTime)-new Date(a.startTime));
+    const active=sorted.find(e=>e.type==='Sleep'&&!e.endTime)||null;
+    const lastSleep=sorted.filter(e=>e.type==='Sleep'&&e.endTime&&new Date(e.endTime).getTime()<=nowMs).sort((a,b)=>new Date(b.endTime)-new Date(a.endTime))[0]||null;
+    const lastFeed=sorted.find(e=>e.type==='Feed'&&new Date(e.startTime).getTime()<=nowMs)||null;
+    const lastDiaper=sorted.find(e=>e.type==='Diaper'&&new Date(e.startTime).getTime()<=nowMs)||null;
+    let lastMed=sorted.find(e=>e.type==='Medicine'&&new Date(e.startTime).getTime()<=nowMs)||null; if(lastMed&&nowMs-new Date(lastMed.startTime).getTime()>86400000)lastMed=null;
+    const napStart=new Date(now);napStart.setHours(Number(baby.nap_start_hour??6),0,0,0); const napEnd=new Date(now);napEnd.setHours(Number(baby.nap_end_hour??18),0,0,0);
+    const nightEnd=new Date(now);nightEnd.setHours(Number(baby.nap_start_hour??6),0,0,0); const nightStart=new Date(nightEnd);nightStart.setDate(nightStart.getDate()-1);nightStart.setHours(Number(baby.nap_end_hour??18),0,0,0);
+    const sleeps=sorted.filter(e=>e.type==='Sleep'&&new Date(e.startTime).getTime()<=nowMs);
+    const naps=[],night=[];let napMin=0,nightMin=0;
+    for(const e of sleeps){const st=new Date(e.startTime).getTime(),en=e.endTime?new Date(e.endTime).getTime():nowMs;if(!Number.isFinite(st)||!Number.isFinite(en)||en<st)continue;const dm=Math.max(0,Math.round((en-st)/60000)),x={...e,durationMinutes:dm};if(st>=napStart.getTime()&&st<napEnd.getTime()){naps.push(x);napMin+=dm}if(st>=nightStart.getTime()&&st<nightEnd.getTime()){night.push(x);nightMin+=dm}}
+    naps.sort((a,b)=>new Date(a.startTime)-new Date(b.startTime));night.sort((a,b)=>new Date(a.startTime)-new Date(b.startTime));
+    return {active,lastSleep,lastFeed,lastDiaper,lastMed,naps,napMin,night,nightMin,bedtime:night[0]?.startTime||null,morningWake:night.length&&!night.some(x=>!x.endTime)?night[night.length-1].endTime:null};
+  }
+
+  function render(){
+    const now=new Date(); $('dateLabel').textContent=now.toLocaleDateString([],{weekday:'short',month:'short',day:'numeric'}).toUpperCase(); $('personChip').textContent=state.member?.display_name||'Set up';
+    $('babyTabs').innerHTML=state.babies.length?state.babies.map(b=>`<button class="baby-tab ${b.id===state.selectedBabyId?'selected':''}" data-id="${esc(b.id)}">${esc(b.name)}</button>`).join(''):'<button class="baby-tab selected" data-id="baby1">Malcolm</button><button class="baby-tab" data-id="baby2">Baby 2</button>';
+    document.querySelectorAll('.baby-tab').forEach(b=>b.onclick=()=>selectBaby(b.dataset.id));
+    const baby=currentBaby(),a=analytics(); $('summaryBaby').textContent=baby.name||'Baby'; $('summaryBaby').classList.toggle('baby2',baby.id==='baby2'); $('summaryAge').textContent=ageText(baby.date_of_birth);
+    if(a.active){const future=new Date(a.active.startTime).getTime()>Date.now()+60000;if(future){$('stateLabel').textContent='SLEEP ENTRY OPEN';$('stateMain').textContent=clock(a.active.startTime);$('stateSub').textContent='This open sleep starts in the future · tap Sleep to correct it';$('sleepTiny').textContent='Fix';$('sleepActionLabel').textContent='Correct Sleep';}else{$('stateLabel').textContent='SLEEPING NOW';$('stateMain').textContent=duration(since(a.active.startTime));$('stateSub').textContent=`Started ${clock(a.active.startTime)} · ${a.active.recordedBy||''}`;$('sleepTiny').textContent='End';$('sleepActionLabel').textContent='End Sleep';}}
+    else {const aw=a.lastSleep?since(a.lastSleep.endTime):null;$('stateLabel').textContent='AWAKE NOW';$('stateMain').textContent=aw==null?'—':duration(aw);let sub=a.lastSleep?`Awake since ${clock(a.lastSleep.endTime)}`:'No completed sleep yet';const target=Number(baby.wake_target_minutes);if(Number.isFinite(target)&&target>0&&a.lastSleep){const t=new Date(new Date(a.lastSleep.endTime).getTime()+target*60000);sub+=` · Target ${clock(t)}`}$('stateSub').textContent=sub;$('sleepTiny').textContent='Start';$('sleepActionLabel').textContent='Start Sleep';}
+    $('lastNightMain').textContent=duration(a.nightMin); $('lastNightSub').textContent=a.bedtime?`${clock(a.bedtime)}${a.morningWake?'–'+clock(a.morningWake):' · still sleeping'}`:'No night sleep recorded';
+    $('napSummary').innerHTML=`${duration(a.napMin)} · ${a.naps.length} ${a.naps.length===1?'nap':'naps'}`; $('napList').innerHTML=a.naps.length?a.naps.map((n,i)=>`<button class="nap-line" data-event-id="${n.id}">Nap ${i+1} · ${clock(n.startTime)}–${n.endTime?clock(n.endTime):'Now'} · ${duration(n.endTime?n.durationMinutes:since(n.startTime))} ›</button>`).join(''):'<span class="row-sub">No naps yet today</span>'; document.querySelectorAll('.nap-line').forEach(b=>b.onclick=()=>openSleepEdit(findEvent(b.dataset.eventId)));
+    renderLast('lastFeed',a.lastFeed,a.lastFeed?`${feedLabel(a.lastFeed)} · ${eventTime(a.lastFeed.startTime)}`:'No feed recorded');
+    renderLast('lastDiaper',a.lastDiaper,a.lastDiaper?`${a.lastDiaper.details||'Diaper'} · ${eventTime(a.lastDiaper.startTime)}`:'No diaper recorded');
+    renderLast('lastMedicine',a.lastMed,a.lastMed?`${a.lastMed.medicine||'Medicine'} · ${a.lastMed.amount} ${a.lastMed.unit} · ${eventTime(a.lastMed.startTime)}`:'No medicine in 24h');
+    $('feedTiny').textContent=a.lastFeed?ago(a.lastFeed.startTime):'Add';$('diaperTiny').textContent=a.lastDiaper?ago(a.lastDiaper.startTime):'Add';$('medicineTiny').textContent=a.lastMed?ago(a.lastMed.startTime):'Add';
+    renderTabbedSummaries(a);
+    renderSync();
+  }
+  function renderLast(id,e,main){ $(id).innerHTML=`<strong>${esc(main)}</strong>${e?`<div class="row-sub">${esc(ago(e.startTime))}</div>`:''}`; }
+  function renderSync(){const p=getPending().length;let s=!navigator.onLine?(p?`Offline · ${p} waiting to sync`:'Offline'):p?`${p} change${p===1?'':'s'} syncing…`:state.lastSync?`Live · updated ${clock(state.lastSync)}`:'Live · Supabase';$('syncStrip').textContent=s;}
+  function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function findEvent(id){return state.events.find(e=>e.id===id)||null;}
+
+  async function loadMember(){ const {data,error}=await db.from('family_members').select('family_id,user_id,display_name,role').eq('user_id',state.user.id).maybeSingle(); if(error)throw error; state.member=data||null;state.familyId=data?.family_id||null; }
+  async function loadBabies(){ const {data,error}=await db.from('babies').select('*').eq('family_id',state.familyId).eq('active',true).order('sort_order'); if(error)throw error; state.babies=data||[]; if(!state.babies.some(b=>b.id===state.selectedBabyId))state.selectedBabyId=state.babies[0]?.id||'baby1'; }
+  async function loadEvents(){ if(!state.familyId)return; const {data,error}=await db.from('events').select('*').eq('family_id',state.familyId).eq('baby_id',state.selectedBabyId).order('start_time',{ascending:false}).limit(250); if(error)throw error; state.events=(data||[]).map(normalizeEvent);state.lastSync=new Date().toISOString();saveCache();render(); }
+  async function refresh(){ if(!state.member)return; try{await loadBabies();await loadEvents();}catch(e){console.error(e);showToast('Could not refresh Baby Tracker.',true)} }
+  async function selectBaby(id){ if(id===state.selectedBabyId)return;state.selectedBabyId=id;localStorage.setItem(LS.selectedBaby,id);state.events=[];render();await loadEvents(); }
+  async function subscribeRealtime(){ if(state.realtime)await db.removeChannel(state.realtime); if(!state.familyId)return; state.realtime=db.channel('baby-tracker-v3').on('postgres_changes',{event:'*',schema:'public',table:'events',filter:`family_id=eq.${state.familyId}`},payload=>{const r=payload.new||payload.old;if(!r||r.baby_id===state.selectedBabyId){clearTimeout(refreshTimer);refreshTimer=setTimeout(loadEvents,120)}}).on('postgres_changes',{event:'UPDATE',schema:'public',table:'babies',filter:`family_id=eq.${state.familyId}`},()=>refresh()).subscribe(); }
+
+  async function ensureAuth(){ let {data:{session}}=await db.auth.getSession(); if(!session){const {data,error}=await db.auth.signInAnonymously();if(error)throw error;session=data.session;}state.user=session.user; }
+  async function boot(){ const cached=loadCache(); if(cached)render(); try{await ensureAuth();await loadMember();if(!state.member){openModal('setupModal');$('syncStrip').textContent='Enter your family code to connect';return;}await refresh();await subscribeRealtime();flushPending();}catch(e){console.error(e);showToast(e.message||'Could not start Baby Tracker.',true);if(!cached)$('syncStrip').textContent='Connection problem';} }
+
+  document.querySelectorAll('#setupPeople button').forEach(b=>b.onclick=()=>{setupPerson=b.dataset.person;document.querySelectorAll('#setupPeople button').forEach(x=>x.classList.toggle('selected',x===b));$('caregiverWrap').classList.toggle('hidden',setupPerson!=='Caregiver')});
+  $('connectDevice').onclick=async()=>{let name=setupPerson==='Caregiver'?$('caregiverName').value.trim():setupPerson,code=$('familyCode').value.trim();if(!name)return showToast('Enter the caregiver name.',true);if(!code)return showToast('Enter the family code.',true);$('connectDevice').disabled=true;try{const {data,error}=await db.rpc('join_family',{p_code:code,p_display_name:name,p_role:setupPerson==='Caregiver'?'caregiver':'parent'});if(error)throw error;await loadMember();closeModal('setupModal');await refresh();await subscribeRealtime();showToast('Baby Tracker connected');}catch(e){showToast(e.message||'Could not connect.',true)}finally{$('connectDevice').disabled=false}};
+
+  $('sleepQuick').onclick=async()=>{if(!state.member)return openModal('setupModal');const a=analytics();if(a.active){if(new Date(a.active.startTime).getTime()>Date.now()+60000){showToast('This open sleep has a future start time. Correct it before ending it.',true);return openSleepEdit(a.active);}const end=isoNow(),mins=Math.max(0,Math.round((new Date(end)-new Date(a.active.startTime))/60000));const before={...a.active};Object.assign(a.active,{endTime:end,durationMinutes:mins});render();try{await queueWrite({opId:makeId(),action:'update',id:a.active.id,payload:{end_time:end,duration_minutes:mins}});showToast('Sleep ended');await loadEvents();}catch(e){Object.assign(a.active,before);render();showToast(e.message,true)}}else{const e={id:makeId(),babyId:state.selectedBabyId,type:'Sleep',startTime:isoNow(),endTime:null,durationMinutes:null,amount:null,unit:'',medicine:'',recordedBy:state.member.display_name,details:''};state.events.unshift(e);render();try{await queueWrite({opId:e.id,action:'insert',payload:denormalizeInsert(e)});showToast('Sleep started');}catch(err){state.events=state.events.filter(x=>x.id!==e.id);render();if(String(err.code||'')==='23505'||String(err.message||'').includes('one_active_sleep_per_baby_idx')){await loadEvents().catch(()=>{});showToast('A sleep is already open. Tap Sleep again to end or correct it.',true);}else showToast(err.message,true)}}};
+
+  function setFeedKind(kind){feedKind=kind==='Solid'?'Solid':'Liquid';document.querySelectorAll('[data-feed-kind]').forEach(b=>b.classList.toggle('selected',b.dataset.feedKind===feedKind));$('liquidFeedFields').classList.toggle('hidden',feedKind!=='Liquid');$('solidFeedFields').classList.toggle('hidden',feedKind!=='Solid');}
+  function setMealSize(size){mealSize=['Small','Medium','Large'].includes(size)?size:'Medium';document.querySelectorAll('[data-meal-size]').forEach(b=>b.classList.toggle('selected',b.dataset.mealSize===mealSize));}
+  function openFeed(){ $('feedTitle').textContent=`Feed · ${currentBaby().name}`;$('feedAmount').value=localStorage.getItem(LS.feed)||'4';feedKind=localStorage.getItem(LS.feedKind)||'Liquid';mealSize=localStorage.getItem(LS.mealSize)||'Medium';$('mealNotes').value='';setFeedKind(feedKind);setMealSize(mealSize);feedMode='now';setModeButtons('feed');$('feedTime').classList.add('hidden');$('feedTime').value=localInput();openModal('feedModal'); }
+  $('feedQuick').onclick=openFeed;document.querySelectorAll('[data-feed-kind]').forEach(b=>b.onclick=()=>setFeedKind(b.dataset.feedKind));document.querySelectorAll('[data-meal-size]').forEach(b=>b.onclick=()=>setMealSize(b.dataset.mealSize));$('feedMinus').onclick=()=>{$('feedAmount').value=Math.max(.5,(Number($('feedAmount').value)||0)-.5)};$('feedPlus').onclick=()=>{$('feedAmount').value=(Number($('feedAmount').value)||0)+.5};
+  document.querySelectorAll('[data-feed-mode]').forEach(b=>b.onclick=()=>{feedMode=b.dataset.feedMode;setModeButtons('feed');$('feedTime').classList.toggle('hidden',feedMode==='now')});
+  $('saveFeed').onclick=async()=>{const time=feedMode==='now'?isoNow():inputToIso($('feedTime').value);if(!time)return showToast('Choose a valid time.',true);let amount=null,unit='',notes='';if(feedKind==='Liquid'){amount=Number($('feedAmount').value);if(!Number.isFinite(amount)||amount<=0)return showToast('Enter a valid bottle amount.',true);unit='oz';localStorage.setItem(LS.feed,String(amount));}else{notes=$('mealNotes').value.trim();}localStorage.setItem(LS.feedKind,feedKind);localStorage.setItem(LS.mealSize,mealSize);const e={id:makeId(),babyId:state.selectedBabyId,type:'Feed',startTime:time,endTime:null,durationMinutes:null,amount,unit,medicine:'',recordedBy:state.member.display_name,details:'',feedKind,mealSize:feedKind==='Solid'?mealSize:'',mealNotes:feedKind==='Solid'?notes:''};state.events.unshift(e);closeModal('feedModal');render();try{await queueWrite({opId:e.id,action:'insert',payload:denormalizeInsert(e)});showToast(feedKind==='Solid'?'Meal saved':'Bottle saved');}catch(err){state.events=state.events.filter(x=>x.id!==e.id);render();showToast(err.message,true)}};
+
+  $('diaperQuick').onclick=()=>{diaperType='Wet';diaperMode='now';setModeButtons('diaper');$('diaperTime').classList.add('hidden');$('diaperTime').value=localInput();document.querySelectorAll('#diaperTypes button').forEach(x=>x.classList.toggle('selected',x.dataset.diaper==='Wet'));openModal('diaperModal')};
+  document.querySelectorAll('#diaperTypes button').forEach(b=>b.onclick=()=>{diaperType=b.dataset.diaper;document.querySelectorAll('#diaperTypes button').forEach(x=>x.classList.toggle('selected',x===b))});document.querySelectorAll('[data-diaper-mode]').forEach(b=>b.onclick=()=>{diaperMode=b.dataset.diaperMode;setModeButtons('diaper');$('diaperTime').classList.toggle('hidden',diaperMode==='now')});
+  $('saveDiaper').onclick=async()=>{const time=diaperMode==='now'?isoNow():inputToIso($('diaperTime').value);if(!time)return showToast('Choose a valid time.',true);const e={id:makeId(),babyId:state.selectedBabyId,type:'Diaper',startTime:time,endTime:null,durationMinutes:null,amount:null,unit:'',medicine:'',recordedBy:state.member.display_name,details:diaperType};state.events.unshift(e);closeModal('diaperModal');render();try{await queueWrite({opId:e.id,action:'insert',payload:denormalizeInsert(e)});showToast('Diaper saved');}catch(err){showToast(err.message,true)}};
+
+  $('medicineQuick').onclick=()=>{$('medicineName').value=localStorage.getItem(LS.medName)||'Tylenol';$('medicineAmount').value=localStorage.getItem(LS.medAmount)||'3.75';$('medicineUnit').value=localStorage.getItem(LS.medUnit)||'mL';medMode='now';setModeButtons('med');$('medicineTime').classList.add('hidden');$('medicineTime').value=localInput();openModal('medicineModal')};document.querySelectorAll('[data-med-mode]').forEach(b=>b.onclick=()=>{medMode=b.dataset.medMode;setModeButtons('med');$('medicineTime').classList.toggle('hidden',medMode==='now')});
+  $('saveMedicine').onclick=async()=>{const medicine=$('medicineName').value.trim(),amount=Number($('medicineAmount').value),unit=$('medicineUnit').value,time=medMode==='now'?isoNow():inputToIso($('medicineTime').value);if(!medicine)return showToast('Enter the medicine name.',true);if(!Number.isFinite(amount)||amount<=0)return showToast('Enter a valid dose.',true);if(!time)return showToast('Choose a valid time.',true);localStorage.setItem(LS.medName,medicine);localStorage.setItem(LS.medAmount,String(amount));localStorage.setItem(LS.medUnit,unit);const e={id:makeId(),babyId:state.selectedBabyId,type:'Medicine',startTime:time,endTime:null,durationMinutes:null,amount,unit,medicine,recordedBy:state.member.display_name,details:''};state.events.unshift(e);closeModal('medicineModal');render();try{await queueWrite({opId:e.id,action:'insert',payload:denormalizeInsert(e)});showToast('Medicine saved');}catch(err){showToast(err.message,true)}};
+
+  function setModeButtons(kind){const sel=kind==='feed'?`[data-feed-mode]`:kind==='diaper'?`[data-diaper-mode]`:`[data-med-mode]`,value=kind==='feed'?feedMode:kind==='diaper'?diaperMode:medMode;document.querySelectorAll(sel).forEach(b=>b.classList.toggle('selected',(b.dataset.feedMode||b.dataset.diaperMode||b.dataset.medMode)===value));}
+
+  $('addNap').onclick=()=>openNewNap();
+  function populateBabySelect(id,value=state.selectedBabyId){$(id).innerHTML=state.babies.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('');$(id).value=value;}
+  function openNewNap(){sleepEditMode='new';editingSleep=null;sleepOngoing=false;const baby=currentBaby(),now=new Date(),ns=new Date(now),ne=new Date(now);ns.setHours(Number(baby.nap_start_hour??6),0,0,0);ne.setHours(Number(baby.nap_end_hour??18),0,0,0);let end=new Date(now);if(end<ns)end=new Date(ns.getTime()+3600000);if(end>ne)end=new Date(ne);let start=new Date(end.getTime()-3600000);if(start<ns)start=new Date(ns);$('sleepEditTitle').textContent='Add Nap';$('sleepEditNote').textContent=`Add a daytime nap for ${baby.name}.`;$('sleepStart').value=localInput(start);$('sleepEnd').value=localInput(end);populateBabySelect('sleepBaby');$('deleteSleep').classList.add('hidden');setSleepStatus(false);openModal('sleepEditModal');}
+  function openSleepEdit(e){if(!e)return;sleepEditMode='edit';editingSleep=e;populateBabySelect('sleepBaby',e.babyId);$('sleepEditTitle').textContent='Correct Sleep';$('sleepEditNote').textContent='Adjust the start/end time, move the sleep to the other baby, or mark it still snoozing.';$('sleepStart').value=localInput(new Date(e.startTime));$('sleepEnd').value=localInput(e.endTime?new Date(e.endTime):new Date());$('deleteSleep').classList.remove('hidden');setSleepStatus(!e.endTime);openModal('sleepEditModal');}
+  function setSleepStatus(v){sleepOngoing=v;$('sleepEnded').classList.toggle('selected',!v);$('sleepOngoing').classList.toggle('selected',v);$('sleepEndWrap').classList.toggle('hidden',v);$('saveSleepEdit').textContent=v?'Save & Keep Snoozing':sleepEditMode==='new'?'Save Nap':'Save Correction';}
+  $('sleepEnded').onclick=()=>setSleepStatus(false);$('sleepOngoing').onclick=()=>setSleepStatus(true);
+  $('saveSleepEdit').onclick=async()=>{const babyId=$('sleepBaby').value,start=inputToIso($('sleepStart').value),end=sleepOngoing?null:inputToIso($('sleepEnd').value);if(!start)return showToast('Choose a valid start time.',true);if(end&&new Date(end)<=new Date(start))return showToast('End time must be after start time.',true);const mins=end?Math.max(0,Math.round((new Date(end)-new Date(start))/60000)):null;if(sleepEditMode==='new'){const e={id:makeId(),babyId,type:'Sleep',startTime:start,endTime:end,durationMinutes:mins,amount:null,unit:'',medicine:'',recordedBy:state.member.display_name,details:'Manual entry'};if(babyId===state.selectedBabyId)state.events.unshift(e);closeModal('sleepEditModal');render();try{await queueWrite({opId:e.id,action:'insert',payload:denormalizeInsert(e)});showToast('Sleep saved');if(babyId!==state.selectedBabyId)await loadEvents();}catch(err){showToast(err.message,true)}}else{const id=editingSleep.id,payload={baby_id:babyId,start_time:start,end_time:end,duration_minutes:mins};if(babyId===state.selectedBabyId){Object.assign(editingSleep,{babyId,startTime:start,endTime:end,durationMinutes:mins})}else state.events=state.events.filter(x=>x.id!==id);closeModal('sleepEditModal');render();try{await queueWrite({opId:makeId(),action:'update',id,payload});showToast('Sleep updated');await loadEvents();}catch(err){showToast(err.message,true)}}};
+  $('deleteSleep').onclick=async()=>{if(!editingSleep||!confirm('Delete this sleep entry?'))return;const id=editingSleep.id;state.events=state.events.filter(x=>x.id!==id);closeModal('sleepEditModal');render();try{await queueWrite({opId:makeId(),action:'delete',id});showToast('Sleep deleted')}catch(err){showToast(err.message,true)}};
+
+  $('historyLink').onclick=openHistory;function openHistory(){renderHistory();openModal('historyModal')}function renderHistory(){const rows=[...state.events].sort((a,b)=>new Date(b.startTime)-new Date(a.startTime));$('historyList').innerHTML=rows.length?rows.map(historyRow).join(''):'<div class="empty">No activity yet.</div>';document.querySelectorAll('.history-row').forEach(b=>b.onclick=()=>openEventOrSleep(findEvent(b.dataset.id)));}
+  function historyRow(e){let icon=e.type==='Sleep'?'☾':e.type==='Feed'?((e.feedKind||'Liquid')==='Solid'?'🍽️':'🍼'):e.type==='Diaper'?'🧷':'＋',detail=e.type==='Sleep'?(e.endTime?`${clock(e.startTime)}–${clock(e.endTime)} · ${duration(e.durationMinutes)}`:`Started ${clock(e.startTime)} · sleeping`):e.type==='Feed'?`${feedLabel(e)} · ${e.recordedBy}`:e.type==='Diaper'?`${e.details} · ${e.recordedBy}`:`${e.medicine} · ${e.amount} ${e.unit}`;return `<button class="history-row" data-id="${e.id}"><span class="history-icon">${icon}</span><span><span class="history-name">${esc(e.type==='Medicine'?e.medicine:e.type==='Feed'?((e.feedKind||'Liquid')==='Solid'?'Meal':'Bottle'):e.type)}</span><br><span class="history-detail">${esc(detail)}</span></span><span class="history-time">${esc(dateShort(e.startTime))}<br>${esc(clock(e.startTime))}</span></button>`;}
+  function renderEventFeedFields(){const kind=$('eventFeedKind').value;$('eventLiquidFields').classList.toggle('hidden',kind!=='Liquid');$('eventSolidFields').classList.toggle('hidden',kind!=='Solid');}
+  $('eventFeedKind').onchange=renderEventFeedFields;
+  function openEventOrSleep(e){closeModal('historyModal');if(e.type==='Sleep')return openSleepEdit(e);editingEvent=e;populateBabySelect('eventBaby',e.babyId);$('eventTime').value=localInput(new Date(e.startTime));$('eventEditTitle').textContent=`Edit ${e.type}`;['feedEditFields','diaperEditFields','medicineEditFields'].forEach(id=>$(id).classList.add('hidden'));if(e.type==='Feed'){$('feedEditFields').classList.remove('hidden');$('eventFeedKind').value=e.feedKind||'Liquid';$('eventFeedAmount').value=e.amount??'';$('eventMealSize').value=e.mealSize||'Medium';$('eventMealNotes').value=e.mealNotes||'';renderEventFeedFields()}else if(e.type==='Diaper'){$('diaperEditFields').classList.remove('hidden');$('eventDiaper').value=e.details}else{$('medicineEditFields').classList.remove('hidden');$('eventMedicine').value=e.medicine;$('eventMedicineAmount').value=e.amount;$('eventMedicineUnit').value=e.unit}openModal('eventEditModal');}
+  $('saveEventEdit').onclick=async()=>{if(!editingEvent)return;const babyId=$('eventBaby').value,start=inputToIso($('eventTime').value);if(!start)return showToast('Choose a valid time.',true);const p={baby_id:babyId,start_time:start};if(editingEvent.type==='Feed'){const kind=$('eventFeedKind').value;if(kind==='Liquid'){const n=Number($('eventFeedAmount').value);if(!Number.isFinite(n)||n<=0)return showToast('Enter a valid bottle amount.',true);Object.assign(p,{feed_kind:'Liquid',amount:n,unit:'oz',meal_size:null,meal_notes:null,medicine:null})}else{Object.assign(p,{feed_kind:'Solid',amount:null,unit:null,meal_size:$('eventMealSize').value,meal_notes:$('eventMealNotes').value.trim()||null,medicine:null})}}else if(editingEvent.type==='Diaper'){p.details=$('eventDiaper').value}else{const medicine=$('eventMedicine').value.trim(),amount=Number($('eventMedicineAmount').value),unit=$('eventMedicineUnit').value;if(!medicine||!Number.isFinite(amount)||amount<=0)return showToast('Enter valid medicine details.',true);Object.assign(p,{medicine,amount,unit})}const id=editingEvent.id;if(babyId===state.selectedBabyId){Object.assign(editingEvent,{babyId,startTime:start,amount:p.amount??null,unit:p.unit??'',medicine:p.medicine??editingEvent.medicine,details:p.details??editingEvent.details,feedKind:p.feed_kind??editingEvent.feedKind,mealSize:p.meal_size??'',mealNotes:p.meal_notes??''})}else state.events=state.events.filter(x=>x.id!==id);closeModal('eventEditModal');render();try{await queueWrite({opId:makeId(),action:'update',id,payload:p});showToast('Changes saved');await loadEvents()}catch(err){showToast(err.message,true)}};
+  $('deleteEvent').onclick=async()=>{if(!editingEvent||!confirm(`Delete this ${editingEvent.type.toLowerCase()} entry?`))return;const id=editingEvent.id;state.events=state.events.filter(x=>x.id!==id);closeModal('eventEditModal');render();try{await queueWrite({opId:makeId(),action:'delete',id});showToast('Entry deleted')}catch(err){showToast(err.message,true)}};
+
+  ['lastFeedRow','lastDiaperRow','lastMedicineRow'].forEach(id=>$(id).onclick=()=>{const a=analytics(),e=id==='lastFeedRow'?a.lastFeed:id==='lastDiaperRow'?a.lastDiaper:a.lastMed;if(e)openEventOrSleep(e)});$('lastNightRow').onclick=openHistory;
+
+  function populateHours(){['settingsNapStart','settingsNapEnd'].forEach(id=>{const s=$(id);s.innerHTML='';for(let h=0;h<24;h++){const d=new Date();d.setHours(h,0,0,0);const o=document.createElement('option');o.value=String(h);o.textContent=d.toLocaleTimeString([],{hour:'numeric'});s.appendChild(o)}})}populateHours();
+  $('personChip').onclick=openSettings;function openSettings(){if(!state.member)return openModal('setupModal');const b=currentBaby();$('settingsUser').value=state.member.display_name;$('settingsBabyName').value=b.name||'';$('settingsDob').value=b.date_of_birth||'';$('settingsDob').max=new Date().toISOString().slice(0,10);$('settingsWake').value=b.wake_target_minutes??'';$('settingsNapStart').value=String(b.nap_start_hour??6);$('settingsNapEnd').value=String(b.nap_end_hour??18);$('settingsMilk').value=localStorage.getItem(LS.milk)||'oz';$('connectionInfo').textContent=`Supabase V3.3 · ${navigator.onLine?'Online':'Offline'} · ${getPending().length} pending` ;openModal('settingsModal')}
+  $('saveSettings').onclick=async()=>{const name=$('settingsUser').value.trim(),babyName=$('settingsBabyName').value.trim(),dob=$('settingsDob').value||null,wake=$('settingsWake').value.trim(),ns=Number($('settingsNapStart').value),ne=Number($('settingsNapEnd').value);if(!name||!babyName)return showToast('Enter both names.',true);if(ns===ne)return showToast('Nap start and end must be different.',true);if(dob&&new Date(dob+'T12:00:00')>new Date())return showToast('Date of birth cannot be in the future.',true);try{let {error}=await db.from('family_members').update({display_name:name}).eq('family_id',state.familyId).eq('user_id',state.user.id);if(error)throw error;({error}=await db.from('babies').update({name:babyName,date_of_birth:dob,wake_target_minutes:wake===''?null:Number(wake),nap_start_hour:ns,nap_end_hour:ne}).eq('family_id',state.familyId).eq('id',state.selectedBabyId));if(error)throw error;state.member.display_name=name;localStorage.setItem(LS.milk,$('settingsMilk').value);closeModal('settingsModal');await refresh();showToast('Settings saved')}catch(e){showToast(e.message,true)}};
+
+  $('openHandoff').onclick=async()=>{closeModal('settingsModal');$('handoffList').innerHTML='<div class="empty">Loading family status…</div>';openModal('handoffModal');try{const {data,error}=await db.from('events').select('*').eq('family_id',state.familyId).order('start_time',{ascending:false}).limit(500);if(error)throw error;const all=(data||[]).map(normalizeEvent);$('handoffList').innerHTML=state.babies.map(b=>handoffCard(b,all.filter(e=>e.babyId===b.id))).join('')}catch(e){$('handoffList').innerHTML=`<div class="empty">${esc(e.message)}</div>`}};
+  function handoffCard(b,ev){const a=analytics(ev,b),status=a.active?`Sleeping · ${duration(since(a.active.startTime))}`:a.lastSleep?`Awake · ${duration(since(a.lastSleep.endTime))}`:'Awake';return `<div class="handoff-card"><div class="handoff-title"><span>${esc(b.name)}</span><span>${esc(status)}</span></div><div class="capsules"><span class="capsule">${a.lastFeed&&a.lastFeed.feedKind==='Solid'?'🍽️':'🍼'} ${a.lastFeed?`${esc(feedLabel(a.lastFeed,false))} · ${ago(a.lastFeed.startTime)}`:'No feed'}</span><span class="capsule">🧷 ${a.lastDiaper?`${esc(a.lastDiaper.details)} · ${ago(a.lastDiaper.startTime)}`:'No diaper'}</span><span class="capsule">＋ ${a.lastMed?`${esc(a.lastMed.medicine)} · ${ago(a.lastMed.startTime)}`:'No meds in 24h'}</span></div></div>`;}
+
+  window.addEventListener('online',()=>{state.online=true;flushPending();refresh()});window.addEventListener('offline',()=>{state.online=false;renderSync()});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&state.member){flushPending();refresh()}});setInterval(()=>{render();if(!document.hidden&&state.member&&navigator.onLine)flushPending()},10000);
+  boot();
+})();
+</script>
+</body>
+</html>
