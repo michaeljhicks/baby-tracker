@@ -14,16 +14,18 @@
       content="black-translucent"
     />
     <meta name="apple-mobile-web-app-title" content="Baby Tracker" />
-    <title>Baby Tracker V3.1</title>
+    <title>Baby Tracker V3.2</title>
     <style>
       :root {
         color-scheme: dark;
         --bg: #0b0d12;
+        --bg2: #0e1118;
         --panel: #141821;
         --panel2: #1b202b;
         --panel3: #10141b;
         --text: #f7f8fb;
-        --muted: #949cad;
+        --muted: #98a1b3;
+        --muted2: #7e879a;
         --line: rgba(255, 255, 255, 0.09);
         --sleep: #a99cff;
         --feed: #8de7c9;
@@ -32,7 +34,6 @@
         --baby1: #83a9ff;
         --baby2: #79c8ad;
         --danger: #ffb1b1;
-        --warm: #ffd38d;
         --shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
       }
       * {
@@ -43,7 +44,12 @@
         margin: 0;
         width: 100%;
         height: 100%;
-        background: var(--bg);
+        background: radial-gradient(
+          circle at top,
+          #121826 0%,
+          var(--bg) 28%,
+          var(--bg) 100%
+        );
         color: var(--text);
         overflow: hidden;
       }
@@ -56,7 +62,8 @@
       }
       button,
       input,
-      select {
+      select,
+      textarea {
         font: inherit;
       }
       button {
@@ -68,10 +75,10 @@
         height: 100dvh;
         max-height: 100dvh;
         margin: 0 auto;
-        padding: 14px 16px calc(12px + env(safe-area-inset-bottom));
+        padding: 16px 16px calc(14px + env(safe-area-inset-bottom));
         display: grid;
         grid-template-rows: auto auto auto minmax(0, 1fr);
-        gap: 10px;
+        gap: 12px;
         overflow: hidden;
       }
       .topbar {
@@ -86,42 +93,47 @@
         color: var(--muted);
         font-size: 10px;
         font-weight: 900;
-        letter-spacing: 0.13em;
+        letter-spacing: 0.15em;
         text-transform: uppercase;
-        margin-bottom: 3px;
+        margin-bottom: 5px;
       }
       .brand h1 {
-        font-size: 27px;
+        font-size: 31px;
         line-height: 1;
         margin: 0;
-        letter-spacing: -0.05em;
+        letter-spacing: -0.055em;
       }
       .person-chip {
         border: 1px solid var(--line);
-        background: var(--panel);
+        background: rgba(20, 24, 33, 0.82);
+        backdrop-filter: blur(8px);
         color: var(--text);
         border-radius: 999px;
-        padding: 9px 14px;
+        padding: 11px 16px;
         font-size: 13px;
         font-weight: 900;
         cursor: pointer;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
       }
+
       .baby-tabs {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 7px;
+        gap: 8px;
         padding: 5px;
         border: 1px solid var(--line);
         border-radius: 999px;
         background: #0f1218;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
       }
       .baby-tab {
         border: 0;
         border-radius: 999px;
-        min-height: 42px;
-        font-weight: 900;
+        min-height: 48px;
+        font-weight: 950;
+        font-size: 16px;
         color: #10141b;
-        opacity: 0.66;
+        opacity: 0.68;
         transition: 0.15s;
         white-space: nowrap;
         overflow: hidden;
@@ -136,20 +148,21 @@
       .baby-tab.selected {
         opacity: 1;
         box-shadow:
-          inset 0 0 0 2px rgba(255, 255, 255, 0.35),
+          inset 0 0 0 2px rgba(255, 255, 255, 0.36),
           0 8px 20px rgba(0, 0, 0, 0.24);
         transform: translateY(-1px);
       }
+
       .quick-actions {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
+        gap: 10px;
       }
       .quick {
         border: 0;
-        border-radius: 18px;
-        min-height: 76px;
-        padding: 9px 6px;
+        border-radius: 20px;
+        min-height: 90px;
+        padding: 10px 8px;
         color: #0b0d12;
         font-weight: 950;
         display: flex;
@@ -158,24 +171,26 @@
         justify-content: center;
         gap: 4px;
         cursor: pointer;
-        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
       }
       .quick:active {
         transform: scale(0.97);
       }
       .quick .icon {
-        font-size: 23px;
+        font-size: 25px;
         line-height: 1;
       }
       .quick .label {
-        font-size: 13px;
-        line-height: 1;
+        font-size: 16px;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
       }
       .quick .tiny {
-        font-size: 9px;
-        line-height: 1;
-        opacity: 0.62;
+        font-size: 11px;
+        line-height: 1.1;
+        opacity: 0.68;
         max-width: 100%;
+        text-align: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -192,15 +207,16 @@
       .quick.medicine {
         background: linear-gradient(145deg, #ffc8dc, var(--medicine));
       }
+
       .summary {
         min-height: 0;
         border: 1px solid var(--line);
         background: linear-gradient(
           180deg,
-          rgba(255, 255, 255, 0.035),
+          rgba(255, 255, 255, 0.04),
           rgba(255, 255, 255, 0.012)
         );
-        border-radius: 26px;
+        border-radius: 28px;
         box-shadow: var(--shadow);
         display: flex;
         flex-direction: column;
@@ -210,12 +226,13 @@
         min-height: 0;
         overflow: auto;
         overscroll-behavior: contain;
-        padding: 16px 18px 13px;
+        padding: 18px 18px 14px;
         scrollbar-width: none;
       }
       .summary-scroll::-webkit-scrollbar {
         display: none;
       }
+
       .summary-head {
         display: flex;
         justify-content: space-between;
@@ -226,151 +243,179 @@
       .summary-head-left {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         min-width: 0;
+        flex-wrap: wrap;
       }
       .baby-badge {
         border-radius: 999px;
-        padding: 5px 10px;
-        font-size: 12px;
+        padding: 7px 12px;
+        font-size: 13px;
         font-weight: 950;
         color: #10141b;
         background: var(--baby1);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
       }
       .baby-badge.baby2 {
         background: var(--baby2);
       }
       .age {
         color: var(--muted);
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 850;
         white-space: nowrap;
       }
       .history-link {
         border: 0;
         background: transparent;
-        color: var(--muted);
-        font-size: 11px;
+        color: #b8bfcd;
+        font-size: 13px;
         font-weight: 900;
         padding: 4px;
         cursor: pointer;
       }
+
       .state-line {
         display: grid;
-        grid-template-columns: 1fr auto;
-        align-items: baseline;
-        gap: 12px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 14px;
+        align-items: start;
+        padding: 16px 0 18px;
         border-bottom: 1px solid var(--line);
-        padding-bottom: 10px;
-        margin-bottom: 7px;
+        margin-bottom: 6px;
+      }
+      .state-copy {
+        min-width: 0;
       }
       .state-label {
+        display: block;
         font-size: 12px;
         color: var(--muted);
         font-weight: 950;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.16em;
         text-transform: uppercase;
+        margin-bottom: 10px;
       }
       .state-main {
-        font-size: 30px;
+        font-size: 52px;
+        line-height: 0.95;
         font-weight: 950;
-        letter-spacing: -0.04em;
+        letter-spacing: -0.065em;
         text-align: right;
+        align-self: start;
       }
       .state-sub {
-        grid-column: 1/-1;
-        color: var(--muted);
-        font-size: 12px;
-        margin-top: -7px;
+        grid-column: 1/2;
+        color: #b3bbca;
+        font-size: 16px;
+        line-height: 1.35;
+        margin-top: -1px;
       }
       .target {
         color: var(--sleep);
         font-weight: 850;
       }
+
+      .section-title {
+        font-size: 11px;
+        color: var(--muted2);
+        font-weight: 950;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin: 14px 0 6px;
+      }
       .summary-row {
         display: grid;
-        grid-template-columns: 118px minmax(0, 1fr);
-        gap: 12px;
+        grid-template-columns: 124px minmax(0, 1fr);
+        gap: 14px;
         align-items: start;
-        padding: 11px 0;
+        padding: 12px 0;
         border-bottom: 1px solid var(--line);
       }
       .summary-row:last-child {
         border-bottom: 0;
       }
       .row-label {
-        font-size: 11px;
+        font-size: 12px;
         color: var(--muted);
         font-weight: 950;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-        padding-top: 2px;
+        padding-top: 3px;
       }
       .row-content {
         min-width: 0;
-        font-size: 14px;
+        font-size: 17px;
         font-weight: 800;
-        line-height: 1.3;
+        line-height: 1.28;
+        letter-spacing: -0.02em;
       }
       .row-content strong {
-        font-size: 17px;
+        font-size: 19px;
+        letter-spacing: -0.04em;
       }
       .row-sub {
-        color: var(--muted);
-        font-size: 11px;
+        color: #a7afbe;
+        font-size: 12px;
         font-weight: 700;
-        margin-top: 2px;
+        margin-top: 3px;
+        line-height: 1.35;
       }
       .clickable {
         cursor: pointer;
       }
       .clickable:active {
-        opacity: 0.7;
+        opacity: 0.72;
       }
+
       .nap-list {
         display: grid;
-        gap: 4px;
+        gap: 5px;
+        margin-top: 2px;
       }
       .nap-line {
         border: 0;
         background: transparent;
         color: var(--text);
-        padding: 1px 0;
+        padding: 0;
         text-align: left;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 800;
+        line-height: 1.3;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
       .add-nap {
-        margin-top: 6px;
-        border: 1px solid rgba(169, 156, 255, 0.42);
-        background: rgba(169, 156, 255, 0.12);
-        color: #d9d3ff;
+        margin-top: 10px;
+        border: 1px solid rgba(169, 156, 255, 0.45);
+        background: rgba(169, 156, 255, 0.11);
+        color: #ddd6ff;
         border-radius: 999px;
-        padding: 6px 10px;
-        font-size: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
         font-weight: 950;
       }
       .no-data {
         color: var(--muted);
         font-weight: 700;
       }
+
       .sync-strip {
         flex: 0 0 auto;
         border-top: 1px solid var(--line);
-        padding: 7px 12px;
-        color: #70798c;
-        font-size: 9px;
+        padding: 9px 12px;
+        color: #737c8d;
+        font-size: 11px;
         text-align: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
+
       .backdrop {
         position: fixed;
         inset: 0;
@@ -633,30 +678,55 @@
         background: #ffd9d9;
         color: #5c1212;
       }
+
       @media (max-width: 380px) {
         .app {
-          padding-left: 11px;
-          padding-right: 11px;
-          gap: 8px;
+          padding-left: 12px;
+          padding-right: 12px;
+          gap: 9px;
+        }
+        .brand h1 {
+          font-size: 28px;
+        }
+        .baby-tab {
+          min-height: 44px;
+          font-size: 15px;
         }
         .quick {
-          min-height: 68px;
+          min-height: 82px;
+          border-radius: 18px;
         }
         .quick .icon {
-          font-size: 20px;
+          font-size: 22px;
         }
         .quick .label {
-          font-size: 11px;
+          font-size: 14px;
+        }
+        .quick .tiny {
+          font-size: 10px;
         }
         .summary-scroll {
-          padding: 13px 14px 10px;
-        }
-        .summary-row {
-          grid-template-columns: 92px minmax(0, 1fr);
-          padding: 7px 0;
+          padding: 15px 14px 12px;
         }
         .state-main {
-          font-size: 22px;
+          font-size: 44px;
+        }
+        .state-sub {
+          font-size: 15px;
+        }
+        .summary-row {
+          grid-template-columns: 102px minmax(0, 1fr);
+          gap: 10px;
+          padding: 10px 0;
+        }
+        .row-label {
+          font-size: 11px;
+        }
+        .row-content {
+          font-size: 15px;
+        }
+        .row-content strong {
+          font-size: 17px;
         }
       }
     </style>
@@ -702,25 +772,31 @@
             <button class="history-link" id="historyLink">History ›</button>
           </div>
           <div class="state-line">
-            <span class="state-label" id="stateLabel">AWAKE</span
-            ><span class="state-main" id="stateMain">—</span>
-            <div class="state-sub" id="stateSub">Loading…</div>
+            <div class="state-copy">
+              <span class="state-label" id="stateLabel">AWAKE NOW</span>
+              <div class="state-sub" id="stateSub">Loading…</div>
+            </div>
+            <span class="state-main" id="stateMain">—</span>
           </div>
+
+          <div class="section-title">Sleep</div>
           <div class="summary-row clickable" id="lastNightRow">
-            <div class="row-label">Sleep last night</div>
+            <div class="row-label">Last night</div>
             <div class="row-content">
               <strong id="lastNightMain">—</strong>
               <div class="row-sub" id="lastNightSub"></div>
             </div>
           </div>
           <div class="summary-row">
-            <div class="row-label">Today's naps</div>
+            <div class="row-label">Naps today</div>
             <div class="row-content">
               <div id="napSummary"><strong>—</strong></div>
               <div class="nap-list" id="napList"></div>
               <button class="add-nap" id="addNap">+ Add nap</button>
             </div>
           </div>
+
+          <div class="section-title">Latest</div>
           <div class="summary-row clickable" id="lastFeedRow">
             <div class="row-label">Last feed</div>
             <div class="row-content" id="lastFeed">—</div>
@@ -2569,7 +2645,7 @@
           $("settingsNapEnd").value = String(b.nap_end_hour ?? 18);
           $("settingsMilk").value = localStorage.getItem(LS.milk) || "oz";
           $("connectionInfo").textContent =
-            `Supabase V3.1 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
+            `Supabase V3.2 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
           openModal("settingsModal");
         }
         $("saveSettings").onclick = async () => {
