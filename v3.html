@@ -14,7 +14,7 @@
       content="black-translucent"
     />
     <meta name="apple-mobile-web-app-title" content="Baby Tracker" />
-    <title>Baby Tracker V3.2</title>
+    <title>Baby Tracker V3.2.1</title>
     <style>
       :root {
         color-scheme: dark;
@@ -369,6 +369,13 @@
       }
       .clickable:active {
         opacity: 0.72;
+      }
+      .last-night-row {
+        margin-top: 2px;
+        background: rgba(169, 156, 255, 0.035);
+      }
+      .last-night-row .row-label {
+        color: #8f96a8;
       }
 
       .nap-list {
@@ -779,14 +786,7 @@
             <span class="state-main" id="stateMain">—</span>
           </div>
 
-          <div class="section-title">Sleep</div>
-          <div class="summary-row clickable" id="lastNightRow">
-            <div class="row-label">Last night</div>
-            <div class="row-content">
-              <strong id="lastNightMain">—</strong>
-              <div class="row-sub" id="lastNightSub"></div>
-            </div>
-          </div>
+          <div class="section-title">Today</div>
           <div class="summary-row">
             <div class="row-label">Naps today</div>
             <div class="row-content">
@@ -808,6 +808,13 @@
           <div class="summary-row clickable" id="lastMedicineRow">
             <div class="row-label">Last medicine</div>
             <div class="row-content" id="lastMedicine">—</div>
+          </div>
+          <div class="summary-row clickable last-night-row" id="lastNightRow">
+            <div class="row-label">Last night's sleep</div>
+            <div class="row-content">
+              <strong id="lastNightMain">—</strong>
+              <div class="row-sub" id="lastNightSub"></div>
+            </div>
           </div>
         </div>
         <div class="sync-strip" id="syncStrip">Connecting to Supabase…</div>
@@ -2645,7 +2652,7 @@
           $("settingsNapEnd").value = String(b.nap_end_hour ?? 18);
           $("settingsMilk").value = localStorage.getItem(LS.milk) || "oz";
           $("connectionInfo").textContent =
-            `Supabase V3.2 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
+            `Supabase V3.2.1 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
           openModal("settingsModal");
         }
         $("saveSettings").onclick = async () => {
