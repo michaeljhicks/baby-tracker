@@ -14,7 +14,7 @@
       content="black-translucent"
     />
     <meta name="apple-mobile-web-app-title" content="Baby Tracker" />
-    <title>Baby Tracker V3</title>
+    <title>Baby Tracker V3.1</title>
     <style>
       :root {
         color-scheme: dark;
@@ -168,11 +168,11 @@
         line-height: 1;
       }
       .quick .label {
-        font-size: 12px;
+        font-size: 13px;
         line-height: 1;
       }
       .quick .tiny {
-        font-size: 8px;
+        font-size: 9px;
         line-height: 1;
         opacity: 0.62;
         max-width: 100%;
@@ -221,7 +221,7 @@
         justify-content: space-between;
         align-items: center;
         gap: 12px;
-        margin-bottom: 10px;
+        margin-bottom: 14px;
       }
       .summary-head-left {
         display: flex;
@@ -268,14 +268,14 @@
         margin-bottom: 7px;
       }
       .state-label {
-        font-size: 11px;
+        font-size: 12px;
         color: var(--muted);
         font-weight: 950;
         letter-spacing: 0.1em;
         text-transform: uppercase;
       }
       .state-main {
-        font-size: 25px;
+        font-size: 30px;
         font-weight: 950;
         letter-spacing: -0.04em;
         text-align: right;
@@ -283,7 +283,7 @@
       .state-sub {
         grid-column: 1/-1;
         color: var(--muted);
-        font-size: 11px;
+        font-size: 12px;
         margin-top: -7px;
       }
       .target {
@@ -292,17 +292,17 @@
       }
       .summary-row {
         display: grid;
-        grid-template-columns: 110px minmax(0, 1fr);
-        gap: 10px;
+        grid-template-columns: 118px minmax(0, 1fr);
+        gap: 12px;
         align-items: start;
-        padding: 8px 0;
+        padding: 11px 0;
         border-bottom: 1px solid var(--line);
       }
       .summary-row:last-child {
         border-bottom: 0;
       }
       .row-label {
-        font-size: 10px;
+        font-size: 11px;
         color: var(--muted);
         font-weight: 950;
         letter-spacing: 0.08em;
@@ -311,15 +311,16 @@
       }
       .row-content {
         min-width: 0;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 800;
+        line-height: 1.3;
       }
       .row-content strong {
-        font-size: 14px;
+        font-size: 17px;
       }
       .row-sub {
         color: var(--muted);
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 700;
         margin-top: 2px;
       }
@@ -337,9 +338,9 @@
         border: 0;
         background: transparent;
         color: var(--text);
-        padding: 0;
+        padding: 1px 0;
         text-align: left;
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 800;
         white-space: nowrap;
         overflow: hidden;
@@ -427,7 +428,8 @@
         margin-bottom: 7px;
       }
       .input,
-      .select {
+      .select,
+      .textarea {
         width: 100%;
         min-height: 50px;
         border: 1px solid var(--line);
@@ -438,8 +440,15 @@
         outline: none;
       }
       .input:focus,
-      .select:focus {
+      .select:focus,
+      .textarea:focus {
         border-color: rgba(169, 156, 255, 0.75);
+      }
+      .textarea {
+        padding: 12px 13px;
+        min-height: 88px;
+        resize: vertical;
+        font: inherit;
       }
       .stepper {
         display: grid;
@@ -675,7 +684,7 @@
           ><span class="tiny" id="feedTiny">Add</span>
         </button>
         <button class="quick diaper" id="diaperQuick">
-          <span class="icon">◌</span><span class="label">Diaper</span
+          <span class="icon">🧷</span><span class="label">Diaper</span
           ><span class="tiny" id="diaperTiny">Add</span>
         </button>
         <button class="quick medicine" id="medicineQuick">
@@ -768,18 +777,50 @@
           <button class="close" data-close="feedModal">×</button>
         </div>
         <div class="field">
-          <label>Breastmilk ounces</label>
-          <div class="stepper">
-            <button id="feedMinus">−</button
-            ><input
-              class="input amount"
-              id="feedAmount"
-              type="number"
-              inputmode="decimal"
-              min="0.1"
-              step="0.5"
-              value="4"
-            /><button id="feedPlus">+</button>
+          <label>Feed type</label>
+          <div class="seg" id="feedKinds">
+            <button class="selected" data-feed-kind="Liquid">🍼 Liquid</button
+            ><button data-feed-kind="Solid">🍽️ Solid</button>
+          </div>
+        </div>
+        <div id="liquidFeedFields">
+          <div class="field">
+            <label>Bottle ounces</label>
+            <div class="stepper">
+              <button id="feedMinus">−</button
+              ><input
+                class="input amount"
+                id="feedAmount"
+                type="number"
+                inputmode="decimal"
+                min="0.1"
+                step="0.5"
+                value="4"
+              /><button id="feedPlus">+</button>
+            </div>
+          </div>
+        </div>
+        <div id="solidFeedFields" class="hidden">
+          <div class="field">
+            <label>Meal size</label>
+            <div class="seg three" id="mealSizes">
+              <button data-meal-size="Small">Small</button
+              ><button class="selected" data-meal-size="Medium">Medium</button
+              ><button data-meal-size="Large">Large</button>
+            </div>
+          </div>
+          <div class="field">
+            <label
+              >Meal notes
+              <span style="font-weight: 600; opacity: 0.7"
+                >(optional)</span
+              ></label
+            ><textarea
+              class="textarea"
+              id="mealNotes"
+              maxlength="500"
+              placeholder="Chicken, peas, yogurt…"
+            ></textarea>
           </div>
         </div>
         <div class="field">
@@ -937,14 +978,41 @@
         </div>
         <div id="feedEditFields" class="hidden">
           <div class="field">
-            <label>Ounces</label
-            ><input
-              class="input"
-              id="eventFeedAmount"
-              type="number"
-              min=".1"
-              step=".5"
-            />
+            <label>Feed type</label
+            ><select class="select" id="eventFeedKind">
+              <option value="Liquid">Liquid</option>
+              <option value="Solid">Solid</option>
+            </select>
+          </div>
+          <div id="eventLiquidFields">
+            <div class="field">
+              <label>Bottle ounces</label
+              ><input
+                class="input"
+                id="eventFeedAmount"
+                type="number"
+                min=".1"
+                step=".5"
+              />
+            </div>
+          </div>
+          <div id="eventSolidFields" class="hidden">
+            <div class="field">
+              <label>Meal size</label
+              ><select class="select" id="eventMealSize">
+                <option>Small</option>
+                <option>Medium</option>
+                <option>Large</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Meal notes</label
+              ><textarea
+                class="textarea"
+                id="eventMealNotes"
+                maxlength="500"
+              ></textarea>
+            </div>
           </div>
         </div>
         <div id="diaperEditFields" class="hidden">
@@ -1065,6 +1133,8 @@
           cache: "bt3.cache",
           pending: "bt3.pending",
           feed: "bt3.feedAmount",
+          feedKind: "bt3.feedKind",
+          mealSize: "bt3.mealSize",
           medName: "bt3.medName",
           medAmount: "bt3.medAmount",
           medUnit: "bt3.medUnit",
@@ -1095,6 +1165,8 @@
         };
         let setupPerson = "Michael",
           feedMode = "now",
+          feedKind = "Liquid",
+          mealSize = "Medium",
           diaperMode = "now",
           medMode = "now",
           diaperType = "Wet",
@@ -1214,6 +1286,15 @@
             ? `${Math.round(n * 29.5735)} mL`
             : `${Number(n.toFixed(2))} oz`;
         }
+        function feedLabel(e, includeNotes = true) {
+          if (!e) return "";
+          if ((e.feedKind || "Liquid") === "Solid") {
+            const size = e.mealSize || "Meal",
+              notes = String(e.mealNotes || "").trim();
+            return `${size} meal${includeNotes && notes ? ` · ${notes}` : ""}`;
+          }
+          return displayMilk(e.amount);
+        }
         function currentBaby() {
           return (
             state.babies.find((b) => b.id === state.selectedBabyId) ||
@@ -1239,6 +1320,15 @@
             medicine: r.medicine || "",
             recordedBy: r.recorded_by || "",
             details: r.details || "",
+            feedKind:
+              r.feed_kind ||
+              (r.type === "Feed"
+                ? r.amount != null
+                  ? "Liquid"
+                  : "Solid"
+                : ""),
+            mealSize: r.meal_size || "",
+            mealNotes: r.meal_notes || "",
             createdAt: r.created_at,
           };
         }
@@ -1257,6 +1347,15 @@
             recorded_by: state.member.display_name,
             recorded_by_user_id: state.user.id,
             details: e.details || null,
+            feed_kind: e.type === "Feed" ? e.feedKind || "Liquid" : null,
+            meal_size:
+              e.type === "Feed" && e.feedKind === "Solid"
+                ? e.mealSize || null
+                : null,
+            meal_notes:
+              e.type === "Feed" && e.feedKind === "Solid"
+                ? e.mealNotes || null
+                : null,
           };
         }
 
@@ -1320,9 +1419,22 @@
             return db.from("events").delete().eq("id", op.id);
           throw new Error("Unknown queued operation");
         }
+        function isPermanentWriteError(err) {
+          const code = String(err?.code || "");
+          const msg = String(err?.message || "").toLowerCase();
+          return (
+            ["23505", "23514", "23503", "42501", "22P02", "PGRST204"].includes(
+              code,
+            ) ||
+            msg.includes("duplicate key") ||
+            msg.includes("violates check constraint") ||
+            msg.includes("column")
+          );
+        }
         async function flushPending() {
           if (!navigator.onLine || !state.member) return;
           const q = [...getPending()];
+          let refreshNeeded = false;
           for (const op of q) {
             try {
               const { error } = await sendOp(op);
@@ -1330,8 +1442,18 @@
               removePending(op.opId);
             } catch (err) {
               console.warn("pending sync", err);
+              if (isPermanentWriteError(err)) {
+                removePending(op.opId);
+                refreshNeeded = true;
+                continue;
+              }
               break;
             }
+          }
+          if (refreshNeeded) {
+            try {
+              await loadEvents();
+            } catch (_) {}
           }
           renderSync();
         }
@@ -1348,6 +1470,7 @@
                 renderSync();
                 return;
               }
+              if (isPermanentWriteError(error)) removePending(op.opId);
               throw error;
             }
             removePending(op.opId);
@@ -1364,12 +1487,7 @@
             (a, b) => new Date(b.startTime) - new Date(a.startTime),
           );
           const active =
-            sorted.find(
-              (e) =>
-                e.type === "Sleep" &&
-                !e.endTime &&
-                new Date(e.startTime).getTime() <= nowMs,
-            ) || null;
+            sorted.find((e) => e.type === "Sleep" && !e.endTime) || null;
           const lastSleep =
             sorted
               .filter(
@@ -1481,11 +1599,21 @@
           $("summaryBaby").classList.toggle("baby2", baby.id === "baby2");
           $("summaryAge").textContent = ageText(baby.date_of_birth);
           if (a.active) {
-            $("stateLabel").textContent = "SLEEPING NOW";
-            $("stateMain").textContent = duration(since(a.active.startTime));
-            $("stateSub").textContent =
-              `Started ${clock(a.active.startTime)} · ${a.active.recordedBy || ""}`;
-            $("sleepTiny").textContent = "End";
+            const future =
+              new Date(a.active.startTime).getTime() > Date.now() + 60000;
+            if (future) {
+              $("stateLabel").textContent = "SLEEP ENTRY OPEN";
+              $("stateMain").textContent = clock(a.active.startTime);
+              $("stateSub").textContent =
+                "This open sleep starts in the future · tap Sleep to correct it";
+              $("sleepTiny").textContent = "Fix";
+            } else {
+              $("stateLabel").textContent = "SLEEPING NOW";
+              $("stateMain").textContent = duration(since(a.active.startTime));
+              $("stateSub").textContent =
+                `Started ${clock(a.active.startTime)} · ${a.active.recordedBy || ""}`;
+              $("sleepTiny").textContent = "End";
+            }
           } else {
             const aw = a.lastSleep ? since(a.lastSleep.endTime) : null;
             $("stateLabel").textContent = "AWAKE NOW";
@@ -1527,7 +1655,7 @@
             "lastFeed",
             a.lastFeed,
             a.lastFeed
-              ? `${displayMilk(a.lastFeed.amount)} · ${eventTime(a.lastFeed.startTime)}`
+              ? `${feedLabel(a.lastFeed)} · ${eventTime(a.lastFeed.startTime)}`
               : "No feed recorded",
           );
           renderLast(
@@ -1755,6 +1883,13 @@
           if (!state.member) return openModal("setupModal");
           const a = analytics();
           if (a.active) {
+            if (new Date(a.active.startTime).getTime() > Date.now() + 60000) {
+              showToast(
+                "This open sleep has a future start time. Correct it before ending it.",
+                true,
+              );
+              return openSleepEdit(a.active);
+            }
             const end = isoNow(),
               mins = Math.max(
                 0,
@@ -1805,14 +1940,53 @@
             } catch (err) {
               state.events = state.events.filter((x) => x.id !== e.id);
               render();
-              showToast(err.message, true);
+              if (
+                String(err.code || "") === "23505" ||
+                String(err.message || "").includes(
+                  "one_active_sleep_per_baby_idx",
+                )
+              ) {
+                await loadEvents().catch(() => {});
+                showToast(
+                  "A sleep is already open. Tap Sleep again to end or correct it.",
+                  true,
+                );
+              } else showToast(err.message, true);
             }
           }
         };
 
+        function setFeedKind(kind) {
+          feedKind = kind === "Solid" ? "Solid" : "Liquid";
+          document
+            .querySelectorAll("[data-feed-kind]")
+            .forEach((b) =>
+              b.classList.toggle("selected", b.dataset.feedKind === feedKind),
+            );
+          $("liquidFeedFields").classList.toggle(
+            "hidden",
+            feedKind !== "Liquid",
+          );
+          $("solidFeedFields").classList.toggle("hidden", feedKind !== "Solid");
+        }
+        function setMealSize(size) {
+          mealSize = ["Small", "Medium", "Large"].includes(size)
+            ? size
+            : "Medium";
+          document
+            .querySelectorAll("[data-meal-size]")
+            .forEach((b) =>
+              b.classList.toggle("selected", b.dataset.mealSize === mealSize),
+            );
+        }
         function openFeed() {
           $("feedTitle").textContent = `Feed · ${currentBaby().name}`;
           $("feedAmount").value = localStorage.getItem(LS.feed) || "4";
+          feedKind = localStorage.getItem(LS.feedKind) || "Liquid";
+          mealSize = localStorage.getItem(LS.mealSize) || "Medium";
+          $("mealNotes").value = "";
+          setFeedKind(feedKind);
+          setMealSize(mealSize);
           feedMode = "now";
           setModeButtons("feed");
           $("feedTime").classList.add("hidden");
@@ -1820,6 +1994,12 @@
           openModal("feedModal");
         }
         $("feedQuick").onclick = openFeed;
+        document
+          .querySelectorAll("[data-feed-kind]")
+          .forEach((b) => (b.onclick = () => setFeedKind(b.dataset.feedKind)));
+        document
+          .querySelectorAll("[data-meal-size]")
+          .forEach((b) => (b.onclick = () => setMealSize(b.dataset.mealSize)));
         $("feedMinus").onclick = () => {
           $("feedAmount").value = Math.max(
             0.5,
@@ -1838,13 +2018,23 @@
             }),
         );
         $("saveFeed").onclick = async () => {
-          const amount = Number($("feedAmount").value),
-            time =
-              feedMode === "now" ? isoNow() : inputToIso($("feedTime").value);
-          if (!Number.isFinite(amount) || amount <= 0)
-            return showToast("Enter a valid amount.", true);
+          const time =
+            feedMode === "now" ? isoNow() : inputToIso($("feedTime").value);
           if (!time) return showToast("Choose a valid time.", true);
-          localStorage.setItem(LS.feed, String(amount));
+          let amount = null,
+            unit = "",
+            notes = "";
+          if (feedKind === "Liquid") {
+            amount = Number($("feedAmount").value);
+            if (!Number.isFinite(amount) || amount <= 0)
+              return showToast("Enter a valid bottle amount.", true);
+            unit = "oz";
+            localStorage.setItem(LS.feed, String(amount));
+          } else {
+            notes = $("mealNotes").value.trim();
+          }
+          localStorage.setItem(LS.feedKind, feedKind);
+          localStorage.setItem(LS.mealSize, mealSize);
           const e = {
             id: makeId(),
             babyId: state.selectedBabyId,
@@ -1853,10 +2043,13 @@
             endTime: null,
             durationMinutes: null,
             amount,
-            unit: "oz",
+            unit,
             medicine: "",
             recordedBy: state.member.display_name,
             details: "",
+            feedKind,
+            mealSize: feedKind === "Solid" ? mealSize : "",
+            mealNotes: feedKind === "Solid" ? notes : "",
           };
           state.events.unshift(e);
           closeModal("feedModal");
@@ -1867,8 +2060,10 @@
               action: "insert",
               payload: denormalizeInsert(e),
             });
-            showToast("Feed saved");
+            showToast(feedKind === "Solid" ? "Meal saved" : "Bottle saved");
           } catch (err) {
+            state.events = state.events.filter((x) => x.id !== e.id);
+            render();
             showToast(err.message, true);
           }
         };
@@ -2192,9 +2387,11 @@
               e.type === "Sleep"
                 ? "☾"
                 : e.type === "Feed"
-                  ? "🍼"
+                  ? (e.feedKind || "Liquid") === "Solid"
+                    ? "🍽️"
+                    : "🍼"
                   : e.type === "Diaper"
-                    ? "◌"
+                    ? "🧷"
                     : "＋",
             detail =
               e.type === "Sleep"
@@ -2202,12 +2399,18 @@
                   ? `${clock(e.startTime)}–${clock(e.endTime)} · ${duration(e.durationMinutes)}`
                   : `Started ${clock(e.startTime)} · sleeping`
                 : e.type === "Feed"
-                  ? `${displayMilk(e.amount)} · ${e.recordedBy}`
+                  ? `${feedLabel(e)} · ${e.recordedBy}`
                   : e.type === "Diaper"
                     ? `${e.details} · ${e.recordedBy}`
                     : `${e.medicine} · ${e.amount} ${e.unit}`;
-          return `<button class="history-row" data-id="${e.id}"><span class="history-icon">${icon}</span><span><span class="history-name">${esc(e.type === "Medicine" ? e.medicine : e.type)}</span><br><span class="history-detail">${esc(detail)}</span></span><span class="history-time">${esc(dateShort(e.startTime))}<br>${esc(clock(e.startTime))}</span></button>`;
+          return `<button class="history-row" data-id="${e.id}"><span class="history-icon">${icon}</span><span><span class="history-name">${esc(e.type === "Medicine" ? e.medicine : e.type === "Feed" ? ((e.feedKind || "Liquid") === "Solid" ? "Meal" : "Bottle") : e.type)}</span><br><span class="history-detail">${esc(detail)}</span></span><span class="history-time">${esc(dateShort(e.startTime))}<br>${esc(clock(e.startTime))}</span></button>`;
         }
+        function renderEventFeedFields() {
+          const kind = $("eventFeedKind").value;
+          $("eventLiquidFields").classList.toggle("hidden", kind !== "Liquid");
+          $("eventSolidFields").classList.toggle("hidden", kind !== "Solid");
+        }
+        $("eventFeedKind").onchange = renderEventFeedFields;
         function openEventOrSleep(e) {
           closeModal("historyModal");
           if (e.type === "Sleep") return openSleepEdit(e);
@@ -2220,7 +2423,11 @@
           );
           if (e.type === "Feed") {
             $("feedEditFields").classList.remove("hidden");
-            $("eventFeedAmount").value = e.amount;
+            $("eventFeedKind").value = e.feedKind || "Liquid";
+            $("eventFeedAmount").value = e.amount ?? "";
+            $("eventMealSize").value = e.mealSize || "Medium";
+            $("eventMealNotes").value = e.mealNotes || "";
+            renderEventFeedFields();
           } else if (e.type === "Diaper") {
             $("diaperEditFields").classList.remove("hidden");
             $("eventDiaper").value = e.details;
@@ -2239,10 +2446,29 @@
           if (!start) return showToast("Choose a valid time.", true);
           const p = { baby_id: babyId, start_time: start };
           if (editingEvent.type === "Feed") {
-            const n = Number($("eventFeedAmount").value);
-            if (!Number.isFinite(n) || n <= 0)
-              return showToast("Enter a valid amount.", true);
-            Object.assign(p, { amount: n, unit: "oz", medicine: null });
+            const kind = $("eventFeedKind").value;
+            if (kind === "Liquid") {
+              const n = Number($("eventFeedAmount").value);
+              if (!Number.isFinite(n) || n <= 0)
+                return showToast("Enter a valid bottle amount.", true);
+              Object.assign(p, {
+                feed_kind: "Liquid",
+                amount: n,
+                unit: "oz",
+                meal_size: null,
+                meal_notes: null,
+                medicine: null,
+              });
+            } else {
+              Object.assign(p, {
+                feed_kind: "Solid",
+                amount: null,
+                unit: null,
+                meal_size: $("eventMealSize").value,
+                meal_notes: $("eventMealNotes").value.trim() || null,
+                medicine: null,
+              });
+            }
           } else if (editingEvent.type === "Diaper") {
             p.details = $("eventDiaper").value;
           } else {
@@ -2258,10 +2484,13 @@
             Object.assign(editingEvent, {
               babyId,
               startTime: start,
-              amount: p.amount ?? editingEvent.amount,
-              unit: p.unit ?? editingEvent.unit,
+              amount: p.amount ?? null,
+              unit: p.unit ?? "",
               medicine: p.medicine ?? editingEvent.medicine,
               details: p.details ?? editingEvent.details,
+              feedKind: p.feed_kind ?? editingEvent.feedKind,
+              mealSize: p.meal_size ?? "",
+              mealNotes: p.meal_notes ?? "",
             });
           } else state.events = state.events.filter((x) => x.id !== id);
           closeModal("eventEditModal");
@@ -2340,7 +2569,7 @@
           $("settingsNapEnd").value = String(b.nap_end_hour ?? 18);
           $("settingsMilk").value = localStorage.getItem(LS.milk) || "oz";
           $("connectionInfo").textContent =
-            `Supabase V3 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
+            `Supabase V3.1 · ${navigator.onLine ? "Online" : "Offline"} · ${getPending().length} pending`;
           openModal("settingsModal");
         }
         $("saveSettings").onclick = async () => {
@@ -2418,7 +2647,7 @@
               : a.lastSleep
                 ? `Awake · ${duration(since(a.lastSleep.endTime))}`
                 : "Awake";
-          return `<div class="handoff-card"><div class="handoff-title"><span>${esc(b.name)}</span><span>${esc(status)}</span></div><div class="capsules"><span class="capsule">🍼 ${a.lastFeed ? `${displayMilk(a.lastFeed.amount)} · ${ago(a.lastFeed.startTime)}` : "No feed"}</span><span class="capsule">◌ ${a.lastDiaper ? `${esc(a.lastDiaper.details)} · ${ago(a.lastDiaper.startTime)}` : "No diaper"}</span><span class="capsule">＋ ${a.lastMed ? `${esc(a.lastMed.medicine)} · ${ago(a.lastMed.startTime)}` : "No meds in 24h"}</span></div></div>`;
+          return `<div class="handoff-card"><div class="handoff-title"><span>${esc(b.name)}</span><span>${esc(status)}</span></div><div class="capsules"><span class="capsule">${a.lastFeed && a.lastFeed.feedKind === "Solid" ? "🍽️" : "🍼"} ${a.lastFeed ? `${esc(feedLabel(a.lastFeed, false))} · ${ago(a.lastFeed.startTime)}` : "No feed"}</span><span class="capsule">🧷 ${a.lastDiaper ? `${esc(a.lastDiaper.details)} · ${ago(a.lastDiaper.startTime)}` : "No diaper"}</span><span class="capsule">＋ ${a.lastMed ? `${esc(a.lastMed.medicine)} · ${ago(a.lastMed.startTime)}` : "No meds in 24h"}</span></div></div>`;
         }
 
         window.addEventListener("online", () => {
